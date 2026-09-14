@@ -1,0 +1,1000 @@
+```html
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | TutorFinder</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background: #f5f7fb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 15px;
+            color: #1f2937;
+        }
+
+        /* Main Container */
+
+        .register-container {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 650px;
+            background: white;
+            border-radius: 22px;
+            overflow: hidden;
+
+            display: grid;
+            grid-template-columns: 40% 60%;
+
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.10);
+        }
+
+
+        /* =========================
+           LEFT SECTION
+        ========================= */
+
+        .left-section {
+            background: linear-gradient(
+                145deg,
+                #5b4bdb,
+                #7c5cff
+            );
+
+            color: white;
+
+            padding: 50px 40px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            opacity: 0.75;
+        }
+
+        .left-content {
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+
+        .left-content h1 {
+            font-size: 42px;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .left-content p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.88);
+            max-width: 330px;
+        }
+
+        .features {
+            margin-top: 35px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 15px;
+        }
+
+        .left-footer {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+
+        /* =========================
+           RIGHT SECTION
+        ========================= */
+
+        .right-section {
+            padding: 45px 55px;
+            overflow-y: auto;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .form-header p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+
+        /* =========================
+           ERROR MESSAGE
+        ========================= */
+
+        .form-errors {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #be123c;
+
+            padding: 12px 15px;
+            border-radius: 9px;
+
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .field-error {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+
+        /* =========================
+           ROLE SELECTION
+        ========================= */
+
+        .section-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #374151;
+        }
+
+        .role-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+
+        .role-card {
+            position: relative;
+
+            border: 2px solid #e5e7eb;
+            border-radius: 13px;
+
+            padding: 20px 16px;
+
+            cursor: pointer;
+
+            transition: all 0.25s ease;
+
+            background: #fff;
+        }
+
+        .role-card:hover {
+            border-color: #8b7cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(91, 75, 219, 0.10);
+        }
+
+        .role-card.selected {
+            border-color: #5b4bdb;
+            background: #f5f3ff;
+        }
+
+        /* Hide radio button */
+
+        .role-card input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .role-icon {
+            width: 48px;
+            height: 48px;
+
+            background: #f0edff;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 24px;
+
+            margin-bottom: 12px;
+        }
+
+        .role-card.selected .role-icon {
+            background: #e3defe;
+        }
+
+        .role-card h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #111827;
+        }
+
+        .role-card p {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #6b7280;
+        }
+
+        .check-mark {
+            position: absolute;
+
+            top: 14px;
+            right: 14px;
+
+            width: 22px;
+            height: 22px;
+
+            border-radius: 50%;
+
+            background: #5b4bdb;
+            color: white;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+        }
+
+        .role-card.selected .check-mark {
+            display: flex;
+        }
+
+
+        /* =========================
+           FORM FIELDS
+        ========================= */
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        .form-group label {
+            display: block;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            margin-bottom: 8px;
+
+            color: #374151;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+
+            height: 48px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+
+            padding: 0 15px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: border-color 0.2s,
+                        box-shadow 0.2s;
+
+            background: white;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #6d5ce7;
+
+            box-shadow:
+                0 0 0 3px rgba(109, 92, 231, 0.10);
+        }
+
+        .input-wrapper input::placeholder {
+            color: #9ca3af;
+        }
+
+
+        /* Password button */
+
+        .password-input {
+            padding-right: 48px !important;
+        }
+
+        .show-password {
+            position: absolute;
+
+            right: 13px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+            background: transparent;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            color: #6b7280;
+        }
+
+        .show-password:hover {
+            color: #5b4bdb;
+        }
+
+
+        /* =========================
+           CREATE ACCOUNT BUTTON
+        ========================= */
+
+        .register-btn {
+            width: 100%;
+            height: 50px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: #5b4bdb;
+            color: white;
+
+            font-size: 15px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.25s ease;
+
+            margin-top: 5px;
+        }
+
+        .register-btn:hover {
+            background: #4939c7;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 7px 18px rgba(91, 75, 219, 0.25);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+
+        /* =========================
+           LOGIN LINK
+        ========================= */
+
+        .login-link {
+            text-align: center;
+
+            font-size: 13px;
+
+            color: #6b7280;
+
+            margin-top: 22px;
+        }
+
+        .login-link a {
+            color: #5b4bdb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 850px) {
+
+            .register-container {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+
+            .left-section {
+                min-height: 280px;
+                padding: 30px 35px;
+            }
+
+            .left-content {
+                margin: 35px 0 20px;
+            }
+
+            .left-content h1 {
+                font-size: 32px;
+            }
+
+            .features {
+                display: none;
+            }
+
+            .left-footer {
+                display: none;
+            }
+
+            .right-section {
+                padding: 35px;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 0;
+                align-items: stretch;
+            }
+
+            .register-container {
+                min-height: 100vh;
+                border-radius: 0;
+            }
+
+            .left-section {
+                min-height: 220px;
+                padding: 25px 22px;
+            }
+
+            .logo {
+                font-size: 23px;
+            }
+
+            .left-content h1 {
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+
+            .left-content p {
+                font-size: 14px;
+            }
+
+            .right-section {
+                padding: 30px 22px;
+            }
+
+            .form-header h2 {
+                font-size: 25px;
+            }
+
+            .role-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .role-card {
+                padding: 16px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="register-container">
+
+
+    <!-- =========================
+         LEFT SECTION
+    ========================== -->
+
+    <section class="left-section">
+
+        <div class="logo">
+            Tutor<span>Finder</span>
+        </div>
+
+
+        <div class="left-content">
+
+            <h1>
+                Start your<br>
+                learning journey.
+            </h1>
+
+            <p>
+                Connect with the right people.
+                Learn from experienced tutors or
+                share your knowledge with students.
+            </p>
+
+
+            <div class="features">
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ✓
+                    </div>
+
+                    <span>
+                        Find qualified tutors
+                    </span>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ✓
+                    </div>
+
+                    <span>
+                        Learn at your convenience
+                    </span>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ✓
+                    </div>
+
+                    <span>
+                        Connect with the right people
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="left-footer">
+            © 2026 TutorFinder. All rights reserved.
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         RIGHT SECTION
+    ========================== -->
+
+    <section class="right-section">
+
+
+        <div class="form-header">
+
+            <h2>
+                Create your account
+            </h2>
+
+            <p>
+                Fill in your details to get started.
+            </p>
+
+        </div>
+
+
+
+        <!-- Django form errors -->
+
+        {% if form.non_field_errors %}
+
+            <div class="form-errors">
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+        {% endif %}
+
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <!-- =========================
+                 ROLE
+            ========================== -->
+
+            <label class="section-label">
+                Register as
+            </label>
+
+
+            <div class="role-cards">
+
+
+                <!-- STUDENT -->
+
+                <label class="role-card">
+
+                    <input
+                        type="radio"
+                        name="role"
+                        value="student"
+                        {% if form.role.value == "student" %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <div class="role-icon">
+                        🎓
+                    </div>
+
+                    <h3>
+                        Student
+                    </h3>
+
+                    <p>
+                        Find tutors and get
+                        personalized help with
+                        your studies.
+                    </p>
+
+                    <span class="check-mark">
+                        ✓
+                    </span>
+
+                </label>
+
+
+
+                <!-- TUTOR -->
+
+                <label class="role-card">
+
+                    <input
+                        type="radio"
+                        name="role"
+                        value="tutor"
+                        {% if form.role.value == "tutor" %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <div class="role-icon">
+                        👨‍🏫
+                    </div>
+
+                    <h3>
+                        Tutor
+                    </h3>
+
+                    <p>
+                        Share your knowledge,
+                        teach students and grow
+                        your opportunities.
+                    </p>
+
+                    <span class="check-mark">
+                        ✓
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            {% if form.role.errors %}
+
+                <div class="field-error">
+                    {{ form.role.errors }}
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- =========================
+                 USERNAME
+            ========================== -->
+
+            <div class="form-group">
+
+                <label for="{{ form.username.id_for_label }}">
+                    Username
+                </label>
+
+                <div class="input-wrapper">
+
+                    {{ form.username }}
+
+                </div>
+
+                {% if form.username.errors %}
+
+                    <div class="field-error">
+                        {{ form.username.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- =========================
+                 EMAIL
+            ========================== -->
+
+            <div class="form-group">
+
+                <label for="{{ form.email.id_for_label }}">
+                    Email address
+                </label>
+
+                <div class="input-wrapper">
+
+                    {{ form.email }}
+
+                </div>
+
+                {% if form.email.errors %}
+
+                    <div class="field-error">
+                        {{ form.email.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- =========================
+                 PASSWORD
+            ========================== -->
+
+            <div class="form-group">
+
+                <label for="{{ form.password1.id_for_label }}">
+                    Password
+                </label>
+
+                <div class="input-wrapper">
+
+                    {{ form.password1.as_widget.attrs }}
+
+                    <input
+                        type="password"
+                        name="password1"
+                        id="{{ form.password1.id_for_label }}"
+                        class="password-input"
+                        placeholder="Create a password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword(
+                            '{{ form.password1.id_for_label }}',
+                            this
+                        )"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+                {% if form.password1.errors %}
+
+                    <div class="field-error">
+                        {{ form.password1.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- =========================
+                 CONFIRM PASSWORD
+            ========================== -->
+
+            <div class="form-group">
+
+                <label for="{{ form.password2.id_for_label }}">
+                    Confirm password
+                </label>
+
+                <div class="input-wrapper">
+
+                    <input
+                        type="password"
+                        name="password2"
+                        id="{{ form.password2.id_for_label }}"
+                        class="password-input"
+                        placeholder="Confirm your password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword(
+                            '{{ form.password2.id_for_label }}',
+                            this
+                        )"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+                {% if form.password2.errors %}
+
+                    <div class="field-error">
+                        {{ form.password2.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- =========================
+                 SUBMIT
+            ========================== -->
+
+            <button
+                type="submit"
+                class="register-btn"
+            >
+                Create Account
+            </button>
+
+
+        </form>
+
+
+
+        <!-- LOGIN -->
+
+        <div class="login-link">
+
+            Already have an account?
+
+            <a href="{% url 'login' %}">
+                Login
+            </a>
+
+        </div>
+
+
+    </section>
+
+</div>
+
+
+
+<script>
+
+    /* =========================
+       ROLE CARD SELECTION
+    ========================== */
+
+    const roleCards =
+        document.querySelectorAll(".role-card");
+
+
+    roleCards.forEach(card => {
+
+        const radio =
+            card.querySelector("input[type='radio']");
+
+
+        if (radio.checked) {
+            card.classList.add("selected");
+        }
+
+
+        card.addEventListener("click", function () {
+
+            roleCards.forEach(item => {
+                item.classList.remove("selected");
+            });
+
+
+            this.classList.add("selected");
+
+
+            radio.checked = true;
+
+        });
+
+    });
+
+
+
+    /* =========================
+       SHOW / HIDE PASSWORD
+    ========================== */
+
+    function togglePassword(inputId, button) {
+
+        const input =
+            document.getElementById(inputId);
+
+
+        if (input.type === "password") {
+
+            input.type = "text";
+
+            button.textContent = "🙈";
+
+        } else {
+
+            input.type = "password";
+
+            button.textContent = "👁";
+
+        }
+
+    }
+
+</script>
+
+
+</body>
+</html>
+```

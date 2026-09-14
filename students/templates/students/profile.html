@@ -1,0 +1,377 @@
+{% extends 'students/student-base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">
+                    <div class="row">
+                        <form method="POST">
+                        {% csrf_token %}
+                            <!--First row starts-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+                                        <!--div for profile picture upload starts-->
+
+                                        <div class="section-title">
+                                            <h2>Profile Picture</h2>
+                                            <p>Upload a picture for your profile.</p>
+                                        </div>
+
+                                        <div class="profile-picture-area">
+
+                                            <div class="profile-picture">
+
+                                                <img id="profilePreview"
+                                                    src="{% static 'assets/images/profile/profile.png' %}"
+                                                    alt="Profile Picture">
+
+                                            </div>
+
+                                            <div class="picture-info">
+
+                                                <label for="profile_picture"
+                                                    class="upload-btn">
+                                                    Choose Photo
+                                                </label>
+
+                                                <input type="file"
+                                                    id="profile_picture"
+                                                    name="profile_picture"
+                                                    accept="image/*"
+                                                    hidden>
+
+                                                <p>JPG, PNG or JPEG. Maximum 2MB.</p>
+
+                                                <button type="button"
+                                                        id="removePhoto"
+                                                        class="remove-btn">
+                                                    Remove
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+                                        <!--div for profile picture upload ends-->
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--First row ends-->
+
+                            <!--Second row starts-->
+                        
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+                                        <!--Div for Personal Information start-->
+                                        <div class="section-title">
+                                            <h2>Personal Information</h2>
+                                            <p>Your basic personal information.</p>
+                                        </div>
+
+                                        <div class="form-grid">
+
+                                            <div class="form-group">
+
+                                                <label for="full_name">
+                                                    Full Name
+                                                </label>
+
+                                                <input type="text"
+                                                    id="full_name"
+                                                    name="full_name"
+                                                    placeholder="Enter full name"
+                                                    required>
+
+                                            </div>
+
+
+                                            <div class="form-group">
+
+                                                <label for="gender">
+                                                    Gender
+                                                </label>
+
+                                                <select id="gender"
+                                                        name="gender">
+
+                                                    <option value="" selected disabled>
+                                                        Select Gender
+                                                    </option>
+
+                                                    <option value="F">Female</option>
+                                                    <option value="M">Male</option>
+                                                    <option value="O">Others</option>
+
+                                                </select>
+
+                                            </div>
+
+
+                                            <div class="form-group">
+
+                                                <label for="phone">
+                                                    Phone Number
+                                                </label>
+
+                                                <input type="tel"
+                                                    id="phone"
+                                                    name="phone"
+                                                    placeholder="98XXXXXXXX"
+                                                    maxlength="10">
+
+                                            </div>
+
+
+                                            <div class="form-group">
+
+                                                <label for="dob_date">
+                                                    Date of Birth
+                                                </label>
+
+                                                <input type="date"
+                                                    id="dob_date"
+                                                    name="dob"
+                                                    placeholder="Date of Birth">          
+                                            </div>
+
+                                        </div>
+                                        <!--div for personal Information ends-->
+
+                                    </div>
+                                </div>
+                            </div>                       
+                            <!--Second row ends-->
+
+
+                            <!--Third row start-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+
+                                        <!--div for academic information starts-->
+                                        <div class="section-title">
+                                            <h2>Academic Information</h2>
+                                            <p>Tell tutors about your current education.</p>
+                                        </div>
+
+                                        <div class="form-grid">
+
+                                            <div class="form-group">
+
+                                                <label for="education_level">
+                                                    Education Level
+                                                </label>
+
+                                                <select id="education_level"
+                                                        name="education_level"
+                                                        required>
+
+                                                    <option value="">
+                                                        Select education level
+                                                    </option>
+
+                                                    <option value="school">
+                                                        School
+                                                    </option>
+
+                                                    <option value="college">
+                                                        College
+                                                    </option>
+
+                                                    <option value="university">
+                                                        University
+                                                    </option>
+
+                                                </select>
+
+                                            </div>
+
+
+                                            <div class="form-group">
+
+                                                <label for="grade">
+                                                    Class / Grade
+                                                </label>
+
+                                                <select id="grade"
+                                                        name="grade">
+
+                                                    <option value="">
+                                                        Select class
+                                                    </option>
+
+                                                    <option value="2">Class 2</option>
+                                                    <option value="3">Class 3</option>
+                                                    <option value="4">Class 4</option>
+                                                    <option value="5">Class 5</option>
+                                                    <option value="6">Class 6</option>
+                                                    <option value="7">Class 7</option>
+                                                    <option value="8">Class 8</option>
+                                                    <option value="9">Class 9</option>
+                                                    <option value="10">Class 10</option>
+
+                                                </select>
+
+                                            </div>
+
+
+                                            <div class="form-group full-width">
+
+                                                <label for="school_college">
+                                                    School / College
+                                                </label>
+
+                                                <input type="text"
+                                                    id="school_college"
+                                                    name="school_college"
+                                                    placeholder="Enter school or college name">
+
+                                            </div>
+                                        </div>
+
+                                        <!--div for academic information ends-->
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Third row ends-->
+
+                            <!--Fourth row start-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+                                        <!--div for location starts-->
+                                        <div class="section-title">
+                                            <h2>Location</h2>
+                                            <p>
+                                                Your location helps us find tutors near you.
+                                            </p>
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label for="address">
+                                                Address
+                                            </label>
+
+                                            <input type="text"
+                                                id="address"
+                                                name="address"
+                                                placeholder="e.g. Shantinagar, Kathmandu"
+                                                required>
+
+                                        </div>
+
+
+                                        <!-- Map Area -->
+                                        <div class="location-area">
+
+                                            <div class="location-header">
+
+                                                <div>
+                                                    <strong>Select your location</strong>
+
+                                                    <p>
+                                                        Choose your location on the map
+                                                        for accurate nearby tutor search.
+                                                    </p>
+                                                </div>
+
+                                                <button type="button"
+                                                        id="useLocation"
+                                                        class="location-btn">
+
+                                                    📍 Use My Location
+
+                                                </button>
+
+                                            </div>
+
+
+                                            <div class="map-placeholder" id="map">
+
+                                                <div class="map-content">
+
+                                                    <div class="map-pin">
+                                                        📍
+                                                    </div>
+
+                                                    <p>
+                                                        Map location will appear here
+                                                    </p>
+
+                                                    <button type="button"
+                                                            id="selectLocation"
+                                                            class="select-location-btn">
+
+                                                        Select Location
+
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- Hidden coordinates -->
+
+                                        <input type="hidden"
+                                            id="latitude"
+                                            name="latitude">
+
+                                        <input type="hidden"
+                                            id="longitude"
+                                            name="longitude">
+                                        
+                                        <!--div for location ends-->
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Fourth row ends-->
+
+                            <!--Fourth row start-->
+                            <div class="col-12">
+                                
+                                <!--div for save-profile starts-->
+                                <!-- Bottom Actions -->
+                                <div class="form-actions">
+
+                                    <a href="{% url 'student_dashboard' %}"
+                                    class="cancel-btn">
+                                        Cancel
+                                    </a>
+
+                                    <input type="button" name="save_profile" value="Save Profile"
+                                            class="save-btn">
+                                    </button>
+
+                                </div>
+                                <!--div for save-profile ends-->                                  
+                                
+                            </div>
+                            <!--Fifthth row ends-->
+                        </form>                  
+
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

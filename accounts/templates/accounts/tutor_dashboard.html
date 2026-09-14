@@ -1,0 +1,1682 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ADME | Dashboard</title>
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f6f7fb;
+            color: #222;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =========================
+           LAYOUT
+        ========================= */
+
+        .dashboard {
+            min-height: 100vh;
+            display: flex;
+        }
+
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 230px;
+            min-height: 100vh;
+
+            background: white;
+
+            border-right: 1px solid #e5e7eb;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            padding: 25px 15px;
+
+            z-index: 1000;
+        }
+
+
+        /* LOGO */
+
+        .logo {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 0 10px;
+
+            margin-bottom: 40px;
+
+            color: #2563eb;
+
+            font-size: 22px;
+
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+
+            background: #2563eb;
+
+            color: white;
+
+            border-radius: 7px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+        }
+
+
+        /* SIDEBAR MENU */
+
+        .menu-title {
+            font-size: 11px;
+
+            color: #9ca3af;
+
+            padding: 0 10px;
+
+            margin-bottom: 10px;
+
+            text-transform: uppercase;
+        }
+
+        .menu {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+        }
+
+        .menu a {
+            padding: 11px 12px;
+
+            border-radius: 6px;
+
+            color: #555;
+
+            font-size: 14px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+        }
+
+        .menu a:hover {
+            background: #f1f5ff;
+
+            color: #2563eb;
+        }
+
+        .menu a.active {
+            background: #eff6ff;
+
+            color: #2563eb;
+
+            font-weight: 600;
+        }
+
+
+        /* LOGOUT */
+
+        .logout {
+            position: absolute;
+
+            left: 15px;
+            right: 15px;
+            bottom: 25px;
+        }
+
+        .logout a {
+            color: #dc2626;
+        }
+
+        .logout a:hover {
+            background: #fef2f2;
+
+            color: #dc2626;
+        }
+
+
+        /* =========================
+           MAIN CONTENT
+        ========================= */
+
+        .main {
+            width: calc(100% - 230px);
+
+            margin-left: 230px;
+
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           TOP BAR
+        ========================= */
+
+        .topbar {
+            height: 70px;
+
+            background: white;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            padding: 0 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 500;
+        }
+
+
+        .mobile-menu {
+            display: none;
+
+            border: none;
+
+            background: none;
+
+            font-size: 23px;
+
+            cursor: pointer;
+        }
+
+
+        .page-title {
+            font-size: 18px;
+
+            font-weight: 600;
+        }
+
+
+        .top-right {
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+        }
+
+
+        /* NOTIFICATION */
+
+        .notification {
+            position: relative;
+
+            font-size: 20px;
+
+            cursor: pointer;
+        }
+
+        .notification-count {
+            position: absolute;
+
+            top: -7px;
+            right: -8px;
+
+            width: 17px;
+            height: 17px;
+
+            background: #ef4444;
+
+            color: white;
+
+            border-radius: 50%;
+
+            font-size: 10px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* USER */
+
+        .user {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .user-photo {
+            width: 35px;
+            height: 35px;
+
+            border-radius: 50%;
+
+            background: #e5e7eb;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+        }
+
+        .user-name {
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .content {
+            padding: 30px;
+        }
+
+
+        /* WELCOME */
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 25px;
+
+            margin-bottom: 5px;
+        }
+
+        .welcome p {
+            color: #777;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           STAT CARDS
+        ========================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 8px;
+
+            padding: 20px;
+        }
+
+        .stat-label {
+            color: #777;
+
+            font-size: 13px;
+
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 27px;
+
+            font-weight: 600;
+        }
+
+        .stat-description {
+            color: #999;
+
+            font-size: 12px;
+
+            margin-top: 4px;
+        }
+
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-section {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 8px;
+
+            padding: 22px;
+
+            margin-bottom: 30px;
+        }
+
+        .section-heading {
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 {
+            font-size: 17px;
+
+            margin-bottom: 3px;
+        }
+
+        .section-heading p {
+            font-size: 13px;
+
+            color: #777;
+        }
+
+
+        .search-form {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr
+                1.2fr
+                1fr
+                auto;
+
+            gap: 12px;
+        }
+
+        .form-group label {
+            display: block;
+
+            font-size: 12px;
+
+            color: #555;
+
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+
+            height: 40px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 5px;
+
+            padding: 0 9px;
+
+            outline: none;
+
+            background: white;
+
+            font-size: 13px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+        }
+
+        .search-btn {
+            height: 40px;
+
+            padding: 0 20px;
+
+            align-self: end;
+
+            border: none;
+
+            border-radius: 5px;
+
+            background: #2563eb;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 13px;
+        }
+
+        .search-btn:hover {
+            background: #1d4ed8;
+        }
+
+
+        /* =========================
+           TWO COLUMN AREA
+        ========================= */
+
+        .dashboard-grid {
+            display: grid;
+
+            grid-template-columns: 2fr 1fr;
+
+            gap: 20px;
+        }
+
+
+        /* =========================
+           TUTORS
+        ========================= */
+
+        .panel {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 8px;
+
+            padding: 22px;
+        }
+
+
+        .panel-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .panel-header h2 {
+            font-size: 17px;
+        }
+
+        .see-all {
+            color: #2563eb;
+
+            font-size: 12px;
+        }
+
+
+        .tutor-list {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 15px;
+        }
+
+
+        .tutor-card {
+            border: 1px solid #e5e7eb;
+
+            border-radius: 7px;
+
+            padding: 17px;
+        }
+
+
+        .tutor-info {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .tutor-photo {
+            width: 48px;
+            height: 48px;
+
+            background: #eef2ff;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+        }
+
+
+        .tutor-name {
+            font-size: 14px;
+
+            font-weight: 600;
+
+            margin-bottom: 2px;
+        }
+
+        .tutor-subject {
+            font-size: 12px;
+
+            color: #777;
+        }
+
+
+        .rating {
+            font-size: 12px;
+
+            color: #f59e0b;
+
+            margin-bottom: 8px;
+        }
+
+
+        .tutor-location {
+            color: #777;
+
+            font-size: 12px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .tutor-bottom {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+
+        .fee {
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .view-btn {
+            border: 1px solid #2563eb;
+
+            color: #2563eb;
+
+            padding: 6px 10px;
+
+            border-radius: 4px;
+
+            font-size: 11px;
+        }
+
+        .view-btn:hover {
+            background: #eff6ff;
+        }
+
+
+        /* =========================
+           REQUESTS
+        ========================= */
+
+        .request {
+            padding: 13px 0;
+
+            border-bottom: 1px solid #eee;
+        }
+
+        .request:last-child {
+            border-bottom: none;
+        }
+
+        .request-name {
+            font-size: 13px;
+
+            font-weight: 600;
+
+            margin-bottom: 3px;
+        }
+
+        .request-details {
+            color: #777;
+
+            font-size: 11px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .status {
+            display: inline-block;
+
+            padding: 3px 7px;
+
+            border-radius: 10px;
+
+            font-size: 10px;
+        }
+
+        .pending {
+            background: #fff7ed;
+
+            color: #c2410c;
+        }
+
+        .accepted {
+            background: #f0fdf4;
+
+            color: #15803d;
+        }
+
+        .rejected {
+            background: #fef2f2;
+
+            color: #dc2626;
+        }
+
+
+        /* =========================
+           QUICK LINKS
+        ========================= */
+
+        .quick-links {
+            margin-top: 25px;
+        }
+
+        .quick-link {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 11px 0;
+
+            border-bottom: 1px solid #eee;
+
+            font-size: 13px;
+
+            color: #555;
+        }
+
+        .quick-link:last-child {
+            border-bottom: none;
+        }
+
+        .quick-link:hover {
+            color: #2563eb;
+        }
+
+
+        /* =========================
+           TABLET
+        ========================= */
+
+        @media (max-width: 1000px) {
+
+            .sidebar {
+                width: 210px;
+            }
+
+            .main {
+                width: calc(100% - 210px);
+
+                margin-left: 210px;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            /* SIDEBAR */
+
+            .sidebar {
+                width: 230px;
+
+                transform: translateX(-100%);
+
+                transition: 0.25s;
+
+                box-shadow: 5px 0 20px rgba(0, 0, 0, 0.08);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+
+            /* MAIN */
+
+            .main {
+                width: 100%;
+
+                margin-left: 0;
+            }
+
+
+            /* TOPBAR */
+
+            .topbar {
+                height: 60px;
+
+                padding: 0 18px;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .page-title {
+                display: none;
+            }
+
+            .top-right {
+                gap: 14px;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+
+            /* CONTENT */
+
+            .content {
+                padding: 20px 15px;
+            }
+
+
+            /* WELCOME */
+
+            .welcome h1 {
+                font-size: 22px;
+            }
+
+
+            /* STATS */
+
+            .stats {
+                grid-template-columns: 1fr;
+
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+
+            /* SEARCH */
+
+            .search-section {
+                padding: 17px;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+
+            /* TUTORS */
+
+            .tutor-list {
+                grid-template-columns: 1fr;
+            }
+
+
+            /* PANELS */
+
+            .panel {
+                padding: 17px;
+            }
+
+        }
+
+
+        /* =========================
+           SMALL MOBILE
+        ========================= */
+
+        @media (max-width: 400px) {
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .notification {
+                font-size: 18px;
+            }
+
+            .content {
+                padding: 15px 10px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- =====================================
+         SIDEBAR
+    ====================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+
+        <div class="logo">
+
+            <span class="logo-icon">
+                🎓
+            </span>
+
+            ADME
+
+        </div>
+
+
+        <div class="menu-title">
+            Menu
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="#" class="active">
+                🏠
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#">
+                🔍
+                <span>Find Tutors</span>
+            </a>
+
+            <a href="#">
+                📋
+                <span>My Requests</span>
+            </a>
+
+            <a href="#">
+                🔔
+                <span>Notifications</span>
+            </a>
+
+            <a href="#">
+                👤
+                <span>My Profile</span>
+            </a>
+
+        </nav>
+
+
+        <div class="logout">
+
+            <a href="{% url 'logout' %}">
+                🚪
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =====================================
+         MAIN
+    ====================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <button
+                class="mobile-menu"
+                onclick="toggleSidebar()"
+            >
+                ☰
+            </button>
+
+
+            <div class="page-title">
+                Dashboard
+            </div>
+
+
+            <div class="top-right">
+
+
+                <div class="notification">
+
+                    🔔
+
+                    <span class="notification-count">
+                        3
+                    </span>
+
+                </div>
+
+
+                <div class="user">
+
+                    <div class="user-photo">
+                        👤
+                    </div>
+
+                    <span class="user-name">
+                        Saras
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+
+        <!-- CONTENT -->
+
+        <div class="content">
+
+
+            <!-- WELCOME -->
+
+            <div class="welcome">
+
+                <h1>
+                    Hello, Saras 👋
+                </h1>
+
+                <p>
+                    Find the right tutor for your learning needs.
+                </p>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 STATISTICS
+            ====================================== -->
+
+            <div class="stats">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        Total Requests
+                    </div>
+
+                    <div class="stat-number">
+                        8
+                    </div>
+
+                    <div class="stat-description">
+                        All tutor requests
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        Accepted
+                    </div>
+
+                    <div class="stat-number">
+                        3
+                    </div>
+
+                    <div class="stat-description">
+                        Accepted requests
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        Pending
+                    </div>
+
+                    <div class="stat-number">
+                        2
+                    </div>
+
+                    <div class="stat-description">
+                        Waiting for response
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =====================================
+                 SEARCH TUTOR
+            ====================================== -->
+
+            <section class="search-section">
+
+
+                <div class="section-heading">
+
+                    <h2>
+                        Find a Tutor
+                    </h2>
+
+                    <p>
+                        Search for tutors based on your requirements.
+                    </p>
+
+                </div>
+
+
+                <form class="search-form">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Class
+                        </label>
+
+                        <select>
+
+                            <option>
+                                Select Class
+                            </option>
+
+                            <option>Class 2</option>
+                            <option>Class 3</option>
+                            <option>Class 4</option>
+                            <option>Class 5</option>
+                            <option>Class 6</option>
+                            <option>Class 7</option>
+                            <option>Class 8</option>
+                            <option>Class 9</option>
+                            <option>Class 10</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Subject
+                        </label>
+
+                        <select>
+
+                            <option>
+                                Select Subject
+                            </option>
+
+                            <option>
+                                Mathematics
+                            </option>
+
+                            <option>
+                                Science
+                            </option>
+
+                            <option>
+                                English
+                            </option>
+
+                            <option>
+                                Nepali
+                            </option>
+
+                            <option>
+                                Social Studies
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Location
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="Enter location"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Maximum Fee
+                        </label>
+
+                        <input
+                            type="number"
+                            placeholder="Rs. / hour"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="search-btn"
+                    >
+                        Search
+                    </button>
+
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =====================================
+                 LOWER CONTENT
+            ====================================== -->
+
+            <div class="dashboard-grid">
+
+
+                <!-- =============================
+                     RECOMMENDED TUTORS
+                ============================== -->
+
+                <section class="panel">
+
+
+                    <div class="panel-header">
+
+                        <h2>
+                            Recommended Tutors
+                        </h2>
+
+                        <a href="#" class="see-all">
+                            View All
+                        </a>
+
+                    </div>
+
+
+                    <div class="tutor-list">
+
+
+                        <!-- TUTOR 1 -->
+
+                        <div class="tutor-card">
+
+
+                            <div class="tutor-info">
+
+                                <div class="tutor-photo">
+                                    👨‍🏫
+                                </div>
+
+                                <div>
+
+                                    <div class="tutor-name">
+                                        Ram Sharma
+                                    </div>
+
+                                    <div class="tutor-subject">
+                                        Mathematics
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="rating">
+                                ★★★★★ 4.8
+                            </div>
+
+
+                            <div class="tutor-location">
+                                📍 2.3 km away
+                            </div>
+
+
+                            <div class="tutor-bottom">
+
+                                <span class="fee">
+                                    Rs. 500/hr
+                                </span>
+
+                                <a href="#" class="view-btn">
+                                    View
+                                </a>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- TUTOR 2 -->
+
+                        <div class="tutor-card">
+
+
+                            <div class="tutor-info">
+
+                                <div class="tutor-photo">
+                                    👩‍🏫
+                                </div>
+
+                                <div>
+
+                                    <div class="tutor-name">
+                                        Sita Thapa
+                                    </div>
+
+                                    <div class="tutor-subject">
+                                        Science
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="rating">
+                                ★★★★★ 4.7
+                            </div>
+
+
+                            <div class="tutor-location">
+                                📍 3.1 km away
+                            </div>
+
+
+                            <div class="tutor-bottom">
+
+                                <span class="fee">
+                                    Rs. 600/hr
+                                </span>
+
+                                <a href="#" class="view-btn">
+                                    View
+                                </a>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- TUTOR 3 -->
+
+                        <div class="tutor-card">
+
+
+                            <div class="tutor-info">
+
+                                <div class="tutor-photo">
+                                    👩‍🏫
+                                </div>
+
+                                <div>
+
+                                    <div class="tutor-name">
+                                        Maya KC
+                                    </div>
+
+                                    <div class="tutor-subject">
+                                        English
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="rating">
+                                ★★★★★ 4.9
+                            </div>
+
+
+                            <div class="tutor-location">
+                                📍 1.8 km away
+                            </div>
+
+
+                            <div class="tutor-bottom">
+
+                                <span class="fee">
+                                    Rs. 450/hr
+                                </span>
+
+                                <a href="#" class="view-btn">
+                                    View
+                                </a>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- TUTOR 4 -->
+
+                        <div class="tutor-card">
+
+
+                            <div class="tutor-info">
+
+                                <div class="tutor-photo">
+                                    👨‍🏫
+                                </div>
+
+                                <div>
+
+                                    <div class="tutor-name">
+                                        Bikash KC
+                                    </div>
+
+                                    <div class="tutor-subject">
+                                        Mathematics
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="rating">
+                                ★★★★☆ 4.5
+                            </div>
+
+
+                            <div class="tutor-location">
+                                📍 4.2 km away
+                            </div>
+
+
+                            <div class="tutor-bottom">
+
+                                <span class="fee">
+                                    Rs. 550/hr
+                                </span>
+
+                                <a href="#" class="view-btn">
+                                    View
+                                </a>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================
+                     RIGHT SIDE
+                ============================== -->
+
+                <div>
+
+
+                    <!-- REQUESTS -->
+
+                    <section class="panel">
+
+
+                        <div class="panel-header">
+
+                            <h2>
+                                Recent Requests
+                            </h2>
+
+                            <a href="#" class="see-all">
+                                View All
+                            </a>
+
+                        </div>
+
+
+                        <div class="request">
+
+                            <div class="request-name">
+                                Ram Sharma
+                            </div>
+
+                            <div class="request-details">
+                                Mathematics • Class 8
+                            </div>
+
+                            <span class="status pending">
+                                Pending
+                            </span>
+
+                        </div>
+
+
+                        <div class="request">
+
+                            <div class="request-name">
+                                Sita Thapa
+                            </div>
+
+                            <div class="request-details">
+                                Science • Class 7
+                            </div>
+
+                            <span class="status accepted">
+                                Accepted
+                            </span>
+
+                        </div>
+
+
+                        <div class="request">
+
+                            <div class="request-name">
+                                Maya KC
+                            </div>
+
+                            <div class="request-details">
+                                English • Class 9
+                            </div>
+
+                            <span class="status rejected">
+                                Rejected
+                            </span>
+
+                        </div>
+
+
+                    </section>
+
+
+
+                    <!-- QUICK LINKS -->
+
+                    <section class="panel quick-links">
+
+
+                        <div class="panel-header">
+
+                            <h2>
+                                Quick Links
+                            </h2>
+
+                        </div>
+
+
+                        <a href="#" class="quick-link">
+
+                            Find a Tutor
+
+                            <span>→</span>
+
+                        </a>
+
+
+                        <a href="#" class="quick-link">
+
+                            My Requests
+
+                            <span>→</span>
+
+                        </a>
+
+
+                        <a href="#" class="quick-link">
+
+                            My Profile
+
+                            <span>→</span>
+
+                        </a>
+
+
+                        <a href="#" class="quick-link">
+
+                            Notifications
+
+                            <span>→</span>
+
+                        </a>
+
+
+                    </section>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+</div>
+
+
+
+<!-- =====================================
+     JAVASCRIPT
+====================================== -->
+
+<script>
+
+    function toggleSidebar() {
+
+        const sidebar =
+            document.getElementById("sidebar");
+
+        sidebar.classList.toggle("open");
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,439 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile - ADME Home Tutor Finder</title>
+
+    <link rel="stylesheet"
+          href="{% static 'assets/students/css/styles.css' %}">
+</head>
+
+<body>
+
+<div class="profile-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1>My Profile</h1>
+            <p>Manage your personal and tutoring preferences.</p>
+        </div>
+
+        <a href="{% url 'student_dashboard' %}" class="back-btn">
+            ← Dashboard
+        </a>
+    </div>
+
+
+    <!-- Profile Form -->
+    <form method="POST"
+          enctype="multipart/form-data"
+          id="profileForm">
+
+        {% csrf_token %}
+
+        <!-- Profile Picture -->
+        <section class="profile-card">
+
+            <div class="section-title">
+                <h2>Profile Picture</h2>
+                <p>Upload a picture for your profile.</p>
+            </div>
+
+            <div class="profile-picture-area">
+
+                <div class="profile-picture">
+
+                    <img id="profilePreview"
+                         src="{% static 'assets/students/images/default-profile.png' %}"
+                         alt="Profile Picture">
+
+                </div>
+
+                <div class="picture-info">
+
+                    <label for="profile_picture"
+                           class="upload-btn">
+                        Choose Photo
+                    </label>
+
+                    <input type="file"
+                           id="profile_picture"
+                           name="profile_picture"
+                           accept="image/*"
+                           hidden>
+
+                    <p>JPG, PNG or JPEG. Maximum 2MB.</p>
+
+                    <button type="button"
+                            id="removePhoto"
+                            class="remove-btn">
+                        Remove
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Personal Information -->
+        <section class="profile-card">
+
+            <div class="section-title">
+                <h2>Personal Information</h2>
+                <p>Your basic personal information.</p>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="first_name">
+                        First Name
+                    </label>
+
+                    <input type="text"
+                           id="first_name"
+                           name="first_name"
+                           placeholder="Enter first name"
+                           required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="last_name">
+                        Last Name
+                    </label>
+
+                    <input type="text"
+                           id="last_name"
+                           name="last_name"
+                           placeholder="Enter last name"
+                           required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number
+                    </label>
+
+                    <input type="tel"
+                           id="phone"
+                           name="phone"
+                           placeholder="98XXXXXXXX"
+                           maxlength="10">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           placeholder="your@email.com"
+                           disabled>
+
+                    <small>
+                        Email is managed through your account.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Academic Information -->
+        <section class="profile-card">
+
+            <div class="section-title">
+                <h2>Academic Information</h2>
+                <p>Tell tutors about your current education.</p>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="education_level">
+                        Education Level
+                    </label>
+
+                    <select id="education_level"
+                            name="education_level"
+                            required>
+
+                        <option value="">
+                            Select education level
+                        </option>
+
+                        <option value="school">
+                            School
+                        </option>
+
+                        <option value="college">
+                            College
+                        </option>
+
+                        <option value="university">
+                            University
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="grade">
+                        Class / Grade
+                    </label>
+
+                    <select id="grade"
+                            name="grade">
+
+                        <option value="">
+                            Select class
+                        </option>
+
+                        <option value="2">Class 2</option>
+                        <option value="3">Class 3</option>
+                        <option value="4">Class 4</option>
+                        <option value="5">Class 5</option>
+                        <option value="6">Class 6</option>
+                        <option value="7">Class 7</option>
+                        <option value="8">Class 8</option>
+                        <option value="9">Class 9</option>
+                        <option value="10">Class 10</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="school_college">
+                        School / College
+                    </label>
+
+                    <input type="text"
+                           id="school_college"
+                           name="school_college"
+                           placeholder="Enter school or college name">
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Location -->
+        <section class="profile-card">
+
+            <div class="section-title">
+                <h2>Location</h2>
+                <p>
+                    Your location helps us find tutors near you.
+                </p>
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="address">
+                    Address
+                </label>
+
+                <input type="text"
+                       id="address"
+                       name="address"
+                       placeholder="e.g. Shantinagar, Kathmandu"
+                       required>
+
+            </div>
+
+
+            <!-- Map Area -->
+            <div class="location-area">
+
+                <div class="location-header">
+
+                    <div>
+                        <strong>Select your location</strong>
+
+                        <p>
+                            Choose your location on the map
+                            for accurate nearby tutor search.
+                        </p>
+                    </div>
+
+                    <button type="button"
+                            id="useLocation"
+                            class="location-btn">
+
+                        📍 Use My Location
+
+                    </button>
+
+                </div>
+
+
+                <div class="map-placeholder" id="map">
+
+                    <div class="map-content">
+
+                        <div class="map-pin">
+                            📍
+                        </div>
+
+                        <p>
+                            Map location will appear here
+                        </p>
+
+                        <button type="button"
+                                id="selectLocation"
+                                class="select-location-btn">
+
+                            Select Location
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Hidden coordinates -->
+
+            <input type="hidden"
+                   id="latitude"
+                   name="latitude">
+
+            <input type="hidden"
+                   id="longitude"
+                   name="longitude">
+
+        </section>
+
+
+        <!-- Tutoring Preferences -->
+        <section class="profile-card">
+
+            <div class="section-title">
+
+                <h2>Tutoring Preferences</h2>
+
+                <p>
+                    Help us find tutors that match your needs.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="teaching_mode">
+                        Preferred Teaching Mode
+                    </label>
+
+                    <select id="teaching_mode"
+                            name="teaching_mode">
+
+                        <option value="both">
+                            Online & Physical
+                        </option>
+
+                        <option value="online">
+                            Online
+                        </option>
+
+                        <option value="physical">
+                            Physical
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="budget">
+                        Preferred Budget (NPR / hour)
+                    </label>
+
+                    <input type="number"
+                           id="budget"
+                           name="budget"
+                           min="0"
+                           placeholder="e.g. 800">
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="learning_goals">
+                        Learning Goals
+                    </label>
+
+                    <textarea id="learning_goals"
+                              name="learning_goals"
+                              rows="5"
+                              placeholder="Tell tutors what you want to improve..."></textarea>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Bottom Actions -->
+        <div class="form-actions">
+
+            <a href="{% url 'student_dashboard' %}"
+               class="cancel-btn">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="save-btn">
+                Save Profile
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script src="{% static 'assets/students/js/scripts.js' %}"></script>
+
+</body>
+</html>

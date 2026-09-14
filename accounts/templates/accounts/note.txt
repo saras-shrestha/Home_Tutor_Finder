@@ -1,0 +1,79 @@
+password: Clouds#321
+
+
+
+from accounts.models import User
+
+
+*************python manage.py shell ****************
+
+User.objects.all()
+user = User.objects.get(username="saras")
+user.username
+user.email
+user.role
+
+User.objects.filter(role="student")
+
+User.objects.filter(role="tutor")
+
+User.objects.count()
+User.objects.filter(role="student").count()
+User.objects.filter(role="tutor").count()
+
+
+users = User.objects.all()
+
+for user in users:
+    print(user.username, user.email, user.role)
+
+User.objects.values("username", "email", "role")
+
+
+****************login authenticate ***************
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import get_user_model
+from django.shortcuts import render, redirect
+
+User = get_user_model()
+
+def user_login(request):
+
+    if request.method == "POST":
+
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        # Check username
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return render(request, "accounts/login.html", {
+                "username_error": "Username does not exist."
+            })
+
+        # Username exists, now check password
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is None:
+            return render(request, "accounts/login.html", {
+                "password_error": "Incorrect password."
+            })
+
+        # Login successful
+        login(request, user)
+
+        if user.role == "student":
+            return redirect("student_dashboard")
+
+        elif user.role == "tutor":
+            return redirect("tutor_dashboard")
+
+        elif user.role == "admin":
+            return redirect("admin_dashboard")
+
+    return render(request, "accounts/login.html")

@@ -1,0 +1,658 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <title>ADME | Home Tutor Finder</title>
+    </head>
+
+
+    <body>
+
+        <!-- NAVBAR -->
+
+        <nav class="navbar">
+
+            <a href="/" class="logo">
+
+                <span class="logo-icon">
+                    🎓
+                </span>
+
+                <span>
+                    ADME
+                </span>
+
+            </a>
+
+
+            <div class="nav-links" id="navLinks">
+
+                <a href="#">
+                    Home
+                </a>
+
+                <a href="#tutors">
+                    Find Tutors
+                </a>
+
+                <a href="#how-it-works">
+                    How It Works
+                </a>
+
+                <a href="#about">
+                    About
+                </a>
+
+                <a href="{% url 'login' %}" class="login-btn">
+                    Login
+                </a>
+
+                <a href="{% url 'register' %}" class="register-btn">
+                    Register
+                </a>
+
+            </div>
+
+
+            <!-- Mobile menu -->
+
+            <button
+                class="menu-btn"
+                onclick="toggleMenu()"
+            >
+                ☰
+            </button>
+
+        </nav>
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <div class="hero-container">
+
+
+                <div class="hero-content">
+
+                    <h1>
+                        Find the
+                        <span>Right Tutor</span>
+                        Near You
+                    </h1>
+
+                    <p>
+                        Connect with qualified and verified tutors
+                        for Class 2 to Class 10 based on subject,
+                        location, availability and budget.
+                    </p>
+
+
+                    <div class="hero-buttons">
+
+                        <a href="#search" class="primary-btn">
+                            Find a Tutor
+                        </a>
+
+                        <a href="#" class="secondary-btn">
+                            Become a Tutor
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-image">
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!--  SEARCH BOX -->
+
+        <div class="search-wrapper" id="search">
+
+            <form class="search-box">
+
+
+                <div class="search-field">
+
+                    <label>
+                        Class
+                    </label>
+
+                    <select>
+
+                        <option>
+                            Select Class
+                        </option>
+
+                        <option>Class 2</option>
+                        <option>Class 3</option>
+                        <option>Class 4</option>
+                        <option>Class 5</option>
+                        <option>Class 6</option>
+                        <option>Class 7</option>
+                        <option>Class 8</option>
+                        <option>Class 9</option>
+                        <option>Class 10</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="search-field">
+
+                    <label>
+                        Subject
+                    </label>
+
+                    <select>
+
+                        <option>
+                            Select Subject
+                        </option>
+
+                        <option>Mathematics</option>
+                        <option>Science</option>
+                        <option>English</option>
+                        <option>Nepali</option>
+                        <option>Social Studies</option>
+                        <option>Computer</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="search-field">
+
+                    <label>
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        placeholder="Enter location"
+                    >
+
+                </div>
+
+
+                <div class="search-field">
+
+                    <label>
+                        Maximum Fee
+                    </label>
+
+                    <input
+                        type="number"
+                        placeholder="Rs. / hour"
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="search-button"
+                >
+                    Search
+                </button>
+
+
+            </form>
+
+        </div>
+
+
+        <!-- FEATURES -->
+
+        <section class="section" id="about">
+
+            <div class="section-header">
+
+                <h2>
+                    Why Choose ADME?
+                </h2>
+
+                <p>
+                    Everything you need to find the right
+                    home tutor.
+                </p>
+
+            </div>
+
+
+            <div class="features">
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        📍
+                    </div>
+
+                    <h3>
+                        Nearby Tutors
+                    </h3>
+
+                    <p>
+                        Find tutors near your location using
+                        GPS-based location search.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        ✓
+                    </div>
+
+                    <h3>
+                        Verified Tutors
+                    </h3>
+
+                    <p>
+                        Connect with tutors verified by
+                        ADME administrators.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        ⭐
+                    </div>
+
+                    <h3>
+                        Ratings & Reviews
+                    </h3>
+
+                    <p>
+                        Choose the best tutor based on
+                        ratings and student reviews.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!--  POPULAR TUTORS -->
+
+        <section class="section tutor-section" id="tutors">
+
+            <div class="section-header">
+
+                <h2>
+                    Popular Tutors
+                </h2>
+
+                <p>
+                    Explore some of our highly rated tutors.
+                </p>
+
+            </div>
+
+
+            <div class="tutors">
+
+
+                <!-- TUTOR 1 -->
+
+                <div class="tutor-card">
+
+                    <div class="tutor-top">
+
+                        <div class="tutor-photo">
+                            👨‍🏫
+                        </div>
+
+                        <div>
+
+                            <div class="tutor-name">
+                                Ram Sharma
+                            </div>
+
+                            <div class="verified">
+                                ✓ Verified Tutor
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="tutor-details">
+
+                        Mathematics • Science
+
+                        <div class="rating">
+                            ★★★★★ 4.8
+                        </div>
+
+                        📍 2.3 km away
+
+                        <br>
+
+                        Experience: 5 years
+
+                    </div>
+
+
+                    <div class="tutor-bottom">
+
+                        <span class="fee">
+                            Rs. 500/hour
+                        </span>
+
+                        <a href="#" class="view-btn">
+                            View Profile
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TUTOR 2 -->
+
+                <div class="tutor-card">
+
+                    <div class="tutor-top">
+
+                        <div class="tutor-photo">
+                            👩‍🏫
+                        </div>
+
+                        <div>
+
+                            <div class="tutor-name">
+                                Sita Thapa
+                            </div>
+
+                            <div class="verified">
+                                ✓ Verified Tutor
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="tutor-details">
+
+                        Science • Mathematics
+
+                        <div class="rating">
+                            ★★★★★ 4.7
+                        </div>
+
+                        📍 3.1 km away
+
+                        <br>
+
+                        Experience: 4 years
+
+                    </div>
+
+
+                    <div class="tutor-bottom">
+
+                        <span class="fee">
+                            Rs. 600/hour
+                        </span>
+
+                        <a href="#" class="view-btn">
+                            View Profile
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TUTOR 3 -->
+
+                <div class="tutor-card">
+
+                    <div class="tutor-top">
+
+                        <div class="tutor-photo">
+                            👩‍🏫
+                        </div>
+
+                        <div>
+
+                            <div class="tutor-name">
+                                Maya KC
+                            </div>
+
+                            <div class="verified">
+                                ✓ Verified Tutor
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="tutor-details">
+
+                        English • Nepali
+
+                        <div class="rating">
+                            ★★★★★ 4.9
+                        </div>
+
+                        📍 1.8 km away
+
+                        <br>
+
+                        Experience: 6 years
+
+                    </div>
+
+
+                    <div class="tutor-bottom">
+
+                        <span class="fee">
+                            Rs. 450/hour
+                        </span>
+
+                        <a href="#" class="view-btn">
+                            View Profile
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!--  HOW IT WORKS -->
+
+        <section class="section" id="how-it-works">
+
+            <div class="section-header">
+
+                <h2>
+                    How ADME Works
+                </h2>
+
+                <p>
+                    Finding a tutor is simple.
+                </p>
+
+            </div>
+
+
+            <div class="steps">
+
+
+                <div class="step">
+
+                    <div class="step-number">
+                        1
+                    </div>
+
+                    <h3>
+                        Search
+                    </h3>
+
+                    <p>
+                        Search tutors based on class,
+                        subject, location and fee.
+                    </p>
+
+                </div>
+
+
+                <div class="step">
+
+                    <div class="step-number">
+                        2
+                    </div>
+
+                    <h3>
+                        Send Request
+                    </h3>
+
+                    <p>
+                        View tutor profiles and send
+                        a tutoring request.
+                    </p>
+
+                </div>
+
+
+                <div class="step">
+
+                    <div class="step-number">
+                        3
+                    </div>
+
+                    <h3>
+                        Start Learning
+                    </h3>
+
+                    <p>
+                        Once the tutor accepts,
+                        start your learning journey.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!--  CALL TO ACTION -->
+
+        <section class="cta">
+
+            <h2>
+                Ready to Find Your Tutor?
+            </h2>
+
+            <p>
+                Start your search and connect with
+                the right tutor today.
+            </p>
+
+            <a href="#search" class="cta-btn">
+                Find a Tutor
+            </a>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            <div class="footer-container">
+
+                <div>
+
+                    <div class="footer-logo">
+                        ADME
+                    </div>
+
+                    <p class="footer-text">
+                        ADME helps students find qualified
+                        and verified home tutors based on
+                        their learning needs.
+                    </p>
+
+                </div>
+
+
+                <div class="footer-links">
+
+                    <a href="#">
+                        Home
+                    </a>
+
+                    <a href="#tutors">
+                        Tutors
+                    </a>
+
+                    <a href="#how-it-works">
+                        How It Works
+                    </a>
+
+                    <a href="#">
+                        Contact
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="copyright">
+
+                © 2026 ADME Home Tutor Finder.
+                All rights reserved.
+
+            </div>
+
+        </footer>
+
+
+        <!-- JAVASCRIPT -->
+
+        <script src="{% static 'js/scripts.js' %}">           
+
+        </script>
+
+    </body>
+
+</html>
+

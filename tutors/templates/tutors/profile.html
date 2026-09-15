@@ -1,4 +1,4 @@
-{% extends 'students/student-base.html' %}
+{% extends 'tutors/tutor-base.html' %}
 {% load static %}
 
 {% block content %}
@@ -282,58 +282,9 @@
                                                 Your location helps us find tutors near you.
                                             </p>
                                         </div>
-                                     
 
-                                        <div class="form-grid">
-                                            
-                                            <div class="form-group">
 
-                                                <label for="region">
-                                                    Region
-                                                </label>
-
-                                                <select id="region" name="region">                                                    
-                                                    <option value="" selected disabled>
-                                                        Select Region
-                                                    </option>
-                                                    {% for region in regions%}
-                                                    <option value="{{region.id}}">
-                                                        {{region.name}}
-                                                    </option>
-                                                    {% endfor %}  
-                                                </select>
-
-                                            </div>
-
-                                            <div class="form-group">
-
-                                                <label for="district">
-                                                    District
-                                                </label>
-
-                                                <select id="district" name="district">
-                                                    <option value="" selected disabled>
-                                                        Select District
-                                                    </option>
-                                                </select>
-
-                                            </div>
-
-                                            <div class="form-group">
-
-                                                <label for="city">
-                                                   City
-                                                </label>
-
-                                                <select id="city" name="city">
-                                                    <option value="" selected disabled>
-                                                        Select City
-                                                    </option>
-                                                </select>
-
-                                            </div>
-
-                                            <div class="form-group">
+                                        <div class="form-group">
 
                                             <label for="address">
                                                 Address
@@ -346,11 +297,6 @@
                                                 required>
 
                                         </div>
-
-                                        </div>
-
-
-
 
 
                                         <!-- Map Area -->

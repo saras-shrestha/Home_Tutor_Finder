@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts', #installed app
     'students',
-    'core'
+    'tutors',
+    'core',
+    'admin_panel'
 ]
 
 MIDDLEWARE = [

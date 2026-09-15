@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
+from .models import StudentProfile
+from core.models import Region, District, City
+from django.http import JsonResponse
 # Create your views here.
 
 @login_required
@@ -38,12 +40,56 @@ def student_profile(request):
         full_name = request.POST.get('full_name')
         gender = request.POST.get('gender')
         date_of_birth = request.POST.get('dob')
-        phone = request.POST.get('phone')
-        description = request.POST.get('phone')  
+        phone = request.POST.get('phone')          
         education_level = request.POST.get('education_level')              
         school_college = request.POST.get('school_college')        
         grade = request.POST.get('grade')
-        
+        learning_description = request.POST.get('phone')
+        if (profile_picture and full_name and gender and date_of_birth and phone and education_level and school_college and grade and learning_description):
+            profile_completed = True
+            StudentProfile.objects.create(
+                user=request.user,
+                profile_picture=profile_picture,
+                full_name=full_name,
+                gender=gender,
+                phone=phone,
+                date_of_birth = date_of_birth,
+                education_level=education_level,
+                grade=grade,
+                school_college=school_college,
+                description=learning_description,
+                profile_completed=profile_completed
+            )
+    regions=Region.objects.all();
+    return render(request, 'students/profile.html',{
+        "regions": regions
+    })
+
+# Json for respective district of selected region
+def get_districts(request, region_id):
+    districts = District.objects.filter(region=region_id)
+
+    district_data = [
+        {
+            'id': district.id,
+            'name': district.name
+        }
+        for district in districts
+    ]
+
+    return JsonResponse(district_data, safe=False)
 
 
-    return render(request, 'students/profile.html')
+# Json for respective city of selected district
+def get_cities(request, district_id):
+    cities = City.objects.filter(district=district_id)
+
+    city_data = [
+        {
+            'id': city.id,
+            'name': city.name
+        }
+        for city in cities
+    ]
+
+    return JsonResponse(city_data, safe=False)

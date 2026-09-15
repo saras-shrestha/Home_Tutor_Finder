@@ -1,31 +1,23 @@
 from django.db import models
 
 from accounts.models import User
-from core.models import Grade
 from core.models import Location
 
 # Create your models here.
-class StudentProfile(models.Model):
+class TutorProfile(models.Model):
     class Gender(models.TextChoices):
         MALE = "M", "Male"
         FEMALE = "F", "Female"
         OTHER = "O", "Other"
 
-    EDUCATION_LEVEL_CHOICES = (
-        ("school", "School"),
-        ("plus_two", "+2"),
-        ("bachelor", "Bachelor"),
-        ("master", "Master"),
-    )
-
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        related_name="student_profile"
+        related_name="tutor_profile"
     )
 
     profile_picture = models.ImageField(
-            upload_to="student_profiles/",
+            upload_to="tutor_profiles/",
             null=True,
             blank=True
     )
@@ -37,37 +29,34 @@ class StudentProfile(models.Model):
         blank=True
     )
     phone = models.CharField(max_length=15, blank=True)
-    date_of_birth = models.DateField(
-        null=True,
-        blank=True
+    qualification = models.CharField(max_length=200, blank=True)
+    experience = models.PositiveIntegerField(
+        default=0,
+        help_text="Experience in years"
     )
-    education_level = models.CharField(
-            max_length=20,
-            choices=EDUCATION_LEVEL_CHOICES,
-            blank=True
-    )
-    grade = models.ForeignKey(
-        Grade,
-        on_delete=models.PROTECT,
-        null=True,
+    cv = models.FileField(
+        upload_to='tutor_cvs/',
         blank=True,
-        related_name="students"
-    )
-    school_college = models.CharField(
-        max_length=200,
-        blank=True
-    )    
+        null=True
+    )   
     description = models.TextField(
         blank=True
-    )       
+    )  
+    hourly_fee = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        blank=True,
+        null=True
+    )     
     location = models.OneToOneField(
         Location,
         on_delete=models.CASCADE,
-        related_name="student_profile",
+        related_name="tutor_profile",
         null=True,
         blank=True
     )
     profile_completed = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(
         auto_now_add=True
     )

@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from students.models import StudentProfile
+from tutors.models import TutorProfile
 from .forms import RegisterForm
 
 # Create your views here.
@@ -25,6 +26,10 @@ def register(request):
                     return redirect('student_dashboard')
             
                 elif user.role == 'tutor':
+                    TutorProfile.objects.create(
+                        user=user
+                    )
+                    login(request, user)
                     return redirect('tutor_dashboard')
         else:
             return render(request, 'accounts/register.html',{

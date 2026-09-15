@@ -1,6 +1,7 @@
 password: Clouds#321
 
-
+Admin
+12345
 
 from accounts.models import User
 

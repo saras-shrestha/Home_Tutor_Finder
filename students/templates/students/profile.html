@@ -1,6 +1,10 @@
 {% extends 'students/student-base.html' %}
 {% load static %}
 
+{% block location_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+{% endblock %}
+
 {% block content %}
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
@@ -12,7 +16,7 @@
 
                 <div class="page-body">
                     <div class="row">
-                        <form  class="col-12" method="POST">
+                        <form  class="col-12" method="POST" enctype="multipart/form-data" onsubmit="return validateLocation();">
                         {% csrf_token %}
                             <!--First row starts-->
                             <div class="col-12">
@@ -32,7 +36,9 @@
                                                 <img id="profilePreview"
                                                     src="{% static 'assets/images/profile/profile.png' %}"
                                                     alt="Profile Picture">
-
+                                                {% if student_profile.profile_picture %}
+                                                <img src="{{ student_profile.profile_picture.url }}" alt="Profile Picture">
+                                                {% endif %}
                                             </div>
 
                                             <div class="picture-info">
@@ -45,7 +51,7 @@
                                                 <input type="file"
                                                     id="profile_picture"
                                                     name="profile_picture"
-                                                    accept="image/*"
+                                                    accept="image/*" 
                                                     hidden>
 
                                                 <p>JPG, PNG or JPEG. Maximum 2MB.</p>
@@ -88,8 +94,7 @@
                                                 <input type="text"
                                                     id="full_name"
                                                     name="full_name"
-                                                    placeholder="Enter full name"
-                                                    required>
+                                                    placeholder="Enter full name">
 
                                             </div>
 
@@ -172,8 +177,7 @@
                                                 </label>
 
                                                 <select id="education_level"
-                                                        name="education_level"
-                                                        required>
+                                                        name="education_level">
 
                                                     <option value="">
                                                         Select education level
@@ -263,7 +267,7 @@
                                                 <label for="goal_description">
                                                     Learning Description
                                                 </label>
-                                                <textarea rows="10" name="goal_description" placeholder="What would you like a tutor to know about you and your learning goals?"></textarea>
+                                                <textarea rows="10" id="goal_description" name="goal_description" placeholder="What would you like a tutor to know about you and your learning goals?"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -342,8 +346,7 @@
                                             <input type="text"
                                                 id="address"
                                                 name="address"
-                                                placeholder="e.g. Shantinagar, Kathmandu"
-                                                required>
+                                                placeholder="e.g. Shantinagar, Kathmandu">
 
                                         </div>
 
@@ -378,34 +381,12 @@
                                             </div>
 
 
-                                            <div class="map-placeholder" id="map">
-
-                                                <div class="map-content">
-
-                                                    <div class="map-pin">
-                                                        📍
-                                                    </div>
-
-                                                    <p>
-                                                        Map location will appear here
-                                                    </p>
-
-                                                    <button type="button"
-                                                            id="selectLocation"
-                                                            class="select-location-btn">
-
-                                                        Select Location
-
-                                                    </button>
-
-                                                </div>
-
-                                            </div>
+                                            <div id="map"></div>
 
                                         </div>
 
 
-                                        <!-- Hidden coordinates -->
+                                        <!-- Hidden coordinates/ GPS values -->
 
                                         <input type="hidden"
                                             id="latitude"
@@ -452,4 +433,225 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block location_js %}
+    <!--Leaflet-->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        {% comment %} let map; {% endcomment %}
+        let marker;
+
+
+        // Default location: Kathmandu
+        const defaultLatitude = 27.7172;
+        const defaultLongitude = 85.3240;
+
+
+        // Create map
+        map = L.map("map").setView(
+            [defaultLatitude, defaultLongitude],
+            13
+        );
+
+
+        // OpenStreetMap tiles
+        L.tileLayer(
+            "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            {
+                attribution:
+                    '&copy; OpenStreetMap contributors &copy; CARTO',
+                subdomains: "abcd",
+                maxZoom: 20
+            }
+        ).addTo(map); 
+
+        {% comment %} L.tileLayer(
+            "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 19
+            }
+        ).addTo(map); {% endcomment %}
+
+        {% comment %} L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map); {% endcomment %}
+
+        map.on("click", function (event) {
+
+            const latitude = event.latlng.lat;
+            const longitude = event.latlng.lng;
+
+            setLocation(latitude, longitude);
+        });
+        
+        function setLocation(latitude, longitude) {
+
+            // Save coordinates in hidden inputs
+            document.getElementById("latitude").value = latitude;
+            document.getElementById("longitude").value = longitude;
+
+
+            // Remove old marker
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+
+            // Create new marker
+            marker = L.marker([latitude, longitude])
+                .addTo(map);
+
+
+            // Move map
+            map.setView(
+                [latitude, longitude],
+                16
+            );
+        }
+
+        {% comment %} setLocation(
+            defaultLatitude,
+            defaultLongitude
+        ); {% endcomment %}
+
+        document.getElementById("useLocation").addEventListener("click", function () {
+
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser.");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+
+                function (position) {
+
+                    const latitude = position.coords.latitude;
+
+                    const longitude = position.coords.longitude;
+
+
+                    setLocation(latitude, longitude);
+                },
+
+                function (error) {
+
+                    if (error.code === error.PERMISSION_DENIED) {
+
+                        alert(
+                            "Please allow location access to use this feature."
+                        );
+
+                    } else {
+
+                        alert(
+                            "Unable to get your location."
+                        );
+                    }
+                }
+            );
+        });
+    </script>
+
+    <script>
+        function validateLocation() {
+        const latitude = document.getElementById("latitude").value;
+        const longitude = document.getElementById("longitude").value;
+
+        if (!latitude || !longitude) {
+            alert("Please select your location on the map.");
+            return false;
+        }
+
+        return true;
+    }
+    </script>
+
+  
+
+    <script>
+    document.getElementById('region').addEventListener('change', function () {
+        const regionId = this.value;
+        const districtSelect = document.getElementById('district');
+
+        districtSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!regionId) {
+            districtSelect.innerHTML =
+                '<option value="">Select District</option>';
+            return;
+        }
+
+        const url = "{% url 'get_districts' 0 %}".replace('0', regionId);
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                districtSelect.innerHTML =
+                    '<option value="" selected disabled>Select District</option>';
+
+                data.forEach(district => {
+                    const option = document.createElement('option');
+
+                    option.value = district.id;
+                    option.textContent = district.name;
+
+                    districtSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading districts:', error);
+
+                districtSelect.innerHTML =
+                    '<option value="">Unable to load districts</option>';
+            });
+    });
+
+
+    document.getElementById('district').addEventListener('change', function () {
+        const districtId = this.value;
+        const citySelect = document.getElementById('city');
+
+        citySelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!districtId) {
+            citySelect.innerHTML =
+                '<option value="" selected disabled>Select City</option>';
+            return;
+        }
+
+        const url = "{% url 'get_cities' 0 %}".replace('0', districtId);
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                citySelect.innerHTML =
+                    '<option value="" selected disabled>Select City</option>';
+
+                data.forEach(city => {
+                    const option = document.createElement('option');
+
+                    option.value = city.id;
+                    option.textContent = city.name;
+
+                    citySelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading cities:', error);
+                citySelect.innerHTML ='<option value="">Unable to load cities</option>';
+            });
+    });
+    </script>
 {% endblock %}

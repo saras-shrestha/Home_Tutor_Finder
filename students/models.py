@@ -63,7 +63,7 @@ class StudentProfile(models.Model):
     location = models.OneToOneField(
         Location,
         on_delete=models.CASCADE,
-        related_name="student_profile",
+        related_name="student_location",
         null=True,
         blank=True
     )

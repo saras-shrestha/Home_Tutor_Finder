@@ -1,13 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    const profileInput =
-        document.getElementById("profile_picture");
+    const profileInput =document.getElementById("profile_picture");
 
-    const profilePreview =
-        document.getElementById("profilePreview");
+    const profilePreview =document.getElementById("profilePreview");
 
-    const removePhoto =
-        document.getElementById("removePhoto");
+    const removePhoto =document.getElementById("removePhoto");
 
 
     /* Profile picture preview */
@@ -73,94 +70,94 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* Use browser location */
 
-    const useLocation =
-        document.getElementById("useLocation");
+    // const useLocation =
+    //     document.getElementById("useLocation");
 
 
-    useLocation.addEventListener("click", function () {
+    // useLocation.addEventListener("click", function () {
 
-        if (!navigator.geolocation) {
+    //     if (!navigator.geolocation) {
 
-            alert(
-                "Location services are not supported by your browser."
-            );
+    //         alert(
+    //             "Location services are not supported by your browser."
+    //         );
 
-            return;
-        }
-
-
-        useLocation.textContent = "Getting location...";
+    //         return;
+    //     }
 
 
-        navigator.geolocation.getCurrentPosition(
-
-            function (position) {
-
-                const latitude =
-                    position.coords.latitude;
-
-                const longitude =
-                    position.coords.longitude;
+    //     useLocation.textContent = "Getting location...";
 
 
-                document.getElementById("latitude").value =
-                    latitude;
+    //     navigator.geolocation.getCurrentPosition(
 
-                document.getElementById("longitude").value =
-                    longitude;
+    //         function (position) {
 
+    //             const latitude =
+    //                 position.coords.latitude;
 
-                useLocation.textContent =
-                    "✓ Location Selected";
-
-
-                alert(
-                    "Your location has been selected."
-                );
-
-            },
+    //             const longitude =
+    //                 position.coords.longitude;
 
 
-            function (error) {
+    //             document.getElementById("latitude").value =
+    //                 latitude;
 
-                useLocation.textContent =
-                    "📍 Use My Location";
-
-
-                if (error.code === 1) {
-
-                    alert(
-                        "Please allow location access in your browser."
-                    );
-
-                } else {
-
-                    alert(
-                        "Unable to get your location."
-                    );
-
-                }
-
-            }
-
-        );
-
-    });
+    //             document.getElementById("longitude").value =
+    //                 longitude;
 
 
-    /* Select location button */
-
-    const selectLocation =
-        document.getElementById("selectLocation");
+    //             useLocation.textContent =
+    //                 "✓ Location Selected";
 
 
-    selectLocation.addEventListener("click", function () {
+    //             alert(
+    //                 "Your location has been selected."
+    //             );
 
-        alert(
-            "Map selection will be connected here."
-        );
+    //         },
 
-    });
+
+    //         function (error) {
+
+    //             useLocation.textContent =
+    //                 "📍 Use My Location";
+
+
+    //             if (error.code === 1) {
+
+    //                 alert(
+    //                     "Please allow location access in your browser."
+    //                 );
+
+    //             } else {
+
+    //                 alert(
+    //                     "Unable to get your location."
+    //                 );
+
+    //             }
+
+    //         }
+
+    //     );
+
+    // });
+
+
+    // /* Select location button */
+
+    // const selectLocation =
+    //     document.getElementById("selectLocation");
+
+
+    // selectLocation.addEventListener("click", function () {
+
+    //     alert(
+    //         "Map selection will be connected here."
+    //     );
+
+    // });
 
 
     /* Form validation */

@@ -5,10 +5,8 @@ from .models import Location, Region, District, City, Grade
 
 @admin.register(Grade)
 class GradeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'order')
-    list_filter = ('order',)
+    list_display = ('name',)
     search_fields = ('name',)
-    ordering = ('order',)
 
 
 @admin.register(Region)

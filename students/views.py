@@ -34,9 +34,10 @@ def student_dashboard(request):
 
 @login_required
 def student_profile(request):
+    # print("*****YESss*****")
     if request.method=="POST":
-        print("*****YES*****")
-        profile_picture = request.POST.get('profile_picture')
+        # print("*****YES*****")
+        profile_picture = request.FILES.get('profile_picture')
         full_name = request.POST.get('full_name')
         gender = request.POST.get('gender')
         date_of_birth = request.POST.get('dob')
@@ -45,6 +46,10 @@ def student_profile(request):
         school_college = request.POST.get('school_college')        
         grade = request.POST.get('grade')
         learning_description = request.POST.get('phone')
+
+        latitude=request.POST.get('latitude')
+        longitude=request.POST.get('longitude')
+        print(f"this is {latitude} and {longitude}")
         if (profile_picture and full_name and gender and date_of_birth and phone and education_level and school_college and grade and learning_description):
             profile_completed = True
             StudentProfile.objects.create(
@@ -60,9 +65,13 @@ def student_profile(request):
                 description=learning_description,
                 profile_completed=profile_completed
             )
+        else:
+            msg="Please complete your profile details"
     regions=Region.objects.all();
+    student_profile=request.user.student_profile
     return render(request, 'students/profile.html',{
-        "regions": regions
+        "regions": regions,
+        "student_profile": student_profile,
     })
 
 # Json for respective district of selected region

@@ -1,7 +1,6 @@
 from django.db import models
-
-from accounts.models import User
-from core.models import Location
+from django.conf import settings
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 class TutorProfile(models.Model):
@@ -11,7 +10,7 @@ class TutorProfile(models.Model):
         OTHER = "O", "Other"
 
     user = models.OneToOneField(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="tutor_profile"
     )
@@ -41,17 +40,11 @@ class TutorProfile(models.Model):
     )   
     description = models.TextField(
         blank=True
-    )  
-    hourly_fee = models.DecimalField(
-        max_digits=8,
-        decimal_places=2,
-        blank=True,
-        null=True
-    )     
-    location = models.OneToOneField(
-        Location,
-        on_delete=models.CASCADE,
-        related_name="tutor_profile",
+    )    
+    location = models.ForeignKey(
+        'core.Location',
+        on_delete=models.SET_NULL,
+        related_name="tutor_locations",
         null=True,
         blank=True
     )
@@ -65,3 +58,81 @@ class TutorProfile(models.Model):
     )
     def __str__(self):
         return f"{self.full_name}"
+
+class TutorTeaching(models.Model):
+    tutor = models.ForeignKey(
+        TutorProfile,
+        on_delete=models.CASCADE,
+        related_name='teachings'
+    )
+
+    subject = models.ForeignKey(
+        'core.Subject',
+        on_delete=models.PROTECT,
+        related_name='tutor_teachings'
+    )
+
+    grade = models.ForeignKey(
+        'core.Grade',
+        on_delete=models.PROTECT,
+        related_name='tutor_teachings'
+    )
+
+    fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['tutor', 'subject', 'grade'],
+                name='unique_tutor_subject_grade'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.tutor.full_name} - {self.subject} - {self.grade}"
+
+
+class TutorAvailability(models.Model):
+    DAYS = [
+        ('sunday', 'Sunday'),
+        ('monday', 'Monday'),
+        ('tuesday', 'Tuesday'),
+        ('wednesday', 'Wednesday'),
+        ('thursday', 'Thursday'),
+        ('friday', 'Friday'),
+        ('saturday', 'Saturday'),
+    ]
+
+    tutor = models.ForeignKey(
+        TutorProfile,
+        on_delete=models.CASCADE,
+        related_name='availabilities'
+    )
+
+    day = models.CharField(
+        max_length=10,
+        choices=DAYS
+    )
+
+    start_time = models.TimeField()
+
+    end_time = models.TimeField()
+    def clean(self):
+        if self.start_time and self.end_time:
+            if self.start_time >= self.end_time:
+                raise ValidationError(
+                    "End time must be after start time."
+                )
+
+    class Meta:
+        ordering = ['day', 'start_time']
+
+    def __str__(self):
+        return (
+            f"{self.tutor.full_name} - "
+            f"{self.day} "
+            f"{self.start_time} - {self.end_time}"
+        )

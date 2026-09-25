@@ -65,6 +65,9 @@
     <link rel="stylesheet" href="{% static 'assets/students/css/profile-completion.css' %}">
     <!--Profile Update-->
     <link rel="stylesheet" href="{% static 'assets/students/css/styles.css' %}">
+    <!-- for location-->
+    {% block location_css %}
+    {% endblock %}
 </head>
 
 <body>
@@ -136,7 +139,7 @@
                                 <div class="main-search morphsearch-search">
                                     <div class="input-group">
                                         <span class="input-group-addon search-close"><i class="ti-close"></i></span>
-                                        <input type="text" class="form-control" placeholder="Enter Keyword">
+                                        <input type="text" name="key_word" class="form-control" placeholder="Enter Keyword">
                                         <span class="input-group-addon search-btn"><i class="ti-search"></i></span>
                                     </div>
                                 </div>
@@ -404,97 +407,11 @@
 
     <!--Script for profile update-->
     <script src="{% static 'assets/students/js/scripts.js' %}"></script>
- 
+    <!--Script for location-->
 
-
-
+    {% block location_js %}
     
-
-    <script>
-    document.getElementById('region').addEventListener('change', function () {
-        const regionId = this.value;
-        const districtSelect = document.getElementById('district');
-
-        districtSelect.innerHTML = '<option value="">Loading...</option>';
-
-        if (!regionId) {
-            districtSelect.innerHTML =
-                '<option value="">Select District</option>';
-            return;
-        }
-
-        const url = "{% url 'get_districts' 0 %}".replace('0', regionId);
-
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                districtSelect.innerHTML =
-                    '<option value="" selected disabled>Select District</option>';
-
-                data.forEach(district => {
-                    const option = document.createElement('option');
-
-                    option.value = district.id;
-                    option.textContent = district.name;
-
-                    districtSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading districts:', error);
-
-                districtSelect.innerHTML =
-                    '<option value="">Unable to load districts</option>';
-            });
-    });
-
-
-    document.getElementById('district').addEventListener('change', function () {
-        const districtId = this.value;
-        const citySelect = document.getElementById('city');
-
-        citySelect.innerHTML = '<option value="">Loading...</option>';
-
-        if (!districtId) {
-            citySelect.innerHTML =
-                '<option value="" selected disabled>Select City</option>';
-            return;
-        }
-
-        const url = "{% url 'get_cities' 0 %}".replace('0', districtId);
-
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                citySelect.innerHTML =
-                    '<option value="" selected disabled>Select City</option>';
-
-                data.forEach(city => {
-                    const option = document.createElement('option');
-
-                    option.value = city.id;
-                    option.textContent = city.name;
-
-                    citySelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading cities:', error);
-                citySelect.innerHTML =
-                    '<option value="">Unable to load cities</option>';
-            });
-    });
-    </script>
+    {% endblock %}
 
     
 </body>

@@ -66,6 +66,7 @@
                             </div>
                             <!--First row ends-->
 
+                           
                             <!--Second row starts-->
                         
                             <div class="col-12">
@@ -129,20 +130,6 @@
                                                     maxlength="10">
 
                                             </div>
-
-
-                                            <div class="form-group">
-
-                                                <label for="dob_date">
-                                                    Date of Birth
-                                                </label>
-
-                                                <input type="date"
-                                                    id="dob_date"
-                                                    name="dob"
-                                                    placeholder="Date of Birth">          
-                                            </div>
-
                                         </div>
                                         <!--div for personal Information ends-->
 
@@ -151,44 +138,67 @@
                             </div>                       
                             <!--Second row ends-->
 
-
-                            <!--Third row start-->
+                             <!--Third row start-->
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-block">
 
                                         <!--div for academic information starts-->
                                         <div class="section-title">
-                                            <h2>Academic Information</h2>
-                                            <p>Tell tutors about your current education.</p>
+                                            <h2>About You</h2>
+                                            <p>Tell students about yourself, your teaching experience, expertise, teaching style, and what they can expect from your lessons.</p>
+                                        </div>
+
+                                        <div class="form-grid">
+
+                                            <div class="form-group full-width">
+
+                                                <label for="description">
+                                                    Your Description
+                                                </label>
+                                                <textarea rows="10" name="description" placeholder="I am a passionate tutor with experience in teaching and helping students achieve their learning goals…"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Third row ends-->
+
+
+
+                            <!--Fourth row start-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+
+                                        <!--div for academic information starts-->
+                                        <div class="section-title">
+                                            <h2>Qualifications</h2>
+                                            <p>Tell us about your educational background and qualifications.</p>
                                         </div>
 
                                         <div class="form-grid">
 
                                             <div class="form-group">
 
-                                                <label for="education_level">
-                                                    Education Level
+                                                <label for="high_qualification">
+                                                    Highest Qualification
                                                 </label>
 
-                                                <select id="education_level"
-                                                        name="education_level"
+                                                <select id="high_qualification"
+                                                        name="high_qualification"
                                                         required>
 
                                                     <option value="">
-                                                        Select education level
+                                                        Select highest academic qualification
                                                     </option>
 
                                                     <option value="school">
-                                                        School
+                                                        Master's Degree
                                                     </option>
 
                                                     <option value="college">
-                                                        College
-                                                    </option>
-
-                                                    <option value="university">
-                                                        University
+                                                        Bachelor's Degree
                                                     </option>
 
                                                 </select>
@@ -198,44 +208,76 @@
 
                                             <div class="form-group">
 
-                                                <label for="grade">
-                                                    Class / Grade
+                                                <label for="study_field">
+                                                    Field of Study
                                                 </label>
 
-                                                <select id="grade"
-                                                        name="grade">
+                                                <input type="text"
+                                                    id="study_field"
+                                                    name="study_field"
+                                                    placeholder="Enter your major or area of specialization.">
+                                            </div>
 
-                                                    <option value="">
-                                                        Select class
-                                                    </option>
+                                            <div class="form-group full-width">
 
-                                                    <option value="2">Class 2</option>
-                                                    <option value="3">Class 3</option>
-                                                    <option value="4">Class 4</option>
-                                                    <option value="5">Class 5</option>
-                                                    <option value="6">Class 6</option>
-                                                    <option value="7">Class 7</option>
-                                                    <option value="8">Class 8</option>
-                                                    <option value="9">Class 9</option>
-                                                    <option value="10">Class 10</option>
+                                                <label for="degree_name">
+                                                    Degree / Qualification Name
+                                                </label>
 
-                                                </select>
+                                                <input type="text"
+                                                    id="degree_name"
+                                                    name="degree_name"
+                                                    placeholder="Enter the name of your degree or qualification.">
 
                                             </div>
 
 
                                             <div class="form-group full-width">
 
-                                                <label for="school_college">
-                                                    School / College
+                                                <label for="college_name">
+                                                    College / Institution Name
                                                 </label>
 
                                                 <input type="text"
-                                                    id="school_college"
-                                                    name="school_college"
-                                                    placeholder="Enter school or college name">
+                                                    id="college_name"
+                                                    name="college_name"
+                                                    placeholder="Enter the name of the college or institution where you studied.">
 
                                             </div>
+                                            <div class="form-group full-width">
+
+                                                <label for="university">
+                                                    University Name
+                                                </label>
+
+                                                <input type="text"
+                                                    id="university"
+                                                    name="university"
+                                                    placeholder="Enter the university your qualification is affiliated with or awarded by.">
+
+                                            </div>
+                                            <div class="form-group">
+
+                                                <label for="study_country">
+                                                    Country
+                                                </label>
+
+                                                <input type="text"
+                                                    id="study_country"
+                                                    name="study_country"
+                                                    placeholder="Enter the country where you studied.">
+                                            </div>
+                                            <div class="form-group">
+
+                                                <label for="tutor_gpa">
+                                                    GPA
+                                                </label>
+
+                                                <input type="text"
+                                                    id="tutor_gpa"
+                                                    name="tutor_gpa"
+                                                    placeholder="Enter your final grade or GPA, if applicable.">
+                                            </div>                                            
                                         </div>
 
                                         <!--div for academic information ends-->
@@ -243,33 +285,127 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--Third row ends-->
+                            <!--Fourth row ends-->
 
-                             <!--Fourth row start-->
+                            <!--Fifth row start-->
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-block">
 
-                                        <!--div for academic information starts-->
+                                        <!--div for certifications starts-->
                                         <div class="section-title">
-                                            <h2>Learning Profile</h2>
-                                            <p>Tell tutors about your learning needs, interests, and goals.</p>
+                                            <h2>Certifications</h2>
+                                            <p>Add any relevant professional, teaching, or training certifications.</p>
                                         </div>
 
                                         <div class="form-grid">
 
-                                            <div class="form-group full-width">
+                                             <div class="form-group">
 
-                                                <label for="goal_description">
-                                                    Learning Description
+                                                <label for="certificate">
+                                                    Certificate / Document
                                                 </label>
-                                                <textarea rows="10" name="goal_description" placeholder="What would you like a tutor to know about you and your learning goals?"></textarea>
+
+                                                <input type="file"
+                                                    id="certificate"
+                                                    name="certificate"
+                                                    placeholder="Add any relevant teaching or professional certifications.">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!--Fourth row ends-->
+                            <!--Fifth row ends-->
+
+                            <!--Sixth row start-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+
+                                        <!--div for teaching profile starts-->
+                                        <div class="section-title">
+                                            <h2>Teaching Profile</h2>
+                                            <p>Tell students about the subjects you teach, your skills, and your teaching experience.</p>
+                                        </div>
+
+                                        <div class="form-grid">
+                                            <div class="form-group">
+
+                                                <label for="experience">
+                                                    Teaching Experience
+                                                </label>
+
+                                                <input type="number"
+                                                    id="experience"
+                                                    name="experience" placeholder="Enter years of teaching experience.">
+
+                                            </div>                                              
+                                            <div class="form-group full-width">
+                                                <label>Choose Subjects that you teach.</label>
+                                            
+                                                <div>
+                                                    <label for="mathematics">
+                                                        Mathematics
+                                                    </label>                                            
+                                                    <input type="checkbox" id="mathematics" name="mathematics" value="mathematics">
+                                                </div>
+                                                <div>
+                                                    <label for="mathematics">
+                                                        Mathematics
+                                                    </label>                                            
+                                                    <input type="checkbox" id="mathematics" name="mathematics" value="mathematics">
+                                                </div>
+                                                <div>
+                                                    <label for="mathematics">
+                                                        Mathematics
+                                                    </label>                                            
+                                                    <input type="checkbox" id="mathematics" name="mathematics" value="mathematics">
+                                                </div>
+                                                <div>
+                                                    <label for="mathematics">
+                                                        Mathematics
+                                                    </label>                                            
+                                                    <input type="checkbox" id="mathematics" name="mathematics" value="mathematics">
+                                                </div>
+                                            </div>                                           
+                                        </div>
+
+                                        <!--div for academic information ends-->
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Sixth row ends-->
+
+                            <!--Seventh row start-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+
+                                        <!--div for certifications starts-->
+                                        <div class="section-title">
+                                            <h2>CV/Resume</h2>
+                                            <p>Upload your CV or resume to provide more details about your background and experience.</p>
+                                        </div>
+
+                                        <div class="form-grid">
+
+                                             <div class="form-group">
+
+                                                <label for="certificate">
+                                                    Upload CV / Resume
+                                                </label>
+
+                                                <input type="file"
+                                                    id="certificate"
+                                                    name="certificate"
+                                                    placeholder="Add any relevant teaching or professional certifications.">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Seventh row ends-->
 
                             <!--Fifth row start-->
                             <div class="col-12">

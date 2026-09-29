@@ -1,0 +1,92 @@
+  .profile-container {
+    width: 700px;
+    max-width: 95%;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 12px;
+}
+
+.profile-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+/* progress bar */
+.steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 35px;
+}
+
+.step {
+    text-align: center;
+    color: #999;
+}
+
+.step span {
+    display: flex;
+    width: 35px;
+    height: 35px;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+}
+
+.step small {
+    display: block;
+    margin-top: 6px;
+}
+
+.step.active span {
+    background: #0d6efd;
+    color: white;
+}
+
+.step.active span {
+    border-color: #e8dede;
+}
+
+.line {
+    width: 80px;
+    height: 2px;
+    background: #ddd;
+    margin: 0 10px;
+}
+
+/* progress button */
+
+.progress-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+button.next-btn, button.back-btn, .complete-profile-btn{
+    padding: 11px 22px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button.next-btn, .complete-profile-btn {
+    background: #222;
+    color: white;
+}
+
+button.back-btn {
+    background: #eee;
+    color: #333;
+}
+
+/* form */
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+}

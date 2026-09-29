@@ -1,0 +1,224 @@
+
+.availability-container h2 {
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #777;
+    margin-bottom: 25px;
+}
+
+
+/* Builder */
+
+.availability-builder {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.day-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-group {
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
+}
+
+.add-time-btn {
+    border: none;
+    background: #222;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.add-time-btn:hover {
+    background: #444;
+}
+
+
+/* Availability list */
+
+.availability-list {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.list-header h3 {
+    margin: 0 0 5px;
+}
+
+.list-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+#slotCount {
+    background: #f1f1f1;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+
+/* Day */
+
+.day-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #f7f7f7;
+}
+
+.day-name {
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.day-slots {
+    padding: 12px 16px;
+}
+
+
+/* Time slot */
+
+.time-slot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.time-slot:last-child {
+    margin-bottom: 0;
+}
+
+.time-slot input {
+    padding: 9px 10px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.time-arrow {
+    color: #777;
+}
+
+.remove-slot {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: #f5f5f5;
+    color: #d33;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.remove-slot:hover {
+    background: #ffe5e5;
+}
+
+
+/* Empty */
+
+.empty-state {
+    text-align: center;
+    padding: 35px 20px;
+    color: #777;
+}
+
+.empty-icon {
+    width: 45px;
+    height: 45px;
+    margin: auto;
+    border-radius: 50%;
+    background: #f1f1f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+}
+
+.empty-state h4 {
+    margin: 12px 0 5px;
+    color: #333;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+
+/* Save */
+
+.save-btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background: #444;
+}
+
+
+@media (max-width: 600px) {
+
+    .day-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .time-slot {
+        flex-wrap: wrap;
+    }
+
+}

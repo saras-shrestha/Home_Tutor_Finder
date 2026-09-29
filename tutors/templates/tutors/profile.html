@@ -10,99 +10,95 @@
             <div class="page-wrapper">
                 <!-- Page-body start -->
 
-                <div class="page-body">
-                    <div class="row">
+                <div class="page-body">                    
+                    <div class="row"> 
+                        <!-- progress step graph starts-->
+                        <div class="col-12">
+                            <div class="card">
+                                       {% include "tutors/progress_bar.html" %}
+                            </div>
+                        </div>
+                        <!-- progress step graph ends-->
+                        
+                        
                         <form  class="col-12" method="POST">
                         {% csrf_token %}
                             <!--First row starts-->
                             <div class="col-12">
+                                
                                 <div class="card">
-                                    <div class="card-block">
-                                        <!--div for profile picture upload starts-->
+                                    <div class="card-block form-step active" data-step="1">
 
-                                        <div class="section-title">
-                                            <h2>Profile Picture</h2>
-                                            <p>Upload a picture for your profile.</p>
-                                        </div>
-
-                                        <div class="profile-picture-area">
-
-                                            <div class="profile-picture">
-
-                                                <img id="profilePreview"
-                                                    src="{% static 'assets/images/profile/profile.png' %}"
-                                                    alt="Profile Picture">
-
-                                            </div>
-
-                                            <div class="picture-info">
-
-                                                <label for="profile_picture"
-                                                    class="upload-btn">
-                                                    Choose Photo
-                                                </label>
-
-                                                <input type="file"
-                                                    id="profile_picture"
-                                                    name="profile_picture"
-                                                    accept="image/*"
-                                                    hidden>
-
-                                                <p>JPG, PNG or JPEG. Maximum 2MB.</p>
-
-                                                <button type="button"
-                                                        id="removePhoto"
-                                                        class="remove-btn">
-                                                    Remove
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-                                        <!--div for profile picture upload ends-->
-
-                                    </div>
-                                </div>
-                            </div>
-                            <!--First row ends-->
-
-                           
-                            <!--Second row starts-->
-                        
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-block">
-                                        <!--Div for Personal Information start-->
+                                         <!--Div for Personal Information start-->
                                         <div class="section-title">
                                             <h2>Personal Information</h2>
                                             <p>Your basic personal information.</p>
                                         </div>
 
-                                        <div class="form-grid">
-
+                                        <!--div for profile picture upload starts-->
+                                        <div class="form">
                                             <div class="form-group">
+                                                <div class="profile-picture-label">
+                                                    <label>
+                                                        Profile Picture
+                                                    </label>
+                                                    <p>Upload a picture for your profile.</p>
+                                                </div>
+                                                <div class="profile-picture-area">                                          
+                                                    <div class="profile-picture">
 
+                                                        <img id="profilePreview"
+                                                            src="{% static 'assets/images/profile/profile.png' %}"
+                                                            alt="Profile Picture">
+
+                                                    </div>
+
+                                                    <div class="picture-info">
+
+                                                        <button class="upload-btn">
+                                                            Choose Photo
+                                                        </button>
+                                                        <button type="button"
+                                                                id="removePhoto"
+                                                                class="remove-btn">
+                                                            Remove
+                                                        </button>
+
+                                                        <input type="file"
+                                                            id="profile_picture"
+                                                            name="profile_picture"
+                                                            accept="image/*"
+                                                            hidden>
+
+                                                        <p>JPG, PNG or JPEG. Maximum 2MB.</p>
+
+                                                        
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--div for profile picture upload ends-->
+                                       
+
+                                        <div class="form-grid">
+                                            <div class="form-group">
                                                 <label for="full_name">
                                                     Full Name
                                                 </label>
-
                                                 <input type="text"
                                                     id="full_name"
                                                     name="full_name"
                                                     placeholder="Enter full name"
                                                     required>
-
                                             </div>
 
 
                                             <div class="form-group">
-
                                                 <label for="gender">
                                                     Gender
                                                 </label>
-
-                                                <select id="gender"
-                                                        name="gender">
+                                                <select id="gender" name="gender">
 
                                                     <option value="" selected disabled>
                                                         Select Gender
@@ -132,18 +128,126 @@
                                             </div>
                                         </div>
                                         <!--div for personal Information ends-->
+                                        
+                                        <div class="progress-buttons">
+                                            <button type="button" id="nextPersonal" class="next-btn">
+                                                Next →
+                                            </button>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <!--First row ends-->                           
+                            <!--Second row starts-->                        
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block form-step" data-step="2">                                        
+                                        <!--div for location starts-->
+                                        <div class="section-title">
+                                            <h2>Location</h2>
+                                            <p>
+                                                Your location helps us find tutors near you.
+                                            </p>
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label for="address">
+                                                Address
+                                            </label>
+
+                                            <input type="text"
+                                                id="address"
+                                                name="address"
+                                                placeholder="e.g. Shantinagar, Kathmandu"
+                                                required>
+
+                                        </div>
+
+
+                                        <!-- Map Area -->
+                                        <div class="location-area">
+
+                                            <div class="location-header">
+
+                                                <div>
+                                                    <strong>Select your location</strong>
+
+                                                    <p>
+                                                        Choose your location on the map
+                                                        for accurate nearby tutor search.
+                                                    </p>
+                                                </div>
+
+                                                <button type="button"
+                                                        id="useLocation"
+                                                        class="location-btn">
+
+                                                    📍 Use My Location
+
+                                                </button>
+
+                                            </div>
+
+
+                                            <div class="map-placeholder" id="map">
+
+                                                <div class="map-content">
+
+                                                    <div class="map-pin">
+                                                        📍
+                                                    </div>
+
+                                                    <p>
+                                                        Map location will appear here
+                                                    </p>
+
+                                                    <button type="button"
+                                                            id="selectLocation"
+                                                            class="select-location-btn">
+
+                                                        Select Location
+
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- Hidden coordinates -->
+
+                                        <input type="hidden"
+                                            id="latitude"
+                                            name="latitude">
+
+                                        <input type="hidden"
+                                            id="longitude"
+                                            name="longitude">
+                                        
+                                        <!--div for location ends-->
+                                        <div class="progress-buttons">
+                                            <button type="button" id="backLocation" class="back-btn">                            
+                                                ← Back
+                                            </button>
+                                            <button type="button" id="nextLocation" class="next-btn">
+                                                Next →
+                                            </button>
+                                        </div>
 
                                     </div>
                                 </div>
-                            </div>                       
+                            </div>                  
                             <!--Second row ends-->
-
                              <!--Third row start-->
                             <div class="col-12">
                                 <div class="card">
-                                    <div class="card-block">
-
-                                        <!--div for academic information starts-->
+                                    <div class="card-block form-step" data-step="3">
+                                        <!--div for about you starts-->
                                         <div class="section-title">
                                             <h2>About You</h2>
                                             <p>Tell students about yourself, your teaching experience, expertise, teaching style, and what they can expect from your lessons.</p>
@@ -159,19 +263,25 @@
                                                 <textarea rows="10" name="description" placeholder="I am a passionate tutor with experience in teaching and helping students achieve their learning goals…"></textarea>
                                             </div>
                                         </div>
+
+                                        <div class="progress-buttons">
+                                            <button type="button" id="backAbout" class="back-btn">                            
+                                                ← Back
+                                            </button>
+                                            <button type="button" id="nextAbout" class="next-btn">
+                                                Next →
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                             <!--Third row ends-->
-
-
-
                             <!--Fourth row start-->
                             <div class="col-12">
                                 <div class="card">
-                                    <div class="card-block">
-
-                                        <!--div for academic information starts-->
+                                    <div class="card-block form-step" data-step="4">
+                                        <!--div for qualification information starts-->
                                         <div class="section-title">
                                             <h2>Qualifications</h2>
                                             <p>Tell us about your educational background and qualifications.</p>
@@ -282,6 +392,15 @@
 
                                         <!--div for academic information ends-->
 
+                                        <div class="progress-buttons">
+                                            <button type="button" id="backQualification" class="back-btn">                            
+                                                ← Back
+                                            </button>
+                                            <button type="button" id="nextQualification" class="next-btn">
+                                                Next →
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -290,8 +409,7 @@
                             <!--Fifth row start-->
                             <div class="col-12">
                                 <div class="card">
-                                    <div class="card-block">
-
+                                    <div class="card-block form-step" data-step="5">
                                         <!--div for certifications starts-->
                                         <div class="section-title">
                                             <h2>Certifications</h2>
@@ -312,77 +430,26 @@
                                                     placeholder="Add any relevant teaching or professional certifications.">
                                             </div>
                                         </div>
+
+                                        <div class="progress-buttons">
+                                            <button type="button" id="backCertification" class="back-btn">                            
+                                                ← Back
+                                            </button>
+                                            <button type="button" id="nextCertification" class="next-btn">
+                                                Next →
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                             <!--Fifth row ends-->
-
+                          
                             <!--Sixth row start-->
                             <div class="col-12">
                                 <div class="card">
-                                    <div class="card-block">
-
-                                        <!--div for teaching profile starts-->
-                                        <div class="section-title">
-                                            <h2>Teaching Profile</h2>
-                                            <p>Tell students about the subjects you teach, your skills, and your teaching experience.</p>
-                                        </div>
-
-                                        <div class="form-grid">
-                                            <div class="form-group">
-
-                                                <label for="experience">
-                                                    Teaching Experience
-                                                </label>
-
-                                                <input type="number"
-                                                    id="experience"
-                                                    name="experience" placeholder="Enter years of teaching experience.">
-
-                                            </div>                                              
-                                            <div class="form-group full-width">
-                                                <label>Choose Subjects that you teach.</label>
-                                            
-                                                <div>
-                                                    <label for="mathematics">
-                                                        Mathematics
-                                                    </label>                                            
-                                                    <input type="checkbox" id="mathematics" name="mathematics" value="mathematics">
-                                                </div>
-                                                <div>
-                                                    <label for="mathematics">
-                                                        Mathematics
-                                                    </label>                                            
-                                                    <input type="checkbox" id="mathematics" name="mathematics" value="mathematics">
-                                                </div>
-                                                <div>
-                                                    <label for="mathematics">
-                                                        Mathematics
-                                                    </label>                                            
-                                                    <input type="checkbox" id="mathematics" name="mathematics" value="mathematics">
-                                                </div>
-                                                <div>
-                                                    <label for="mathematics">
-                                                        Mathematics
-                                                    </label>                                            
-                                                    <input type="checkbox" id="mathematics" name="mathematics" value="mathematics">
-                                                </div>
-                                            </div>                                           
-                                        </div>
-
-                                        <!--div for academic information ends-->
-
-                                    </div>
-                                </div>
-                            </div>
-                            <!--Sixth row ends-->
-
-                            <!--Seventh row start-->
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-block">
-
-                                        <!--div for certifications starts-->
+                                    <div class="card-block form-step" data-step="6">
+                                        <!--div for cv starts-->
                                         <div class="section-title">
                                             <h2>CV/Resume</h2>
                                             <p>Upload your CV or resume to provide more details about your background and experience.</p>
@@ -392,137 +459,28 @@
 
                                              <div class="form-group">
 
-                                                <label for="certificate">
+                                                <label for="cv">
                                                     Upload CV / Resume
                                                 </label>
 
                                                 <input type="file"
-                                                    id="certificate"
-                                                    name="certificate"
-                                                    placeholder="Add any relevant teaching or professional certifications.">
+                                                    id="cv"
+                                                    name="cv"
+                                                    placeholder="Add your cv here.">
                                             </div>
+                                        </div>
+                                        <div class="progress-buttons">
+                                            <button type="button" id="backCV" class="back-btn">                            
+                                                ← Back
+                                            </button>
+                                            
+                                    <input type="submit" name="save_profile" value="Save Profile" class="complete-profile-btn"/> 
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!--Seventh row ends-->
-
-                            <!--Fifth row start-->
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-block">
-                                        <!--div for location starts-->
-                                        <div class="section-title">
-                                            <h2>Location</h2>
-                                            <p>
-                                                Your location helps us find tutors near you.
-                                            </p>
-                                        </div>
-
-
-                                        <div class="form-group">
-
-                                            <label for="address">
-                                                Address
-                                            </label>
-
-                                            <input type="text"
-                                                id="address"
-                                                name="address"
-                                                placeholder="e.g. Shantinagar, Kathmandu"
-                                                required>
-
-                                        </div>
-
-
-                                        <!-- Map Area -->
-                                        <div class="location-area">
-
-                                            <div class="location-header">
-
-                                                <div>
-                                                    <strong>Select your location</strong>
-
-                                                    <p>
-                                                        Choose your location on the map
-                                                        for accurate nearby tutor search.
-                                                    </p>
-                                                </div>
-
-                                                <button type="button"
-                                                        id="useLocation"
-                                                        class="location-btn">
-
-                                                    📍 Use My Location
-
-                                                </button>
-
-                                            </div>
-
-
-                                            <div class="map-placeholder" id="map">
-
-                                                <div class="map-content">
-
-                                                    <div class="map-pin">
-                                                        📍
-                                                    </div>
-
-                                                    <p>
-                                                        Map location will appear here
-                                                    </p>
-
-                                                    <button type="button"
-                                                            id="selectLocation"
-                                                            class="select-location-btn">
-
-                                                        Select Location
-
-                                                    </button>
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-
-                                        <!-- Hidden coordinates -->
-
-                                        <input type="hidden"
-                                            id="latitude"
-                                            name="latitude">
-
-                                        <input type="hidden"
-                                            id="longitude"
-                                            name="longitude">
-                                        
-                                        <!--div for location ends-->
-
-                                    </div>
-                                </div>
-                            </div>
-                            <!--Fifth row ends-->
-
-                            <!--Sixth row start-->
-                            <div class="col-12">
-                                
-                                <!--div for save-profile starts-->
-                                <!-- Bottom Actions -->
-                                <div class="form-actions">
-
-                                    <a href="{% url 'student_dashboard' %}"
-                                    class="cancel-btn">
-                                        Cancel
-                                    </a>
-
-                                    <input type="submit" name="save_profile" value="Save Profile" class="save-btn"/>
-                                    
-                                </div>
-                                <!--div for save-profile ends-->                                  
-                                
                             </div>
                             <!--Sixth row ends-->
+
                         </form>                  
 
                     </div>

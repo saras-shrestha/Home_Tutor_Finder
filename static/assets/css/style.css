@@ -75,6 +75,7 @@ b, strong {
       Main-body css start
 ==========================  **/
 .main-body .page-wrapper {
+  position:relative;
   padding: 1.8rem;
   -webkit-transition: all ease-in 0.3s;
   transition: all ease-in 0.3s; }
@@ -291,7 +292,8 @@ b, strong {
         -ms-flex-align: center;
             align-items: center;
     background-color: rgba(255, 255, 255, 0.7);
-    z-index: 999; }
+    z-index: 999;
+   }
     .pcoded .card.card-load .card-loader i {
       margin: 0 auto;
       color: #ab7967;
@@ -4079,6 +4081,7 @@ a[data-toggle="lightbox"] .img-fluid {
   font-size: 35px;
   border-radius: 6px;
   padding: 6px 9px; }
+
 @media only screen and (min-width: 788px) {
   #main-chat .page-error,
   .full-calender .page-error {

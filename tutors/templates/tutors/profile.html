@@ -10,17 +10,16 @@
             <div class="page-wrapper">
                 <!-- Page-body start -->
 
+                 <!-- progress step graph starts-->
+                <div class="col-12">
+                    <div class="progress-card">
+                        {% include "tutors/progress_bar.html" %}
+                    </div>
+                </div>
+                <!-- progress step graph ends-->
+
                 <div class="page-body">                    
                     <div class="row"> 
-                        <!-- progress step graph starts-->
-                        <div class="col-12">
-                            <div class="card">
-                                       {% include "tutors/progress_bar.html" %}
-                            </div>
-                        </div>
-                        <!-- progress step graph ends-->
-                        
-                        
                         <form  class="col-12" method="POST">
                         {% csrf_token %}
                             <!--First row starts-->

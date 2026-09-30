@@ -28,10 +28,11 @@ class TutorProfile(models.Model):
         blank=True
     )
     phone = models.CharField(max_length=15, blank=True)
-    qualification = models.CharField(max_length=200, blank=True)
     experience = models.PositiveIntegerField(
         default=0,
-        help_text="Experience in years"
+        help_text="Experience in years",
+        blank=True,
+        null=True
     )
     cv = models.FileField(
         upload_to='tutor_cvs/',
@@ -59,6 +60,28 @@ class TutorProfile(models.Model):
     def __str__(self):
         return f"{self.full_name}"
 
+class Qualification(models.Model):
+    tutor = models.ForeignKey(
+        TutorProfile,
+        on_delete=models.CASCADE,
+        related_name='qualifications'
+    )
+    highest_qualification = models.CharField(max_length=100, blank=True, null=True)
+    study_field = models.CharField(max_length=100, blank=True, null=True)
+    degree_name = models.CharField(max_length=200, blank=True, null=True)
+    college = models.CharField(max_length=200, blank=True, null=True)
+    university = models.CharField(max_length=200, blank=True, null=True)
+    country = models.CharField(max_length=200, blank=True, null=True)
+    gpa = models.DecimalField( 
+        max_digits=4, 
+        decimal_places=2, 
+        blank=True, 
+        null=True
+    )
+    def __str__(self):
+        return f"{self.degree_name}"
+
+    
 class TutorTeaching(models.Model):
     tutor = models.ForeignKey(
         TutorProfile,

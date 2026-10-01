@@ -16461,3 +16461,11 @@ body.dark {
   bottom: 50px;
   opacity: 1;
 }
+
+.section-title>h2, .section-title>p{
+  text-align: center;
+}
+
+.card-block>hr {
+  border-top: 1px solid  rgba(0, 0, 0, 0.5);
+}

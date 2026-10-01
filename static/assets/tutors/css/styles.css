@@ -1,45 +1,49 @@
-.progress-card{
+.progress-card {
     border-radius: 5px;
-    -webkit-box-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.08);
     box-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.08);
     border: none;
     margin-bottom: 30px;
-    -webkit-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out; 
-    /* padding-top: 2px; */
-    padding-bottom: 20px;
+    transition: all 0.3s ease-in-out;
+    padding: 15px 10px;
     background-color: rgb(0, 0, 0);
-    /* margin:0; */
-    /* width:700px; */
-    /* Move it slightly over the first div */
-  margin: -30px;
+    min-height: 150px;
+    margin: -5px;
+    position: relative;
+    z-index: 1000;
 
-  position: relative;
-  z-index: 1000;
-}
-.profile-container {
-    width: 1000px;
-    max-width: 90%;
-    /* margin: 40px; */
-    /* padding: 30px; */
-    /* background: #737776; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.profile-container h2 {
+.profile-progress-container {
+    position: sticky;
+    top: 100px;
+    width: 100%;
+    max-width: 1000px;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+.profile-progress-container h2 {
     text-align: center;
+    color: rgba(255, 255, 255, 1);
     margin-bottom: 20px;
+    font-size: 24px;
 }
-/* progress bar */
+
+/* Progress */
 .steps {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    margin-bottom: 20px;
+    width: 100%;
 }
 
 .step {
     text-align: center;
     color: #999;
+    flex: 0 0 auto;
 }
 
 .step span {
@@ -49,33 +53,112 @@
     align-items: center;
     justify-content: center;
     margin: auto;
-    border-radius: 50%;    
-    color: rgba(255, 255, 255,0.5);
-    border: 2px solid rgba(255, 255, 255,0.5);
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
 }
 
 .step small {
     display: block;
     margin-top: 6px;
+    white-space: nowrap;
+    font-size: 12px;
 }
 
 .step.active span {
     color: white;
-    background:rgba(68, 138, 255,1);
-    border-color: rgba(255, 255, 255,1);
-}
-.step.active small {
-   color:rgba(255, 255, 255,1);
+    background: rgba(68, 138, 255, 1);
+    border-color: rgba(255, 255, 255, 1);
 }
 
-.steps .line {
-    width: 80px;
-    height: 2px;
-    background:rgba(255, 255, 255,0.5);
-    margin: 0 10px;
+.step.active small {
+    color: rgba(255, 255, 255, 1);
 }
+
+/* Responsive connecting lines */
+.steps .line {
+    flex: 1;
+    min-width: 15px;
+    max-width: 80px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 17px 8px 0;
+}
+
 .step.active + .line {
     background: rgba(255, 255, 255, 1);
+}
+
+
+/* TABLET */
+@media (max-width: 768px) {
+
+    .progress-card {
+        min-height: 130px;
+        padding: 15px 5px;
+    }
+
+    .profile-progress-container {
+        max-width: 100%;
+        padding: 0 8px;
+    }
+
+    .profile-progress-container h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .step span {
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
+    }
+
+    .step small {
+        font-size: 10px;
+    }
+
+    .steps .line {
+        margin: 14px 4px 0;
+        min-width: 10px;
+    }
+}
+
+
+/* MOBILE */
+@media (max-width: 480px) {
+
+    .progress-card {
+        min-height: 115px;
+        padding: 12px 3px;
+    }
+
+    .profile-progress-container {
+        padding: 0 3px;
+    }
+
+    .profile-progress-container h2 {
+        font-size: 17px;
+        margin-bottom: 15px;
+    }
+
+    .step span {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+        border-width: 1px;
+    }
+
+    .step small {
+        font-size: 8px;
+        margin-top: 4px;
+    }
+
+    .steps .line {
+        min-width: 5px;
+        margin: 12px 2px 0;
+    }
 }
 
 /* progress button */
@@ -111,4 +194,58 @@ button.back-btn {
 
 .form-step.active {
     display: block;
+}
+
+/* Tablet */
+
+@media (max-width: 768px) {
+
+    .progress-buttons {
+        margin-top: 25px;
+        gap: 8px;
+    }
+
+    button.next-btn,
+    button.back-btn,
+    .complete-profile-btn {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+}
+
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+    .progress-buttons {
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 20px;
+    }
+
+    button.next-btn,
+    button.back-btn,
+    .complete-profile-btn {
+        flex: 1;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}
+
+
+/*  Very Small Screens */
+
+@media (max-width: 350px) {
+    .progress-buttons {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+    button.next-btn,
+    button.back-btn,
+    .complete-profile-btn {
+        width: 100%;
+        flex: none;
+    }
 }

@@ -165,7 +165,7 @@ b, strong {
       right: 10px;
       top: 13px;
       display: inline-block;
-      float: right;
+      /* float: right; */
       padding: 7px 0;
       position: absolute; }
       @media only screen and (max-width: 575px) {
@@ -413,7 +413,8 @@ b, strong {
 
 .card-block ul li.list-inline-item {
   display: inline-block;
-  float: left; }
+  /* float: left;  */
+}
 
 /*======= Typography css end ========*/
 /**  =====================
@@ -892,7 +893,6 @@ button.close {
     padding: 40px;
     -webkit-transform: translate3d(0, 100%, 0);
     transform: translate3d(0, 100%, 0);
-    webkit-transition: -webkit-transform 0.3s;
     -webkit-transition: -webkit-transform 0.3s;
     transition: -webkit-transform 0.3s;
     transition: transform 0.3s;
@@ -1829,7 +1829,8 @@ img.comment-img {
 
 .author {
   display: inline-block;
-  float: right; }
+  /* float: right;  */
+}
   .author a {
     font-size: 13px; }
 
@@ -8586,7 +8587,8 @@ body.menu-bottom #collapse-menu {
   .button-page .card-block ul li {
     display: inline-block;
     margin-right: 20px;
-    float: left; }
+    /* float: left;  */
+  }
 
 .button-page .btn {
   margin-bottom: 20px;
@@ -10013,7 +10015,7 @@ body.menu-bottom #collapse-menu {
     border: 2px solid #448aff;
     cursor: pointer;
     display: inline-block;
-    float: left;
+    /* float: left; */
     height: 20px;
     margin-right: 1rem;
     position: relative;
@@ -14781,7 +14783,7 @@ pre.line-numbers > code {
   color: #666;
   background-size: 15%; }
 #task-container li {
-  float: left;
+  /* float: left; */
   width: 49%;
   overflow: auto;
   height: auto;
@@ -14932,7 +14934,7 @@ pre.line-numbers > code {
     right: -50px; } }
 @media only screen and (max-width: 1199px) {
   .pagination {
-    float: inherit;
+    /* float: inherit; */
     text-align: center;
     display: inline-block;
     margin-top: 10px !important; }
@@ -15211,7 +15213,7 @@ pre.line-numbers > code {
     display: none; }
 
   .dataTables_paginate .pagination {
-    float: inherit;
+    /* float: inherit; */
     text-align: center;
     display: inline-block;
     margin-top: 10px !important; }

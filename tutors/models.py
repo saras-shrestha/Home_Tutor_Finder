@@ -17,6 +17,7 @@ class TutorProfile(models.Model):
 
     profile_picture = models.ImageField(
             upload_to="tutor_profiles/",
+            default = "tutor_profiles/default_profile_picture.jpg",
             null=True,
             blank=True
     )
@@ -49,6 +50,7 @@ class TutorProfile(models.Model):
         null=True,
         blank=True
     )
+    current_step = models.PositiveSmallIntegerField(default=1)
     profile_completed = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(

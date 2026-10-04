@@ -20,7 +20,7 @@
 
                 <div class="page-body">                    
                     <div class="row"> 
-                        <form  class="col-12" method="POST">
+                        <form  class="col-12" method="POST" enctype="multipart/form-data" data-url="{% url 'tutor_profile' %}">
                         {% csrf_token %}
                             <!--First row starts-->
                             <div class="col-12">
@@ -28,7 +28,7 @@
                                 <div class="card">
                                     <div class="card-block form-step active" data-step="1">
                                         <hr>
-                                         <!--Div for Personal Information start-->
+                                         <!--div for Personal Information start-->
                                         <div class="section-title">
                                             <h2>Personal Information</h2>
                                             <p>Your basic personal information.</p>
@@ -45,16 +45,19 @@
                                                 </div>
                                                 <div class="profile-picture-area">                                          
                                                     <div class="profile-picture">
-
+                                                        {% if request.user.tutor_profile.profile_picture %}
+                                                            <img id="profilePreview"
+                                                                src="{{ request.user.tutor_profile.profile_picture.url }}"
+                                                                alt="Profile Picture">
+                                                        {% else %}
                                                         <img id="profilePreview"
                                                             src="{% static 'assets/images/profile/profile.png' %}"
                                                             alt="Profile Picture">
-
+                                                        {% endif %}
                                                     </div>
 
                                                     <div class="picture-info">
-
-                                                        <button class="upload-btn">
+                                                        <button type="button" id="choosePhoto" class="upload-btn">
                                                             Choose Photo
                                                         </button>
                                                         <button type="button"
@@ -69,9 +72,7 @@
                                                             accept="image/*"
                                                             hidden>
 
-                                                        <p>JPG, PNG or JPEG. Maximum 2MB.</p>
-
-                                                        
+                                                        <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                        
 
                                                     </div>
                                                 </div>
@@ -91,8 +92,6 @@
                                                     placeholder="Enter full name"
                                                     required>
                                             </div>
-
-
                                             <div class="form-group">
                                                 <label for="gender">
                                                     Gender

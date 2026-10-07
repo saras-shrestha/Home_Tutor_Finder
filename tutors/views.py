@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import TutorProfile
+from django.urls import reverse
+from core.models import Location
+from core.models import Region
+from .models import TutorProfile, Qualification
 from django.http import JsonResponse
 # Create your views here.
 
@@ -41,71 +44,143 @@ def tutor_profile(request):
         section = request.POST.get("section")
         # Step 1: Personal Information
         if section == "personal":
-            print("*****YES*****")
             tutor.full_name = request.POST.get('full_name')
             tutor.gender = request.POST.get('gender')
             tutor.phone = request.POST.get('phone') 
             if "profile_picture" in request.FILES:
                 tutor.profile_picture = request.FILES["profile_picture"]
-                            
-            tutor.current_step = 2
+            if tutor.current_step<2:                
+                tutor.current_step = 2
             tutor.save()
             return JsonResponse({
                 "success": True,
                 "next_step": 2,
             })
+        
         # Step 2: Location
         elif section == "location":
-            location_id = request.POST.get("location_id")
-            if location_id:
-                from core.models import Location
-                try:
-                    location = Location.objects.get(id=location_id)
-                    tutor.location = location
-                    tutor.current_step = 3
-                    tutor.save()
-                    return JsonResponse({
-                        "success": True,
-                        "next_step": 3,
-                    })
-                except Location.DoesNotExist:
-                    return JsonResponse({
-                        "success": False,
-                        "message": "Invalid location selected."
-                    })
-            else:
+
+            region_id = request.POST.get("region")
+            district_id = request.POST.get("district")
+            city_id = request.POST.get("city")
+            address = request.POST.get("address")
+            latitude = request.POST.get("latitude")
+            longitude = request.POST.get("longitude")
+
+            # Basic validation
+            if not region_id or not district_id or not city_id:
                 return JsonResponse({
                     "success": False,
-                    "message": "Location is required."
+                    "message": "Please select region, district and city."
                 })
+
+            if not address:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Please enter your address."
+                })
+
+            # If location already exists, update it
+            if tutor.location:
+
+                location = tutor.location
+
+                location.region_id = region_id
+                location.district_id = district_id
+                location.city_id = city_id
+                location.address = address
+                location.latitude = latitude or None
+                location.longitude = longitude or None
+
+                location.save()
+
+            # Otherwise create a new location
+            else:
+
+                location = Location.objects.create(
+                    region_id=region_id,
+                    district_id=district_id,
+                    city_id=city_id,
+                    address=address,
+                    latitude=latitude or None,
+                    longitude=longitude or None
+                )
+
+                tutor.location = location
+            if tutor.current_step<3: 
+                tutor.current_step = 3
+            tutor.save()
+
+            return JsonResponse({
+                "success": True,
+                "message": "Location saved successfully.",
+                "next_step": 3
+            })
         # Step 3: About
         elif section == "about": 
-            tutor.description = request.POST.get("description", "")
+            tutor.description = request.POST.get("description")
 
-            tutor.current_step = 4
+            if tutor.current_step<4: 
+                tutor.current_step = 4           
             tutor.save()
 
             return JsonResponse({
                 "success": True,
                 "next_step": 4
             })
+        
         # Step 4: Qualification
         elif section == "qualification":
 
-            # Qualification will be saved here
+            qualification, created = Qualification.objects.get_or_create(
+                tutor=tutor
+            )
 
-            tutor.current_step = 5
+            qualification.highest_qualification = request.POST.get(
+                "high_qualification"
+            )
+
+            qualification.study_field = request.POST.get(
+                "study_field"
+            )
+
+            qualification.degree_name = request.POST.get(
+                "degree_name"
+            )
+
+            qualification.college = request.POST.get(
+                "college_name"
+            )
+
+            qualification.university = request.POST.get(
+                "university"
+            )
+
+            qualification.country = request.POST.get(
+                "study_country"
+            )
+
+            gpa = request.POST.get("tutor_gpa")
+
+            qualification.gpa = gpa if gpa else None
+
+            qualification.save()
+
+            if tutor.current_step<5: 
+                tutor.current_step = 5
             tutor.save()
 
             return JsonResponse({
                 "success": True,
+                "message": "Qualification saved successfully.",
                 "next_step": 5
             })
-        # Step 5: Certificationelif section == "certification":
-
-            # Certification will be saved here
-
-            tutor.current_step = 6
+        # Step 5: Certificationel
+        if section == "certification":
+            if "certificate" in request.FILES:
+                tutor.certificate = request.FILES["certificate"]
+            if tutor.current_step<6: 
+                tutor.current_step = 6
             tutor.save()
 
             return JsonResponse({
@@ -113,34 +188,36 @@ def tutor_profile(request):
                 "next_step": 6
             })
 
-        # --------------------------------
-        # STEP 6 - CV / FINAL
-        # --------------------------------
+        
+        # STEP 6 - CV and FINAL
         elif section == "cv":
 
-            if "cv" in request.FILES:
-                tutor.cv = request.FILES["cv"]
+            cv = request.FILES.get("cv")
 
+            if not cv:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Please upload your CV."
+                })
+
+            tutor.cv = cv
             tutor.profile_completed = True
             tutor.current_step = 7
-
             tutor.save()
 
             return JsonResponse({
                 "success": True,
-                "completed": True
+                "completed": True,
+                "redirect_url": reverse("tutor_dashboard")
             })
 
-        return JsonResponse({
-            "success": False,
-            "message": "Invalid section."
-        })
-
+    regions=Region.objects.all();
     return render(
         request,
         "tutors/profile.html",
         {
-            "profile": tutor,
+            "tutor": tutor,
+            "regions": regions,
             "current_step": tutor.current_step
         }
     )

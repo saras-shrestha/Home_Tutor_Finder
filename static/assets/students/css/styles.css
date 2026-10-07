@@ -308,50 +308,37 @@ body {
         padding: 0 12px;
     }
 
-
     .page-header {
         align-items: flex-start;
         gap: 15px;
     }
 
-
     .page-header h1 {
         font-size: 23px;
     }
-
 
     .back-btn {
         font-size: 12px;
         padding: 8px 11px;
     }
 
-
     .profile-card {
         padding: 18px;
     }
-
 
     .form-grid {
         grid-template-columns: 1fr;
         gap: 15px;
     }
 
-
     .form-group.full-width {
         grid-column: auto;
     }
-
-
-    /* .profile-picture-area {
-        /* align-items: flex-start; */
-    } */
-
 
     .profile-picture {
         width: 80px;
         height: 80px;
     }
-
 
     .location-header {
         flex-direction: column;
@@ -359,16 +346,13 @@ body {
         gap: 12px;
     }
 
-
     .location-btn {
         width: 100%;
     }
 
-
     .map-placeholder {
         height: 240px;
     }
-
 
     .form-actions {
         width: 100%;
@@ -381,7 +365,7 @@ body {
         text-align: center;
     } */
 
-
+}
 
 @media (max-width: 450px) {
 

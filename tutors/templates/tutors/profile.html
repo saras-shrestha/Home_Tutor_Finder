@@ -1,6 +1,10 @@
 {% extends 'tutors/tutor-base.html' %}
 {% load static %}
 
+{% block location_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+{% endblock %}
+
 {% block content %}
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
@@ -20,8 +24,9 @@
 
                 <div class="page-body">                    
                     <div class="row"> 
-                        <form  class="col-12" method="POST" enctype="multipart/form-data" data-url="{% url 'tutor_profile' %}">
+                        <form id="profileForm" class="col-12" method="POST" enctype="multipart/form-data" data-url="{% url 'tutor_profile' %}">
                         {% csrf_token %}
+                            <input type="hidden" id="currentStep" value="{{ current_step }}">
                             <!--First row starts-->
                             <div class="col-12">
                                 
@@ -45,9 +50,9 @@
                                                 </div>
                                                 <div class="profile-picture-area">                                          
                                                     <div class="profile-picture">
-                                                        {% if request.user.tutor_profile.profile_picture %}
+                                                        {% if tutor.profile_picture %}
                                                             <img id="profilePreview"
-                                                                src="{{ request.user.tutor_profile.profile_picture.url }}"
+                                                                src="{{ tutor.profile_picture.url }}"
                                                                 alt="Profile Picture">
                                                         {% else %}
                                                         <img id="profilePreview"
@@ -88,6 +93,7 @@
                                                 </label>
                                                 <input type="text"
                                                     id="full_name"
+                                                    value="{{ tutor.full_name }}"
                                                     name="full_name"
                                                     placeholder="Enter full name"
                                                     required>
@@ -98,13 +104,13 @@
                                                 </label>
                                                 <select id="gender" name="gender">
 
-                                                    <option value="" selected disabled>
+                                                    <option value="" disabled>
                                                         Select Gender
                                                     </option>
 
-                                                    <option value="F">Female</option>
-                                                    <option value="M">Male</option>
-                                                    <option value="O">Others</option>
+                                                    <option value="F" {% if tutor.gender == "F" %} selected {% endif %}>Female</option>
+                                                    <option value="M" {% if tutor.gender == "M" %} selected {% endif %}>Male</option>
+                                                    <option value="O" {% if tutor.gender == "O" %} selected {% endif %}>Others</option>
 
                                                 </select>
 
@@ -120,6 +126,7 @@
                                                 <input type="tel"
                                                     id="phone"
                                                     name="phone"
+                                                    value="{{ tutor.phone }}"
                                                     placeholder="98XXXXXXXX"
                                                     maxlength="10">
 
@@ -136,36 +143,76 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--First row ends-->                           
+                            <!--First row ends-->                             
                             <!--Second row starts-->                        
                             <div class="col-12">
                                 <div class="card">
-                                    <div class="card-block form-step" data-step="2">                                        
+                                    <div class="card-block form-step" data-step="2">
                                         <!--div for location starts-->
-                                        <hr>
                                         <div class="section-title">
                                             <h2>Location</h2>
                                             <p>
                                                 Your location helps us find tutors near you.
                                             </p>
                                         </div>
-                                        <hr>
+                                     
 
+                                        <div class="form-grid">
+                                            
+                                            <div class="form-group">
 
-                                        <div class="form-group">
+                                                <label for="region">
+                                                    Region
+                                                </label>
 
-                                            <label for="address">
-                                                Address
-                                            </label>
+                                                <select id="region" name="region">                                                    
+                                                    <option value="" selected disabled>
+                                                        Select Region
+                                                    </option>
+                                                    {% for region in regions%}
+                                                    <option value="{{region.id}}"
+                                                    {% if tutor.location and tutor.location.region_id == region.id %} selected {% endif %}
+                                                    >
+                                                        {{region.name}}
+                                                    </option>
+                                                    {% endfor %}  
+                                                </select>
 
-                                            <input type="text"
-                                                id="address"
-                                                name="address"
-                                                placeholder="e.g. Shantinagar, Kathmandu"
-                                                required>
+                                            </div>
+
+                                            <div class="form-group">
+
+                                                <label for="district">
+                                                    District
+                                                </label>
+
+                                                <select id="district" name="district" data-selected="{{tutor.location.district_id|default:''}}">
+                                                    <option value="" disabled>
+                                                        Select District
+                                                    </option>
+                                                </select>
+
+                                            </div>
+
+                                            <div class="form-group">
+
+                                                <label for="city">
+                                                   City
+                                                </label>
+                                                <select id="city" name="city" data-selected="{{tutor.location.city_id|default:''}}">
+                                                    <option value="" selected disabled>
+                                                        Select City
+                                                    </option>
+                                                </select>
+
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="address"> Address </label>
+                                                <input type="text" id="address" name="address" value="{{ tutor.location.address|default:'' }}" placeholder="e.g. Shantinagar, Kathmandu">
+                                            </div>
 
                                         </div>
-
 
                                         <!-- Map Area -->
                                         <div class="location-area">
@@ -174,7 +221,6 @@
 
                                                 <div>
                                                     <strong>Select your location</strong>
-
                                                     <p>
                                                         Choose your location on the map
                                                         for accurate nearby tutor search.
@@ -192,45 +238,18 @@
                                             </div>
 
 
-                                            <div class="map-placeholder" id="map">
-
-                                                <div class="map-content">
-
-                                                    <div class="map-pin">
-                                                        📍
-                                                    </div>
-
-                                                    <p>
-                                                        Map location will appear here
-                                                    </p>
-
-                                                    <button type="button"
-                                                            id="selectLocation"
-                                                            class="select-location-btn">
-
-                                                        Select Location
-
-                                                    </button>
-
-                                                </div>
-
-                                            </div>
+                                            <div id="map"></div>
 
                                         </div>
 
 
-                                        <!-- Hidden coordinates -->
+                                        <!-- Hidden coordinates/ GPS values -->
 
-                                        <input type="hidden"
-                                            id="latitude"
-                                            name="latitude">
+                                        <input type="hidden" id="latitude" name="latitude" value="{{ tutor.location.latitude|default:'' }}">
 
-                                        <input type="hidden"
-                                            id="longitude"
-                                            name="longitude">
-                                        
-                                        <!--div for location ends-->
-                                        <div class="progress-buttons">
+                                        <input type="hidden" id="longitude" name="longitude" value="{{ tutor.location.longitude|default:'' }}">
+                                            
+                                         <div class="progress-buttons">
                                             <button type="button" id="backLocation" class="back-btn">                            
                                                 ← Back
                                             </button>
@@ -238,12 +257,14 @@
                                                 Next →
                                             </button>
                                         </div>
+                                        
+                                        <!--div for location ends-->
 
                                     </div>
                                 </div>
-                            </div>                  
+                            </div>                 
                             <!--Second row ends-->
-                             <!--Third row start-->
+                            <!--Third row start-->
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-block form-step" data-step="3">
@@ -262,7 +283,7 @@
                                                 <label for="description">
                                                     Your Description
                                                 </label>
-                                                <textarea rows="10" name="description" placeholder="I am a passionate tutor with experience in teaching and helping students achieve their learning goals…"></textarea>
+                                                <textarea rows="10" id="description" name="description" value="{{ tutor.description|default:'' }}" placeholder="I am a passionate tutor with experience in teaching and helping students achieve their learning goals…"></textarea>
                                             </div>
                                         </div>
 
@@ -300,25 +321,24 @@
                                                 </label>
 
                                                 <select id="high_qualification"
-                                                        name="high_qualification"
+                                                        name="high_qualification" value="{{ tutor.qualifications.high_qualification|default:'' }}"
                                                         required>
 
                                                     <option value="">
                                                         Select highest academic qualification
                                                     </option>
 
-                                                    <option value="school">
+                                                    <option value="masters">
                                                         Master's Degree
                                                     </option>
 
-                                                    <option value="college">
+                                                    <option value="bachelors">
                                                         Bachelor's Degree
                                                     </option>
 
                                                 </select>
 
                                             </div>
-
 
                                             <div class="form-group">
 
@@ -329,6 +349,7 @@
                                                 <input type="text"
                                                     id="study_field"
                                                     name="study_field"
+                                                    value="{{ tutor.qualifications.study_field|default:'' }}"
                                                     placeholder="Enter your major or area of specialization.">
                                             </div>
 
@@ -341,10 +362,10 @@
                                                 <input type="text"
                                                     id="degree_name"
                                                     name="degree_name"
+                                                    value="{{ tutor.qualifications.degree_name|default:'' }}"
                                                     placeholder="Enter the name of your degree or qualification.">
 
                                             </div>
-
 
                                             <div class="form-group full-width">
 
@@ -355,6 +376,7 @@
                                                 <input type="text"
                                                     id="college_name"
                                                     name="college_name"
+                                                    value="{{ tutor.qualifications.college_name|default:'' }}"
                                                     placeholder="Enter the name of the college or institution where you studied.">
 
                                             </div>
@@ -366,7 +388,7 @@
 
                                                 <input type="text"
                                                     id="university"
-                                                    name="university"
+                                                    name="university" value="{{ tutor.qualifications.university|default:'' }}"
                                                     placeholder="Enter the university your qualification is affiliated with or awarded by.">
 
                                             </div>
@@ -378,7 +400,7 @@
 
                                                 <input type="text"
                                                     id="study_country"
-                                                    name="study_country"
+                                                    name="study_country" value="{{ tutor.qualifications.country|default:'' }}"
                                                     placeholder="Enter the country where you studied.">
                                             </div>
                                             <div class="form-group">
@@ -389,7 +411,7 @@
 
                                                 <input type="text"
                                                     id="tutor_gpa"
-                                                    name="tutor_gpa"
+                                                    name="tutor_gpa" value="{{ tutor.qualifications.gpa|default:'' }}"
                                                     placeholder="Enter your final grade or GPA, if applicable.">
                                             </div>                                            
                                         </div>
@@ -429,11 +451,32 @@
                                                 <label for="certificate">
                                                     Certificate / Document
                                                 </label>
+                                                <div class="certificate-picture-area">                                          
+                                                    <div class="certificate-picture">
+                                                        {% if tutor.certificate %}
+                                                            <img id="certificatePreview"
+                                                                src="{{ tutor.certificate.url }}"
+                                                                alt="Profile Picture">
+                                                        {% else %}
+                                                        <img id="certificatePreview"
+                                                            src="{% static 'assets/images/profile/profile.png' %}"
+                                                            alt="Profile Picture">
+                                                        {% endif %}
+                                                    </div>
 
-                                                <input type="file"
-                                                    id="certificate"
-                                                    name="certificate"
-                                                    placeholder="Add any relevant teaching or professional certifications.">
+                                                    <div class="certificate-info">
+                                                        <button type="button" id="chooseCertificate" class="upload-certificate">
+                                                            Upload
+                                                        </button>
+                                                        <button type="button"
+                                                                id="removeCertificate"
+                                                                class="remove-certificate">
+                                                            Remove
+                                                        </button>
+                                                        <input type="file" id="certificate" name="certificate" accept="image/*" hidden>
+                                                        <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                       
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -470,11 +513,35 @@
                                                 <label for="cv">
                                                     Upload CV / Resume
                                                 </label>
+                                                 <div class="cv-picture-area">                                          
+                                                    <div class="cv-picture">
+                                                        {% if tutor.cv %}
+                                                            <img id="cvPreview"
+                                                                src="{{ tutor.cv.url }}"
+                                                                alt="CV">
+                                                        {% else %}
+                                                        <img id="cvPreview"
+                                                            src="{% static 'assets/images/profile/profile.png' %}"
+                                                            alt="CV">
+                                                        {% endif %}
+                                                    </div>
 
-                                                <input type="file"
-                                                    id="cv"
-                                                    name="cv"
-                                                    placeholder="Add your cv here.">
+                                                    <div class="cv-info">
+                                                        <button type="button" id="chooseCV" class="upload-cv">
+                                                            Upload 
+                                                        </button>
+                                                        <button type="button"
+                                                                id="removeCV"
+                                                                class="remove-cv">
+                                                            Remove
+                                                        </button>
+                                                        <input type="file" id="cv" name="cv" hidden>
+                                                        <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                        
+
+                                                    </div>
+                                                </div>
+
+                                                
                                             </div>
                                         </div>
                                         <div class="progress-buttons">
@@ -482,7 +549,7 @@
                                                 ← Back
                                             </button>
                                             
-                                    <input type="submit" name="save_profile" value="Save Profile" class="complete-profile-btn"/> 
+                                    <input type="submit" id="save_profile" name="save_profile" value="Save Profile" class="complete-profile-btn"/> 
                                         </div>
                                     </div>
                                 </div>
@@ -499,5 +566,430 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block location_js %}
+    <!--Leaflet-->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+
+        // DEFAULT LOCATION
+        const defaultLatitude = 27.7172;
+        const defaultLongitude = 85.3240;
+
+        // CREATE MAP
+        const map = L.map("map").setView(
+            [defaultLatitude, defaultLongitude],
+            13
+        );
+
+
+        // MAP TILES
+
+        L.tileLayer(
+            "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            {
+                attribution:
+                    '&copy; OpenStreetMap contributors &copy; CARTO',
+                subdomains: "abcd",
+                maxZoom: 20
+            }
+        ).addTo(map);
+
+
+        // MARKER
+
+        let marker;
+
+
+        // SET LOCATION
+
+        function setLocation(latitude, longitude) {
+
+            // Save coordinates
+            document.getElementById("latitude").value = latitude;
+            document.getElementById("longitude").value = longitude;
+
+
+            // Remove old marker
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+
+            // Add new marker
+            marker = L.marker([
+                latitude,
+                longitude
+            ]).addTo(map);
+
+
+            // Move map
+            map.setView(
+                [latitude, longitude],
+                16
+            );
+        }
+
+        // LOAD SAVED LOCATION
+
+        const savedLatitude =
+            document.getElementById("latitude").value;
+
+        const savedLongitude =
+            document.getElementById("longitude").value;
+
+
+        if (savedLatitude && savedLongitude) {
+
+            const latitude = parseFloat(savedLatitude);
+            const longitude = parseFloat(savedLongitude);
+
+            setLocation(
+                latitude,
+                longitude
+            );
+        }
+
+
+        // CLICK ON MAP
+
+        map.on("click", function (event) {
+
+            const latitude = event.latlng.lat;
+            const longitude = event.latlng.lng;
+
+            setLocation(
+                latitude,
+                longitude
+            );
+        });
+
+        // USE MY LOCATION
+
+        document
+            .getElementById("useLocation")
+            .addEventListener("click", function () {
+
+                if (!navigator.geolocation) {
+
+                    alert(
+                        "Geolocation is not supported by your browser."
+                    );
+
+                    return;
+                }
+
+
+                navigator.geolocation.getCurrentPosition(
+
+                    function (position) {
+
+                        const latitude =
+                            position.coords.latitude;
+
+                        const longitude =
+                            position.coords.longitude;
+
+                        setLocation(
+                            latitude,
+                            longitude
+                        );
+                    },
+
+                    function (error) {
+
+                        if (
+                            error.code ===
+                            error.PERMISSION_DENIED
+                        ) {
+
+                            alert(
+                                "Please allow location access to use this feature."
+                            );
+
+                        } else {
+
+                            alert(
+                                "Unable to get your location."
+                            );
+                        }
+                    }
+                );
+            });
+
+    </script>
+
+
+    <script>
+        const regionSelect = document.getElementById('region');
+        const districtSelect = document.getElementById('district');
+        const citySelect = document.getElementById('city');
+
+
+        // LOAD DISTRICTS
+
+        function loadDistricts(regionId, selectedDistrictId = null) {
+
+            districtSelect.innerHTML =
+                '<option value="">Loading...</option>';
+
+            citySelect.innerHTML =
+                '<option value="" selected disabled>Select City</option>';
+
+            if (!regionId) {
+                districtSelect.innerHTML =
+                    '<option value="" selected disabled>Select District</option>';
+                return;
+            }
+
+            const url = "{% url 'get_districts' 0 %}".replace('0', regionId);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error: ${response.status}`);
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+
+                    districtSelect.innerHTML =
+                        '<option value="" selected disabled>Select District</option>';
+
+                    data.forEach(district => {
+
+                        const option = document.createElement('option');
+
+                        option.value = district.id;
+                        option.textContent = district.name;
+
+                        // Select previously saved district
+                        if (
+                            selectedDistrictId &&
+                            district.id == selectedDistrictId
+                        ) {
+                            option.selected = true;
+                        }
+
+                        districtSelect.appendChild(option);
+                    });
+
+                    // After districts are loaded,
+                    // load the previously saved city
+                    const selectedCityId =
+                        citySelect.dataset.selected;
+
+                    if (selectedDistrictId && selectedCityId) {
+                        loadCities(
+                            selectedDistrictId,
+                            selectedCityId
+                        );
+                    }
+                })
+                .catch(error => {
+
+                    console.error('Error loading districts:', error);
+
+                    districtSelect.innerHTML =
+                        '<option value="">Unable to load districts</option>';
+                });
+        }
+
+        // LOAD CITIES
+
+        function loadCities(districtId, selectedCityId = null) {
+
+            citySelect.innerHTML =
+                '<option value="">Loading...</option>';
+
+            if (!districtId) {
+                citySelect.innerHTML =
+                    '<option value="" selected disabled>Select City</option>';
+                return;
+            }
+
+            const url = "{% url 'get_cities' 0 %}".replace('0', districtId);
+
+            fetch(url)
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error: ${response.status}`);
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+
+                    citySelect.innerHTML =
+                        '<option value="" selected disabled>Select City</option>';
+
+                    data.forEach(city => {
+
+                        const option = document.createElement('option');
+
+                        option.value = city.id;
+                        option.textContent = city.name;
+
+                        // Select previously saved city
+                        if (
+                            selectedCityId &&
+                            city.id == selectedCityId
+                        ) {
+                            option.selected = true;
+                        }
+
+                        citySelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+
+                    console.error('Error loading cities:', error);
+
+                    citySelect.innerHTML =
+                        '<option value="">Unable to load cities</option>';
+                });
+        }
+
+
+        // REGION CHANGED
+
+        regionSelect.addEventListener('change', function () {
+
+            const regionId = this.value;
+
+            // User selected a new region,
+            // so old district and city should be cleared.
+            districtSelect.dataset.selected = '';
+            citySelect.dataset.selected = '';
+
+            loadDistricts(regionId);
+        });
+
+
+        // DISTRICT CHANGED
+
+        districtSelect.addEventListener('change', function () {
+
+            const districtId = this.value;
+
+            // User selected a new district,
+            // so old city should be cleared.
+            citySelect.dataset.selected = '';
+
+            loadCities(districtId);
+        });
+
+
+        // LOAD SAVED DATA ON PAGE LOAD
+
+        const savedRegionId =
+            regionSelect.value;
+
+        const savedDistrictId =
+            districtSelect.dataset.selected;
+
+        const savedCityId =
+            citySelect.dataset.selected;
+
+
+        if (savedRegionId) {
+
+            loadDistricts(
+                savedRegionId,
+                savedDistrictId
+            );
+        }
+
+    </script>
+
+{% comment %} <script>
+    document.getElementById('region').addEventListener('change', function () {
+        const regionId = this.value;
+        const districtSelect = document.getElementById('district');
+
+        districtSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!regionId) {
+            districtSelect.innerHTML =
+                '<option value="">Select District</option>';
+            return;
+        }
+
+        const url = "{% url 'get_districts' 0 %}".replace('0', regionId);
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                districtSelect.innerHTML =
+                    '<option value="" selected disabled>Select District</option>';
+
+                data.forEach(district => {
+                    const option = document.createElement('option');
+
+                    option.value = district.id;
+                    option.textContent = district.name;
+
+                    districtSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading districts:', error);
+
+                districtSelect.innerHTML =
+                    '<option value="">Unable to load districts</option>';
+            });
+    });
+
+
+    document.getElementById('district').addEventListener('change', function () {
+        const districtId = this.value;
+        const citySelect = document.getElementById('city');
+
+        citySelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!districtId) {
+            citySelect.innerHTML =
+                '<option value="" selected disabled>Select City</option>';
+            return;
+        }
+
+        const url = "{% url 'get_cities' 0 %}".replace('0', districtId);
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                citySelect.innerHTML =
+                    '<option value="" selected disabled>Select City</option>';
+
+                data.forEach(city => {
+                    const option = document.createElement('option');
+
+                    option.value = city.id;
+                    option.textContent = city.name;
+
+                    citySelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading cities:', error);
+                citySelect.innerHTML ='<option value="">Unable to load cities</option>';
+            });
+    });
+</script> {% endcomment %}
 
 {% endblock %}

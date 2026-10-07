@@ -18,14 +18,15 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
-from accounts import views
+import accounts.views as account_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.homePage, name="home-page"),
+    path('',account_views.homePage, name="home-page"),
     path('accounts/', include('accounts.urls')),
     path('students/', include('students.urls')),
     path('tutors/', include('tutors.urls')),
+    path('', include('admin_panel.urls')),
 ]
 
 if settings.DEBUG:

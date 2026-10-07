@@ -35,6 +35,11 @@ class TutorProfile(models.Model):
         blank=True,
         null=True
     )
+    certificate = models.FileField(
+        upload_to="tutors_certificates/",
+        null=True,
+        blank=True
+    )
     cv = models.FileField(
         upload_to='tutor_cvs/',
         blank=True,

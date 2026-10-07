@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         // Check file type
 
         if (!file.type.startsWith("image/")) {
@@ -66,98 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
         profilePreview.src = "{% static 'assets/images/profile/faq_man.png' %}";
 
     });
-
-
-    /* Use browser location */
-
-    // const useLocation =
-    //     document.getElementById("useLocation");
-
-
-    // useLocation.addEventListener("click", function () {
-
-    //     if (!navigator.geolocation) {
-
-    //         alert(
-    //             "Location services are not supported by your browser."
-    //         );
-
-    //         return;
-    //     }
-
-
-    //     useLocation.textContent = "Getting location...";
-
-
-    //     navigator.geolocation.getCurrentPosition(
-
-    //         function (position) {
-
-    //             const latitude =
-    //                 position.coords.latitude;
-
-    //             const longitude =
-    //                 position.coords.longitude;
-
-
-    //             document.getElementById("latitude").value =
-    //                 latitude;
-
-    //             document.getElementById("longitude").value =
-    //                 longitude;
-
-
-    //             useLocation.textContent =
-    //                 "✓ Location Selected";
-
-
-    //             alert(
-    //                 "Your location has been selected."
-    //             );
-
-    //         },
-
-
-    //         function (error) {
-
-    //             useLocation.textContent =
-    //                 "📍 Use My Location";
-
-
-    //             if (error.code === 1) {
-
-    //                 alert(
-    //                     "Please allow location access in your browser."
-    //                 );
-
-    //             } else {
-
-    //                 alert(
-    //                     "Unable to get your location."
-    //                 );
-
-    //             }
-
-    //         }
-
-    //     );
-
-    // });
-
-
-    // /* Select location button */
-
-    // const selectLocation =
-    //     document.getElementById("selectLocation");
-
-
-    // selectLocation.addEventListener("click", function () {
-
-    //     alert(
-    //         "Map selection will be connected here."
-    //     );
-
-    // });
 
 
     /* Form validation */
@@ -211,5 +118,146 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
     });
+
+
+    /* Certificate */
+
+    const certificateInput = document.getElementById("certificate");
+    const certificatePreview = document.getElementById("certificatePreview");
+    const chooseCertificate = document.getElementById("chooseCertificate");
+    const removeCertificate = document.getElementById("removeCertificate");
+
+
+    // Choose certificate
+    chooseCertificate.addEventListener("click", function () {
+        certificateInput.click();
+    });
+
+
+    // Preview certificate
+    certificateInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        // Check file type
+        if (!file.type.startsWith("image/")) {
+
+            alert("Please select an image file.");
+
+            this.value = "";
+
+            return;
+        }
+
+
+        // Check file size
+        if (file.size > 2 * 1024 * 1024) {
+
+            alert("Image size must be less than 2MB.");
+
+            this.value = "";
+
+            return;
+        }
+
+
+        // Read image
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+
+            certificatePreview.src = event.target.result;
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+
+
+    // Remove certificate
+    removeCertificate.addEventListener("click", function () {
+
+        certificateInput.value = "";
+
+        certificatePreview.src =
+            "{% static 'assets/images/profile/profile.png' %}";
+
+    });
+    /* certificate part ended */
+
+    /* CV */
+
+    const cvInput = document.getElementById("cv");
+    const cvPreview = document.getElementById("cvPreview");
+    const chooseCV = document.getElementById("chooseCV");
+    const removeCV = document.getElementById("removeCV");
+
+
+    // Choose certificate
+    chooseCV.addEventListener("click", function () {
+        cvInput.click();
+    });
+
+
+    // Preview certificate
+    cvInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        // Check file type
+        if (!file.type.startsWith("image/")) {
+
+            alert("Please select an image file.");
+
+            this.value = "";
+
+            return;
+        }
+
+
+        // Check file size
+        if (file.size > 2 * 1024 * 1024) {
+
+            alert("Image size must be less than 2MB.");
+
+            this.value = "";
+
+            return;
+        }
+
+
+        // Read image
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+
+            cvPreview.src = event.target.result;
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+
+
+    // Remove certificate
+    removeCV.addEventListener("click", function () {
+
+        cvInput.value = "";
+
+        cvPreview.src =
+            "{% static 'assets/images/profile/profile.png' %}";
+
+    });
+    /* cv part ended */
 
 });

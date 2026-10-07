@@ -556,21 +556,21 @@
 
     <script>
         function validateLocation() {
-        const latitude = document.getElementById("latitude").value;
-        const longitude = document.getElementById("longitude").value;
+            const latitude = document.getElementById("latitude").value;
+            const longitude = document.getElementById("longitude").value;
 
-        if (!latitude || !longitude) {
-            alert("Please select your location on the map.");
-            return false;
+            if (!latitude || !longitude) {
+                alert("Please select your location on the map.");
+                return false;
+            }
+
+            return true;
         }
-
-        return true;
-    }
     </script>
 
   
 
-    <script>
+<script>
     document.getElementById('region').addEventListener('change', function () {
         const regionId = this.value;
         const districtSelect = document.getElementById('district');
@@ -653,5 +653,5 @@
                 citySelect.innerHTML ='<option value="">Unable to load cities</option>';
             });
     });
-    </script>
+</script>
 {% endblock %}

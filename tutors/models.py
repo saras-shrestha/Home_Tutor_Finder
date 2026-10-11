@@ -57,6 +57,9 @@ class TutorProfile(models.Model):
     )
     current_step = models.PositiveSmallIntegerField(default=1)
     profile_completed = models.BooleanField(default=False)
+    profile_completed_at = models.DateTimeField(
+        null=True, blank=True
+    )
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(
         auto_now_add=True

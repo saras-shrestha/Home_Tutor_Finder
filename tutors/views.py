@@ -5,6 +5,7 @@ from core.models import Location
 from core.models import Region
 from .models import TutorProfile, Qualification
 from django.http import JsonResponse
+from django.utils import timezone
 # Create your views here.
 
 @login_required
@@ -202,6 +203,7 @@ def tutor_profile(request):
 
             tutor.cv = cv
             tutor.profile_completed = True
+            tutor.profile_completed_at= timezone.now()
             tutor.current_step = 7
             tutor.save()
 

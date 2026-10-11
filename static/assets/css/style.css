@@ -148,6 +148,9 @@ b, strong {
   margin-bottom: 30px;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out; }
+  .card-footer p{
+    font-size: 15px;
+  }
   .card .card-footer {
     border-top: none;
     padding: 15px 20px;
@@ -259,6 +262,9 @@ b, strong {
     padding: 35px; }
   .card .card-block-small {
     padding: 15px; }
+  .card .card-block i{
+    font-size: x-large;
+}
 
 .card-footer {
   background: transparent; }

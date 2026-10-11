@@ -141,3 +141,6 @@ AUTH_USER_MODEL = 'accounts.User'
 # for images (MEDIA_ROOT)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+LOGIN_URL = 'admin_login'

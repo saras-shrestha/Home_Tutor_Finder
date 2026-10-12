@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from tutors.models import TutorProfile
+from students.models import StudentProfile
 from django.core.paginator import Paginator
 
 def admin_login(request):
@@ -72,5 +73,19 @@ def tutors_list(request):
     return render(
         request,
         'admin_panel/tutors-list.html',
+        context
+    )
+
+def students_list(request):
+    students = StudentProfile.objects.all()
+    paginator = Paginator(students, 2)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context={
+            "students":page_obj,
+        }
+    return render(
+        request,
+        'admin_panel/students-list.html',
         context
     )

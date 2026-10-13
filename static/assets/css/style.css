@@ -16477,3 +16477,9 @@ body.dark {
 .card-block>hr {
   border-top: 1px solid  rgba(0, 0, 0, 0.5);
 }
+
+/* more info a tag */
+.more-info-link{
+  text-decoration: none;
+  color: inherit;
+}

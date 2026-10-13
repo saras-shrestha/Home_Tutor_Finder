@@ -1,0 +1,136 @@
+{% extends 'admin_panel/admin-base.html' %}
+    {% block content %}
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <!-- Main-body start -->
+
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <!-- Page-body start -->
+
+                    <div class="page-body">
+                        <div class="row">
+                            <!--first row-->                            
+                            <!--  Tutor Pending approvals starts -->
+                            <div class="col-12">
+                                <div class="card table-card">
+                                    <div class="card-header">
+                                        <h5>Pending Tutor Approvals</h5>
+                                        <p class="text-muted mb-0 small">
+                                            Tutors waiting for verification
+                                        </p>
+                                        <div class="card-header-right">
+                                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                                View All
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="card-block">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            <div class="chk-option">
+                                                                <div class="checkbox-fade fade-in-primary">
+                                                                    <label class="check-task">
+                                                                        <input type="checkbox" value="">
+                                                                        <span class="cr">
+                                                                            <i class="cr-icon fa fa-check txt-default"></i>
+                                                                        </span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            Tutors
+                                                        </th>
+                                                        <th>Qualifications</th>
+                                                        <th>Submission Date</th>
+                                                        <th>Status</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for pending_tutor in pending_tutors %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="chk-option">
+                                                                <div class="checkbox-fade fade-in-primary">
+                                                                    <label class="check-task">
+                                                                        <input type="checkbox" value="">
+                                                                        <span class="cr">
+                                                                            <i class="cr-icon fa fa-check txt-default"></i>
+                                                                        </span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-inline-block align-middle">
+                                                                <img src="{{ pending_tutor.profile_picture.url }}" alt="user image"
+                                                                    class="img-radius img-40 align-top m-r-15">
+                                                                <div class="d-inline-block">
+                                                                    <h6>{{ pending_tutor.full_name }}</h6>
+                                                                    <p class="text-muted m-b-0">Graphics
+                                                                        Designer</p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% for pending_tutor_qualification in pending_tutor.qualifications.all %}
+                                                            <p> {{ pending_tutor_qualification.degree_name }} </p>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <td>{{ pending_tutor.profile_completed_at }}</td>
+                                                        <td>
+                                                            {% if pending_tutor.verification_status == 0 %}
+                                                            <p>Pending</p>
+                                                            {% elif pending_tutor.verification_status == 1 %}
+                                                            <p>Verified</p>
+                                                            {% elif pending_tutor.verification_status == 2 %}
+                                                            <p>Rejected</p>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td class="text-right">
+                                                             <a href="{% url 'tutor_review' id=pending_tutor.id %}" class="btn btn-sm btn-primary">
+                                                                Review
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% empty %}
+                                                        <p>No tutors found.</p>
+                                                    {% endfor %}
+                                                   
+                                                </tbody>
+                                            </table>
+                                             <div class="text-center m-r-20">
+                                                <span>
+                                                    Pages:
+                                                    {% if pending_tutors.has_previous %}
+                                                        <a href="?page={{ pending_tutor.previous_page_number }}">Previous</a>
+                                                    {% endif %}
+                                                    {% for num in pending_tutors.paginator.page_range %}
+                                                        <a href="?page={{ num }}">{{ num }}</a>
+                                                    {% endfor %}
+                                                    {% if pending_tutors.has_next %}
+                                                        <a href="?page={{ pending_tutors.next_page_number }}">Next</a>
+                                                    {% endif %}                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            <!--first row ends-->
+                                                                                  
+                        </div>
+                    </div>
+                    <!-- Page-body end -->
+                </div>
+                <div id="styleSelector"> </div>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}
+
+
+
+
+

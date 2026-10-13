@@ -28,7 +28,7 @@
                                     <div class="card-footer bg-c-purple">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
-                                                <p class="text-white m-b-0">More Info <i class="bi bi-arrow-right"></i></p>
+                                                <p class="text-white m-b-0"> <a href="{% url 'students_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
 
@@ -52,7 +52,7 @@
                                     <div class="card-footer bg-c-green">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
-                                                <p class="text-white m-b-0">More Info <i class="bi bi-arrow-right"></i></p>
+                                                <p class="text-white m-b-0"><a href="{% url 'tutors_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
                                     </div>
@@ -74,7 +74,7 @@
                                     <div class="card-footer bg-c-red">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
-                                                <p class="text-white m-b-0">More Info</i> <i class="bi bi-arrow-right"></i></p>
+                                                <p class="text-white m-b-0"><a href="{% url 'students_list' %}" class="more-info-link"> More Info</i> <i class="bi bi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
                                     </div>
@@ -96,7 +96,7 @@
                                     <div class="card-footer bg-c-blue">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
-                                                <p class="text-white m-b-0">More Info <i class="bi bi-arrow-right"></i></p>
+                                                <p class="text-white m-b-0"><a href="{% url 'students_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
                                     </div>
@@ -125,17 +125,7 @@
                                             <table class="table table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th>
-                                                            <div class="chk-option">
-                                                                <div class="checkbox-fade fade-in-primary">
-                                                                    <label class="check-task">
-                                                                        <input type="checkbox" value="">
-                                                                        <span class="cr">
-                                                                            <i class="cr-icon fa fa-check txt-default"></i>
-                                                                        </span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
+                                                        <th>                                                            
                                                             Tutors
                                                         </th>
                                                         <th>Qualifications</th>
@@ -147,16 +137,7 @@
                                                     {% for pending_tutor in pending_tutors %}
                                                     <tr>
                                                         <td>
-                                                            <div class="chk-option">
-                                                                <div class="checkbox-fade fade-in-primary">
-                                                                    <label class="check-task">
-                                                                        <input type="checkbox" value="">
-                                                                        <span class="cr">
-                                                                            <i class="cr-icon fa fa-check txt-default"></i>
-                                                                        </span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
+                                                           
                                                             <div class="d-inline-block align-middle">
                                                                 <img src="{{ pending_tutor.profile_picture.url }}" alt="user image"
                                                                     class="img-radius img-40 align-top m-r-15">
@@ -187,7 +168,7 @@
                                             </table>
 
                                             <div class="text-right m-r-20">
-                                                <a href="#!" class=" b-b-primary text-primary">View all
+                                                <a href="#!" class="b-b-primary text-primary">View all
                                                     Projects</a>
                                             </div>
                                         </div>
@@ -198,160 +179,56 @@
                             <div class="col-xl-4 col-md-12">
                                 <div class="card ">
                                     <div class="card-header">
-                                        <h5>Team Members</h5>
-                                        <div class="card-header-right">
-                                            <ul class="list-unstyled card-option">
-                                                <li><i class="fa fa fa-wrench open-card-option"></i>
-                                                </li>
-                                                <li><i class="fa fa-window-maximize full-card"></i></li>
-                                                <li><i class="fa fa-minus minimize-card"></i></li>
-                                                <li><i class="fa fa-refresh reload-card"></i></li>
-                                                <li><i class="fa fa-trash close-card"></i></li>
-                                            </ul>
-                                        </div>
+                                        <h5>Recent Activity</h5>
+                                        <p class="text-muted mb-0 small">
+                                            Latest activity on ADME
+                                        </p>
                                     </div>
-                                    <div class="card-block">
-                                        <div class="align-middle m-b-30">
-                                            <img src="assets/images/avatar-2.jpg" alt="user image"
-                                                class="img-radius img-40 align-top m-r-15">
-                                            <div class="d-inline-block">
-                                                <h6>David Jones</h6>
-                                                <p class="text-muted m-b-0">Developer</p>
+                                    <div class="card-block p-4">
+                                        <div class="d-flex mb-4">
+                                            <i class="bi bi-person-plus text-primary fs-5 me-3"></i>
+
+                                            <div>
+                                                <strong>New tutor registered</strong>
+                                                <div class="small text-muted">
+                                                    10 minutes ago
+                                                </div>
                                             </div>
+
                                         </div>
-                                        <div class="align-middle m-b-30">
-                                            <img src="assets/images/avatar-1.jpg" alt="user image"
-                                                class="img-radius img-40 align-top m-r-15">
-                                            <div class="d-inline-block">
-                                                <h6>David Jones</h6>
-                                                <p class="text-muted m-b-0">Developer</p>
+
+
+                                        <div class="d-flex mb-4">
+
+                                            <i class="bi bi-check-circle text-success fs-5 me-3"></i>
+
+                                            <div>
+                                                <strong>Tutor approved</strong>
+                                                <div class="small text-muted">
+                                                    1 hour ago
+                                                </div>
                                             </div>
+
                                         </div>
-                                        <div class="align-middle m-b-30">
-                                            <img src="assets/images/avatar-3.jpg" alt="user image"
-                                                class="img-radius img-40 align-top m-r-15">
-                                            <div class="d-inline-block">
-                                                <h6>David Jones</h6>
-                                                <p class="text-muted m-b-0">Developer</p>
+
+
+                                        <div class="d-flex">
+
+                                            <i class="bi bi-person text-secondary fs-5 me-3"></i>
+
+                                            <div>
+                                                <strong>New student registered</strong>
+                                                <div class="small text-muted">
+                                                    2 hours ago
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="align-middle m-b-30">
-                                            <img src="assets/images/avatar-4.jpg" alt="user image"
-                                                class="img-radius img-40 align-top m-r-15">
-                                            <div class="d-inline-block">
-                                                <h6>David Jones</h6>
-                                                <p class="text-muted m-b-0">Developer</p>
-                                            </div>
-                                        </div>
-                                        <div class="align-middle m-b-10">
-                                            <img src="assets/images/avatar-5.jpg" alt="user image"
-                                                class="img-radius img-40 align-top m-r-15">
-                                            <div class="d-inline-block">
-                                                <h6>David Jones</h6>
-                                                <p class="text-muted m-b-0">Developer</p>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <a href="#!" class="b-b-primary text-primary">View all
-                                                Projects</a>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Tutor Pending approvals ends -->
-                            <!--Second row ends-->
-
-                            <!--Third row start-->
-                            <!--  find a tutor start -->
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5>Find a Tutor</h5>
-                                        <form>
-                                            <div class="form-group row">
-                                                <div class="col-sm-2">
-                                                    <label class="col-form-label">Class</label>
-                                                    <select name="select" class="form-control">
-                                                        <option value="opt1">Select Class</option>
-                                                        <option value="opt2">Type 2</option>
-                                                        <option value="opt3">Type 3</option>
-                                                        <option value="opt4">Type 4</option>
-                                                        <option value="opt5">Type 5</option>
-                                                        <option value="opt6">Type 6</option>
-                                                        <option value="opt7">Type 7</option>
-                                                        <option value="opt8">Type 8</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label class="col-form-label">Subject</label>
-                                                    <select name="select" class="form-control">
-                                                        <option value="opt1">Select Subject</option>
-                                                        <option value="opt2">Type 2</option>
-                                                        <option value="opt3">Type 3</option>
-                                                        <option value="opt4">Type 4</option>
-                                                        <option value="opt5">Type 5</option>
-                                                        <option value="opt6">Type 6</option>
-                                                        <option value="opt7">Type 7</option>
-                                                        <option value="opt8">Type 8</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label class="col-form-label">Location</label>
-                                                    <select name="select" class="form-control">
-                                                        <option value="opt1">Select Location</option>
-                                                        <option value="opt2">Type 2</option>
-                                                        <option value="opt3">Type 3</option>
-                                                        <option value="opt4">Type 4</option>
-                                                        <option value="opt5">Type 5</option>
-                                                        <option value="opt6">Type 6</option>
-                                                        <option value="opt7">Type 7</option>
-                                                        <option value="opt8">Type 8</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-sm-2">
-                                                    <label class="col-form-label">Maximum Fee</label>
-                                                    <input class="form-control" type="number" name="fee"
-                                                        placeholder="Rs./hour" />
-                                                </div>
-                                                <div class="col-sm-2 text-center">
-                                                    <input type="submit"
-                                                        class="btn waves-effect waves-light btn-primary btn-square"
-                                                        value="Search">
-                                                </div>
-                                            </div>
-
-
-                                        </form>
-                                    </div>
-
-                                </div>
-                            </div>
-
-
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-block">
-                                        <div class="row">
-                                            <div class="col">
-                                                <h4>$256.23</h4>
-                                                <p class="text-muted">This Month</p>
-                                            </div>
-                                            <div class="col-auto">
-                                                <label class="label label-success">+20%</label>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm-8">
-                                                <canvas id="this-month" style="height: 80px;"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--  find a tutor end -->
-                            <!--Third row ends-->
-
-                            
+                            <!--Second row ends-->                            
                         </div>
                     </div>
                     <!-- Page-body end -->

@@ -60,7 +60,18 @@ class TutorProfile(models.Model):
     profile_completed_at = models.DateTimeField(
         null=True, blank=True
     )
-    is_verified = models.BooleanField(default=False)
+    class VerificationStatus(models.IntegerChoices):
+        PENDING = 0, "Pending"
+        VERIFIED = 1, "Verified"
+        REJECTED = 2, "Rejected"
+
+    verification_status = models.IntegerField(
+        choices=VerificationStatus.choices,
+        default=VerificationStatus.PENDING
+    )
+    rejection_reason = models.TextField(
+        blank=True
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )

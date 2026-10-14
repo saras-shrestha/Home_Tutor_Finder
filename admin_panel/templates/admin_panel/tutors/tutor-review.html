@@ -14,264 +14,223 @@
                             <div class="col-sm-12">
                                 <div class="card">
 
-                                    <div class="container-fluid p-3 p-md-4">
-
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold mb-1">Tutor Review</h4>
-            <p class="text-muted mb-0 small">
-                Review tutor details and verify the submitted application.
-            </p>
-        </div>
-
-        <a href=""
-           class="btn btn-outline-secondary btn-sm">
-            Back to Tutors
-        </a>
-    </div>
-
-    <!-- Tutor Information -->
-    <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body p-4">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0">Tutor Information</h5>
-
-                {% if tutor.verification_status == "verified" %}
-                    <span class="badge bg-success">Verified</span>
-                {% elif tutor.verification_status == "rejected" %}
-                    <span class="badge bg-danger">Rejected</span>
-                {% else %}
-                    <span class="badge bg-warning text-dark">Pending</span>
-                {% endif %}
-            </div>
-
-            <div class="row g-4">
-                <div class="col-md-4 col-sm-6">
-                    <small class="text-muted d-block mb-1">Full Name</small>
-                    <span class="fw-semibold">
-                        
-                    </span>
-                </div>
-
-                <div class="col-md-4 col-sm-6">
-                    <small class="text-muted d-block mb-1">Email Address</small>
-                    <span>{{ tutor.user.email|default:"Not provided" }}</span>
-                </div>
-
-                <div class="col-md-4 col-sm-6">
-                    <small class="text-muted d-block mb-1">Phone Number</small>
-                    <span>{{ tutor.phone|default:"Not provided" }}</span>
-                </div>
-
-                <div class="col-md-4 col-sm-6">
-                    <small class="text-muted d-block mb-1">Qualification</small>
-                    <span>{{ tutor.qualification|default:"Not provided" }}</span>
-                </div>
-
-                <div class="col-md-4 col-sm-6">
-                    <small class="text-muted d-block mb-1">Experience</small>
-                    <span>{{ tutor.experience|default:"Not provided" }}</span>
-                </div>
-
-                <div class="col-md-4 col-sm-6">
-                    <small class="text-muted d-block mb-1">Location</small>
-                    <span>{{ tutor.location|default:"Not provided" }}</span>
-                </div>
-
-                <div class="col-md-4 col-sm-6">
-                    <small class="text-muted d-block mb-1">Submission Date</small>
-                    <span>
-                        {{ tutor.submitted_at|date:"d M Y, h:i A"|default:"Not available" }}
-                    </span>
-                </div>
-
-                <div class="col-12">
-                    <small class="text-muted d-block mb-1">About Tutor</small>
-                    <p class="mb-0">
-                        {{ tutor.description|default:"No description provided." }}
-                    </p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Uploaded Documents -->
-    <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body p-4">
-
-            <h5 class="fw-bold mb-3">Uploaded Documents</h5>
-
-            <div class="d-flex flex-wrap justify-content-between
-                        align-items-center gap-2 border rounded p-3 mb-3">
-
-                <div>
-                    <div class="fw-semibold">Qualification Certificate</div>
-                    <small class="text-muted">Uploaded certificate</small>
-                </div>
-
-                {% if tutor.certificate %}
-                    <a href="{{ tutor.certificate.url }}"
-                       target="_blank"
-                       rel="noopener"
-                       class="btn btn-outline-primary btn-sm">
-                        View Certificate
-                    </a>
-                {% else %}
-                    <span class="text-muted small">Not uploaded</span>
-                {% endif %}
-            </div>
-
-            <div class="d-flex flex-wrap justify-content-between
-                        align-items-center gap-2 border rounded p-3">
-
-                <div>
-                    <div class="fw-semibold">CV / Resume</div>
-                    <small class="text-muted">Tutor experience document</small>
-                </div>
-
-                {% if tutor.cv %}
-                    <a href="{{ tutor.cv.url }}"
-                       target="_blank"
-                       rel="noopener"
-                       class="btn btn-outline-primary btn-sm">
-                        View CV
-                    </a>
-                {% else %}
-                    <span class="text-muted small">Not uploaded</span>
-                {% endif %}
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Rejection Reason for previously rejected applications -->
-    {% if tutor.verification_status == "rejected" %}
-    <div class="alert alert-danger mb-3">
-        <h6 class="fw-bold">Rejection Reason</h6>
-        <p class="mb-0">
-            {{ tutor.rejection_reason|default:"No reason recorded." }}
-        </p>
-    </div>
-    {% endif %}
-
-    <!-- Accept / Reject Actions -->
-    {% if tutor.verification_status == "pending" or tutor.verification_status == "under_review" %}
-    <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body p-4">
-
-            <h5 class="fw-bold mb-3">Verification Decision</h5>
-
-            <form method="POST"
-                  action="{% url 'review_tutor' tutor.pk %}">
-                {% csrf_token %}
-
-                <div class="mb-3">
-                    <label for="rejection_reason" class="form-label">
-                        Rejection Reason
-                    </label>
-
-                    <textarea
-                        name="rejection_reason"
-                        id="rejection_reason"
-                        class="form-control"
-                        rows="3"
-                        placeholder="Explain why the tutor is being rejected..."
-                    ></textarea>
-
-                    <small class="text-muted">
-                        Required only when rejecting the application.
-                    </small>
-                </div>
-
-                <div class="d-flex flex-wrap gap-2">
-
-                    <button type="submit"
-                            name="decision"
-                            value="verified"
-                            class="btn btn-success px-4">
-                        ✓ Accept Tutor
-                    </button>
-
-                    <button type="submit"
-                            name="decision"
-                            value="rejected"
-                            class="btn btn-danger px-4"
-                            onclick="return validateReject()">
-                        ✕ Reject Tutor
-                    </button>
-
-                    <a href="{% url 'tutor_list' %}"
-                       class="btn btn-outline-secondary px-4">
-                        Cancel
-                    </a>
-
-                </div>
-            </form>
-
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Review Information -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-
-            <h6 class="fw-bold mb-3">Review Information</h6>
-
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <small class="text-muted d-block mb-1">Reviewed By</small>
-                    <span>
-                        {{ tutor.verification_reviewed_by|default:"Not reviewed yet" }}
-                    </span>
-                </div>
-
-                <div class="col-md-6">
-                    <small class="text-muted d-block mb-1">Review Date</small>
-                    <span>
-                        {{ tutor.verification_reviewed_at|date:"d M Y, h:i A"|default:"Not reviewed yet" }}
-                    </span>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-
-<script>
-function validateReject() {
-    const reason = document.getElementById("rejection_reason").value.trim();
-
-    if (!reason) {
-        alert("Please enter a reason before rejecting this tutor.");
-        document.getElementById("rejection_reason").focus();
-        return false;
-    }
-
-    return confirm("Are you sure you want to reject this tutor?");
-}
-</script>
-
-                                    {% comment %} <div class="card-header">
-                                        <h5>Add Region</h5>
+                                    <div class="card-header">
+                                        <h5>Tutor Review</h5>
+                                        <p class="text-muted mb-0">
+                                            Review tutor information and verification documents.
+                                        </p>
                                     </div>
                                     <div class="card-block">                                        
-                                        <h4 class="sub-title">Location</h4>
-                                        <form>
-                                            
-                                            <div class="form-group row">
-                                                <label class="col-sm-2 col-form-label">Region</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control"
-                                                                        placeholder="Type your title in Placeholder">
+                                        <h4 class="sub-title">Tutor Information</h4>
+                                           <!-- Tutor Information -->
+                                            <div class="card border-0 shadow-sm mb-3">
+                                                <div class="card-body p-4">
+
+                                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                                        <h5 class="fw-bold mb-0">Tutor Information</h5>
+
+                                                        {% if tutor.verification_status == "verified" %}
+                                                            <span class="badge bg-success">Verified</span>
+                                                        {% elif tutor.verification_status == "rejected" %}
+                                                            <span class="badge bg-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="badge bg-warning text-dark">Pending</span>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="row g-4">
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <small class="text-muted d-block mb-1">Full Name</small>
+                                                            <span class="fw-semibold">
+                                                                
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <small class="text-muted d-block mb-1">Email Address</small>
+                                                            <span>{{ tutor.user.email|default:"Not provided" }}</span>
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <small class="text-muted d-block mb-1">Phone Number</small>
+                                                            <span>{{ tutor.phone|default:"Not provided" }}</span>
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <small class="text-muted d-block mb-1">Qualification</small>
+                                                            <span>{{ tutor.qualification|default:"Not provided" }}</span>
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <small class="text-muted d-block mb-1">Experience</small>
+                                                            <span>{{ tutor.experience|default:"Not provided" }}</span>
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <small class="text-muted d-block mb-1">Location</small>
+                                                            <span>{{ tutor.location|default:"Not provided" }}</span>
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <small class="text-muted d-block mb-1">Submission Date</small>
+                                                            <span>
+                                                                {{ tutor.submitted_at|date:"d M Y, h:i A"|default:"Not available" }}
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <small class="text-muted d-block mb-1">About Tutor</small>
+                                                            <p class="mb-0">
+                                                                {{ tutor.description|default:"No description provided." }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div> {% endcomment %}
+
+                                            <!-- Uploaded Documents -->
+                                            <div class="card border-0 shadow-sm mb-3">
+                                                <div class="card-body p-4">
+
+                                                    <h5 class="fw-bold mb-3">Uploaded Documents</h5>
+
+                                                    <div class="d-flex flex-wrap justify-content-between
+                                                                align-items-center gap-2 border rounded p-3 mb-3">
+
+                                                        <div>
+                                                            <div class="fw-semibold">Qualification Certificate</div>
+                                                            <small class="text-muted">Uploaded certificate</small>
+                                                        </div>
+
+                                                        {% if tutor.certificate %}
+                                                            <a href="{{ tutor.certificate.url }}"
+                                                            target="_blank"
+                                                            rel="noopener"
+                                                            class="btn btn-outline-primary btn-sm">
+                                                                View Certificate
+                                                            </a>
+                                                        {% else %}
+                                                            <span class="text-muted small">Not uploaded</span>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="d-flex flex-wrap justify-content-between
+                                                                align-items-center gap-2 border rounded p-3">
+
+                                                        <div>
+                                                            <div class="fw-semibold">CV / Resume</div>
+                                                            <small class="text-muted">Tutor experience document</small>
+                                                        </div>
+
+                                                        {% if tutor.cv %}
+                                                            <a href="{{ tutor.cv.url }}"
+                                                            target="_blank"
+                                                            rel="noopener"
+                                                            class="btn btn-outline-primary btn-sm">
+                                                                View CV
+                                                            </a>
+                                                        {% else %}
+                                                            <span class="text-muted small">Not uploaded</span>
+                                                        {% endif %}
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Rejection Reason for previously rejected applications -->
+                                            {% if tutor.verification_status == "rejected" %}
+                                            <div class="alert alert-danger mb-3">
+                                                <h6 class="fw-bold">Rejection Reason</h6>
+                                                <p class="mb-0">
+                                                    {{ tutor.rejection_reason|default:"No reason recorded." }}
+                                                </p>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Accept / Reject Actions -->
+                                            {% if tutor.verification_status == "pending" or tutor.verification_status == "under_review" %}
+                                            <div class="card border-0 shadow-sm mb-3">
+                                                <div class="card-body p-4">
+
+                                                    <h5 class="fw-bold mb-3">Verification Decision</h5>
+
+                                                    <form method="POST"
+                                                        action="{% url 'review_tutor' tutor.pk %}">
+                                                        {% csrf_token %}
+
+                                                        <div class="mb-3">
+                                                            <label for="rejection_reason" class="form-label">
+                                                                Rejection Reason
+                                                            </label>
+
+                                                            <textarea
+                                                                name="rejection_reason"
+                                                                id="rejection_reason"
+                                                                class="form-control"
+                                                                rows="3"
+                                                                placeholder="Explain why the tutor is being rejected..."
+                                                            ></textarea>
+
+                                                            <small class="text-muted">
+                                                                Required only when rejecting the application.
+                                                            </small>
+                                                        </div>
+
+                                                        <div class="d-flex flex-wrap gap-2">
+
+                                                            <button type="submit"
+                                                                    name="decision"
+                                                                    value="verified"
+                                                                    class="btn btn-success px-4">
+                                                                ✓ Accept Tutor
+                                                            </button>
+
+                                                            <button type="submit"
+                                                                    name="decision"
+                                                                    value="rejected"
+                                                                    class="btn btn-danger px-4"
+                                                                    onclick="return validateReject()">
+                                                                ✕ Reject Tutor
+                                                            </button>
+
+                                                            <a href="{% url 'tutor_list' %}"
+                                                            class="btn btn-outline-secondary px-4">
+                                                                Cancel
+                                                            </a>
+
+                                                        </div>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Review Information -->
+                                            <div class="card border-0 shadow-sm">
+                                                <div class="card-body p-4">
+
+                                                    <h6 class="fw-bold mb-3">Review Information</h6>
+
+                                                    <div class="row g-3">
+                                                        <div class="col-md-6">
+                                                            <small class="text-muted d-block mb-1">Reviewed By</small>
+                                                            <span>
+                                                                {{ tutor.verification_reviewed_by|default:"Not reviewed yet" }}
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <small class="text-muted d-block mb-1">Review Date</small>
+                                                            <span>
+                                                                {{ tutor.verification_reviewed_at|date:"d M Y, h:i A"|default:"Not reviewed yet" }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                    </div>
 
                                 </div>
                             </div>
@@ -287,6 +246,19 @@ function validateReject() {
             </div>
         </div>
     </div>
+    <script>
+        function validateReject() {
+            const reason = document.getElementById("rejection_reason").value.trim();
+
+            if (!reason) {
+                alert("Please enter a reason before rejecting this tutor.");
+                document.getElementById("rejection_reason").focus();
+                return false;
+            }
+
+            return confirm("Are you sure you want to reject this tutor?");
+        }
+    </script>
     {% endblock content %}
 
 

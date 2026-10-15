@@ -117,8 +117,10 @@ def tutor_review(request, id):
                 rejection_reason = request.POST.get("rejection_reason")
             tutor.save()
             return redirect("tutors_approval")
-        
-    return render(request, 'admin_panel/tutors/tutor-review.html')
+    context={
+        "tutor":tutor
+    }
+    return render(request, 'admin_panel/tutors/tutor-review.html', context)
 
 # locations
 def regions(request):

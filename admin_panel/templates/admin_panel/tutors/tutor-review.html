@@ -1,4 +1,5 @@
 {% extends 'admin_panel/admin-base.html' %}
+    {% load static %}
     {% block content %}
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
@@ -24,11 +25,9 @@
                                         <h4 class="sub-title">Tutor Information</h4>
                                            <!-- Tutor Information -->
                                             <div class="card border-0 shadow-sm mb-3">
-                                                <div class="card-body p-4">
-
+                                                <div class="card-body p-4">                                                  
                                                     <div class="d-flex justify-content-between align-items-center mb-4">
                                                         <h5 class="fw-bold mb-0">Tutor Information</h5>
-
                                                         {% if tutor.verification_status == "verified" %}
                                                             <span class="badge bg-success">Verified</span>
                                                         {% elif tutor.verification_status == "rejected" %}
@@ -37,52 +36,71 @@
                                                             <span class="badge bg-warning text-dark">Pending</span>
                                                         {% endif %}
                                                     </div>
-
-                                                    <div class="row g-4">
-                                                        <div class="col-md-4 col-sm-6">
-                                                            <small class="text-muted d-block mb-1">Full Name</small>
-                                                            <span class="fw-semibold">
-                                                                
-                                                            </span>
+                                                    <div class="row mb-4">
+                                                        <div class="col-4 profile-picture m-auto">
+                                                            {% if tutor.profile_picture %}
+                                                                <img id="profilePreview"
+                                                                    src="{{ tutor.profile_picture.url }}"
+                                                                    alt="Profile Picture">
+                                                            {% else %}
+                                                                <img id="profilePreview"
+                                                                    src="{% static 'assets/images/profile/profile.png' %}"
+                                                                    alt="Profile Picture">
+                                                            {% endif %}
                                                         </div>
+                                                        <div class="col-8">
+                                                            <div class="row g-4 m-5">
+                                                                <div class="col-md-4 col-sm-6 m-2">
+                                                                    <small class="text-muted d-block mb-1">Full Name</small>
+                                                                    <span class="fw-semibold">
+                                                                        {{ tutor.full_name }}
+                                                                    </span>
+                                                                </div>
 
-                                                        <div class="col-md-4 col-sm-6">
-                                                            <small class="text-muted d-block mb-1">Email Address</small>
-                                                            <span>{{ tutor.user.email|default:"Not provided" }}</span>
-                                                        </div>
+                                                                <div class="col-md-4 col-sm-6 m-2">
+                                                                    <small class="text-muted d-block mb-1">Email Address</small>
+                                                                    <span>{{ tutor.user.email|default:"Not provided" }}</span>
+                                                                </div>
 
-                                                        <div class="col-md-4 col-sm-6">
-                                                            <small class="text-muted d-block mb-1">Phone Number</small>
-                                                            <span>{{ tutor.phone|default:"Not provided" }}</span>
-                                                        </div>
+                                                                <div class="col-md-4 col-sm-6 m-2">
+                                                                    <small class="text-muted d-block mb-1">Phone Number</small>
+                                                                    <span>{{ tutor.phone|default:"Not provided" }}</span>
+                                                                </div>
 
-                                                        <div class="col-md-4 col-sm-6">
-                                                            <small class="text-muted d-block mb-1">Qualification</small>
-                                                            <span>{{ tutor.qualification|default:"Not provided" }}</span>
-                                                        </div>
+                                                                <div class="col-md-4 col-sm-6 m-2">
+                                                                    <small class="text-muted d-block mb-1">Qualification</small>
+                                                                    <span>
+                                                                        {% for tutor_qualification in tutor.qualifications.all %}
+                                                                        <p> {{ tutor_qualification.degree_name|default:"Not provided" }} </p>
+                                                                        {% endfor %}
 
-                                                        <div class="col-md-4 col-sm-6">
-                                                            <small class="text-muted d-block mb-1">Experience</small>
-                                                            <span>{{ tutor.experience|default:"Not provided" }}</span>
-                                                        </div>
+                                                                    </span>
+                                                                </div>
 
-                                                        <div class="col-md-4 col-sm-6">
-                                                            <small class="text-muted d-block mb-1">Location</small>
-                                                            <span>{{ tutor.location|default:"Not provided" }}</span>
-                                                        </div>
+                                                                <div class="col-md-4 col-sm-6 m-2">
+                                                                    <small class="text-muted d-block mb-1">Experience</small>
+                                                                    <span>{{ tutor.experience|default:"Not provided" }}</span>
+                                                                </div>
 
-                                                        <div class="col-md-4 col-sm-6">
-                                                            <small class="text-muted d-block mb-1">Submission Date</small>
-                                                            <span>
-                                                                {{ tutor.submitted_at|date:"d M Y, h:i A"|default:"Not available" }}
-                                                            </span>
-                                                        </div>
+                                                                <div class="col-md-4 col-sm-6 m-2">
+                                                                    <small class="text-muted d-block mb-1">Location</small>
+                                                                    <span>{{ tutor.location|default:"Not provided" }}</span>
+                                                                </div>
 
-                                                        <div class="col-12">
-                                                            <small class="text-muted d-block mb-1">About Tutor</small>
-                                                            <p class="mb-0">
-                                                                {{ tutor.description|default:"No description provided." }}
-                                                            </p>
+                                                                <div class="col-md-4 col-sm-6 m-2">
+                                                                    <small class="text-muted d-block mb-1">Submission Date</small>
+                                                                    <span>
+                                                                        {{ tutor.submitted_at|date:"d M Y, h:i A"|default:"Not available" }}
+                                                                    </span>
+                                                                </div>
+
+                                                                <div class="col-12 m-2">
+                                                                    <small class="text-muted d-block mb-1">About Tutor</small>
+                                                                    <p class="mb-0">
+                                                                        {{ tutor.description|default:"No description provided." }}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
 

@@ -8,7 +8,6 @@
             <div class="main-body">
                 <div class="page-wrapper">
                     <!-- Page-body start -->
-
                     <div class="page-body">
                         <div class="row">
 
@@ -21,246 +20,355 @@
                                             Review tutor information and verification documents.
                                         </p>
                                     </div>
-                                    <div class="card-block">                                        
-                                        <h4 class="sub-title">Tutor Information</h4>
-                                           <!-- Tutor Information -->
-                                            <div class="card border-0 shadow-sm mb-3">
-                                                <div class="card-body p-4">                                                  
-                                                    <div class="d-flex justify-content-between align-items-center mb-4">
-                                                        <h5 class="fw-bold mb-0">Tutor Information</h5>
-                                                        {% if tutor.verification_status == "verified" %}
-                                                            <span class="badge bg-success">Verified</span>
-                                                        {% elif tutor.verification_status == "rejected" %}
-                                                            <span class="badge bg-danger">Rejected</span>
+
+                                    <div class="card-block"> 
+                                        
+                                        <div class="container-fluid">
+
+                                            <div class="profile-card">
+                                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                                    <h5 class="fw-bold mb-0">Tutor Information</h5>
+                                                    {% if tutor.verification_status == "verified" %}
+                                                        <span class="badge bg-success">Verified</span>
+                                                    {% elif tutor.verification_status == "rejected" %}
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning text-dark">Pending</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="row g-0">
+                                                    <!-- Profile Sidebar -->
+                                                    <aside class="col-md-3 col-lg-3 profile-sidebar">
+                                                        <div>
+                                                        {% if tutor.profile_picture %}
+                                                            <img id="profilePreview" src="{{ tutor.profile_picture.url }}" alt="Profile Picture" class="profile-img">
                                                         {% else %}
-                                                            <span class="badge bg-warning text-dark">Pending</span>
+                                                            <img id="profilePreview" src="{% static 'assets/images/profile/profile.png' %}" alt="Profile Picture" class="profile-img">
                                                         {% endif %}
-                                                    </div>
-                                                    <div class="row mb-4">
-                                                        <div class="col-4 profile-picture m-auto">
-                                                            {% if tutor.profile_picture %}
-                                                                <img id="profilePreview"
-                                                                    src="{{ tutor.profile_picture.url }}"
-                                                                    alt="Profile Picture">
-                                                            {% else %}
-                                                                <img id="profilePreview"
-                                                                    src="{% static 'assets/images/profile/profile.png' %}"
-                                                                    alt="Profile Picture">
-                                                            {% endif %}
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <div class="row g-4 m-5">
-                                                                <div class="col-md-4 col-sm-6 m-2">
-                                                                    <small class="text-muted d-block mb-1">Full Name</small>
-                                                                    <span class="fw-semibold">
-                                                                        {{ tutor.full_name }}
-                                                                    </span>
-                                                                </div>
 
-                                                                <div class="col-md-4 col-sm-6 m-2">
-                                                                    <small class="text-muted d-block mb-1">Email Address</small>
-                                                                    <span>{{ tutor.user.email|default:"Not provided" }}</span>
-                                                                </div>
-
-                                                                <div class="col-md-4 col-sm-6 m-2">
-                                                                    <small class="text-muted d-block mb-1">Phone Number</small>
-                                                                    <span>{{ tutor.phone|default:"Not provided" }}</span>
-                                                                </div>
-
-                                                                <div class="col-md-4 col-sm-6 m-2">
-                                                                    <small class="text-muted d-block mb-1">Qualification</small>
-                                                                    <span>
-                                                                        {% for tutor_qualification in tutor.qualifications.all %}
-                                                                        <p> {{ tutor_qualification.degree_name|default:"Not provided" }} </p>
-                                                                        {% endfor %}
-
-                                                                    </span>
-                                                                </div>
-
-                                                                <div class="col-md-4 col-sm-6 m-2">
-                                                                    <small class="text-muted d-block mb-1">Experience</small>
-                                                                    <span>{{ tutor.experience|default:"Not provided" }}</span>
-                                                                </div>
-
-                                                                <div class="col-md-4 col-sm-6 m-2">
-                                                                    <small class="text-muted d-block mb-1">Location</small>
-                                                                    <span>{{ tutor.location|default:"Not provided" }}</span>
-                                                                </div>
-
-                                                                <div class="col-md-4 col-sm-6 m-2">
-                                                                    <small class="text-muted d-block mb-1">Submission Date</small>
-                                                                    <span>
-                                                                        {{ tutor.submitted_at|date:"d M Y, h:i A"|default:"Not available" }}
-                                                                    </span>
-                                                                </div>
-
-                                                                <div class="col-12 m-2">
-                                                                    <small class="text-muted d-block mb-1">About Tutor</small>
-                                                                    <p class="mb-0">
-                                                                        {{ tutor.description|default:"No description provided." }}
-                                                                    </p>
-                                                                </div>
+                                                        <h5 class="profile-name">{{ tutor.full_name }}</h5>
+                                                        </div>                                               
+                                                        <div class="text-justify">
+                                                            <span class="info-label">About Tutor:</span>
+                                                            
+                                                            <div class="info-value">
+                                                                {{tutor.description|default:"No description provided."}}
                                                             </div>
                                                         </div>
-                                                    </div>
 
+                                                    </aside>
+
+                                                    <!-- User Profile Details -->
+                                                    <main class="col-md-9 col-lg-9">
+
+                                                        <!-- Personal Information -->
+                                                        <section class="section">
+                                                        <div class="section-title">Personal Information</div>
+                                                        <div class="row gy-3">
+                                                            <div class="col-lg-3 col-sm-6">
+                                                                <span class="info-label">Username:</span>
+                                                                <span class="info-value">{{ tutor.user.username }}</span>
+                                                            </div>
+                                                            <div class="col-lg-3 col-sm-6">
+                                                                <span class="info-label">Gender:</span>
+                                                                <span class="info-value">
+                                                                    {{ tutor.get_gender_display }}
+                                                                </span>
+                                                            </div>                                                
+
+                                                            <div class="col-lg-4 col-sm-6">
+                                                                <span class="info-label">Phone number:</span>
+                                                                <span class="info-value">
+                                                                    {{ tutor.phone }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        </section>
+
+                                                        <!-- Location -->
+                                                        <section class="section">
+                                                            <div class="section-title">Location</div>
+
+                                                            <div class="setting-row">
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">Region:</span>
+                                                                    <span class="info-value">{{ tutor.location.region }} </span>
+                                                                </div>
+
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">District:</span>
+                                                                    <span class="info-value">{{ tutor.location.district }} </span>
+                                                                </div>
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">Municipality:</span>
+                                                                    <span class="info-value">{{ tutor.location.city }} </span>
+                                                                </div>
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">Tole/Area:</span>
+                                                                    <span class="info-value">{{ tutor.location.address }} </span>
+                                                                </div>                                                 
+                                                            </div>
+
+                                                        </section>
+
+                                                        <!-- Qualification -->
+                                                        <section class="section">
+                                                            <div class="section-title">Qualifications</div>
+
+                                                            <div class="setting-row">
+                                                                {% for tutor_qualification in tutor.qualifications.all %}
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">Highest Degree:</span>
+                                                                    <span class="info-value">                                                                
+                                                                        {{ tutor_qualification.highest_qualifiction }}                                                               
+                                                                    </span>
+                                                                </div>
+
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">Study Field:</span>
+                                                                    <span class="info-value">{{ tutor_qualification.study_field }} </span>
+                                                                </div>
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">Degree Name:</span>
+                                                                    <span class="info-value">{{ tutor_qualification.degree_name }} </span>
+                                                                </div>
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">College:</span>
+                                                                    <span class="info-value">{{ tutor_qualification.college }} </span>
+                                                                </div>
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">University:</span>
+                                                                    <span class="info-value">{{ tutor_qualification.university }} </span>
+                                                                </div>
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">Country:</span>
+                                                                    <span class="info-value">{{ tutor_qualification.country }} </span>
+                                                                </div>
+                                                                <div class="setting-item">
+                                                                    <span class="info-label">GPA:</span>
+                                                                    <span class="info-value">{{ tutor_qualification.gpa }} </span>
+                                                                </div>
+                                                                {% endfor %}                                                 
+                                                            </div>
+                                                        </section>    
+                                                        
+                                                        <!-- Uploaded Documents -->
+                                                        <section class="section">
+                                                            <div class="section-title">Uploaded Documents</div>
+
+                                                            <div class="setting-row">
+                                                                
+                                                                <div class="border rounded p-3 mb-3
+                                                                            d-flex justify-content-between
+                                                                            align-items-center gap-3">
+                                                                    <div>
+                                                                        <div class="fw-semibold">
+                                                                            Professional Certificate
+                                                                        </div>
+                                                                        <small class="text-muted">
+                                                                            Uploaded certificate
+                                                                        </small>
+                                                                    </div>
+
+                                                                    {% if tutor.certificate %}
+                                                                        <a href="{{ tutor.certificate.url }}"
+                                                                        target="_blank"
+                                                                        rel="noopener"
+                                                                        class="btn btn-sm btn-outline-primary">
+                                                                            View
+                                                                        </a>
+                                                                    {% else %}
+                                                                        <span class="text-muted small">
+                                                                            Not uploaded
+                                                                        </span>
+                                                                    {% endif %}
+                                                                </div>
+
+                                                                <div class="border rounded p-3
+                                                                            d-flex justify-content-between
+                                                                            align-items-center gap-3">
+                                                                    <div>
+                                                                        <div class="fw-semibold">CV / Resume</div>
+                                                                        <small class="text-muted">
+                                                                            Tutor experience document
+                                                                        </small>
+                                                                    </div>
+
+                                                                    {% if tutor.cv %}
+                                                                        <a href="{{ tutor.cv.url }}"
+                                                                        target="_blank"
+                                                                        rel="noopener"
+                                                                        class="btn btn-sm btn-outline-primary">
+                                                                            View
+                                                                        </a>
+                                                                    {% else %}
+                                                                        <span class="text-muted small">
+                                                                            Not uploaded
+                                                                        </span>
+                                                                    {% endif %}
+                                                                </div>
+                                                                                                               
+                                                            </div>
+
+                                                        </section> 
+
+                                                        <!-- Verification Decision -->
+                                                        <section class="section">
+                                                            <div class="section-title">Verification Decision</div>
+                                                            <p class="text-muted small">
+                                                                Review the submitted information before
+                                                                making a decision.
+                                                            </p>
+
+                                                            <div class="setting-row">                                                               
+                                                            {% if tutor.verification_status != "verified" and tutor.verification_status != "rejected" %}
+
+                                                                <form method="POST"
+                                                                    action="">
+                                                                    {% csrf_token %}
+                                                                    
+                                                                    <button type="submit"
+                                                                            name="decision"
+                                                                            value="verified"
+                                                                            class="btn btn-success w-100 mb-2">
+                                                                        Approve Tutor
+                                                                    </button>
+
+                                                                    <button type="submit"
+                                                                            name="decision"
+                                                                            value="rejected"
+                                                                            class="btn btn-outline-danger w-100"
+                                                                            onclick="return validateRejection()">
+                                                                        Reject Application
+                                                                    </button>
+
+             
+                                                                </form>
+
+
+                                                            {% endif %}
+
+                                                                                                                   
+                                                            </div>
+                                                            
+                                                        </section> 
+
+                                                    </main>
+                                                    
                                                 </div>
                                             </div>
-
-                                            <!-- Uploaded Documents -->
-                                            <div class="card border-0 shadow-sm mb-3">
-                                                <div class="card-body p-4">
-
-                                                    <h5 class="fw-bold mb-3">Uploaded Documents</h5>
-
-                                                    <div class="d-flex flex-wrap justify-content-between
-                                                                align-items-center gap-2 border rounded p-3 mb-3">
-
-                                                        <div>
-                                                            <div class="fw-semibold">Qualification Certificate</div>
-                                                            <small class="text-muted">Uploaded certificate</small>
-                                                        </div>
-
-                                                        {% if tutor.certificate %}
-                                                            <a href="{{ tutor.certificate.url }}"
-                                                            target="_blank"
-                                                            rel="noopener"
-                                                            class="btn btn-outline-primary btn-sm">
-                                                                View Certificate
-                                                            </a>
-                                                        {% else %}
-                                                            <span class="text-muted small">Not uploaded</span>
-                                                        {% endif %}
-                                                    </div>
-
-                                                    <div class="d-flex flex-wrap justify-content-between
-                                                                align-items-center gap-2 border rounded p-3">
-
-                                                        <div>
-                                                            <div class="fw-semibold">CV / Resume</div>
-                                                            <small class="text-muted">Tutor experience document</small>
-                                                        </div>
-
-                                                        {% if tutor.cv %}
-                                                            <a href="{{ tutor.cv.url }}"
-                                                            target="_blank"
-                                                            rel="noopener"
-                                                            class="btn btn-outline-primary btn-sm">
-                                                                View CV
-                                                            </a>
-                                                        {% else %}
-                                                            <span class="text-muted small">Not uploaded</span>
-                                                        {% endif %}
-                                                    </div>
-
-                                                </div>
-                                            </div>
-
+                                       
+                                       
                                             <!-- Rejection Reason for previously rejected applications -->
                                             {% if tutor.verification_status == "rejected" %}
-                                            <div class="alert alert-danger mb-3">
-                                                <h6 class="fw-bold">Rejection Reason</h6>
-                                                <p class="mb-0">
-                                                    {{ tutor.rejection_reason|default:"No reason recorded." }}
-                                                </p>
-                                            </div>
+                                                <div class="alert alert-danger mb-3">
+                                                    <h6 class="fw-bold">Rejection Reason</h6>
+                                                    <p class="mb-0">
+                                                        {{ tutor.rejection_reason|default:"No reason recorded." }}
+                                                    </p>
+                                                </div>
                                             {% endif %}
 
                                             <!-- Accept / Reject Actions -->
                                             {% if tutor.verification_status == "pending" or tutor.verification_status == "under_review" %}
-                                            <div class="card border-0 shadow-sm mb-3">
-                                                <div class="card-body p-4">
+                                                <div class="card border-0 shadow-sm mb-3">
+                                                    <div class="card-body p-4">
 
-                                                    <h5 class="fw-bold mb-3">Verification Decision</h5>
+                                                        <h5 class="fw-bold mb-3">Verification Decision</h5>
 
-                                                    <form method="POST"
-                                                        action="{% url 'review_tutor' tutor.pk %}">
-                                                        {% csrf_token %}
+                                                        <form method="POST"
+                                                            action="">
+                                                            {% csrf_token %}
 
-                                                        <div class="mb-3">
-                                                            <label for="rejection_reason" class="form-label">
-                                                                Rejection Reason
-                                                            </label>
+                                                            <div class="mb-3">
+                                                                <label for="rejection_reason" class="form-label">
+                                                                    Rejection Reason
+                                                                </label>
 
-                                                            <textarea
-                                                                name="rejection_reason"
-                                                                id="rejection_reason"
-                                                                class="form-control"
-                                                                rows="3"
-                                                                placeholder="Explain why the tutor is being rejected..."
-                                                            ></textarea>
+                                                                <textarea
+                                                                    name="rejection_reason"
+                                                                    id="rejection_reason"
+                                                                    class="form-control"
+                                                                    rows="3"
+                                                                    placeholder="Explain why the tutor is being rejected..."
+                                                                ></textarea>
 
-                                                            <small class="text-muted">
-                                                                Required only when rejecting the application.
-                                                            </small>
-                                                        </div>
+                                                                <small class="text-muted">
+                                                                    Required only when rejecting the application.
+                                                                </small>
+                                                            </div>
 
-                                                        <div class="d-flex flex-wrap gap-2">
+                                                            <div class="d-flex flex-wrap gap-2">
 
-                                                            <button type="submit"
-                                                                    name="decision"
-                                                                    value="verified"
-                                                                    class="btn btn-success px-4">
-                                                                ✓ Accept Tutor
-                                                            </button>
+                                                                <button type="submit"
+                                                                        name="decision"
+                                                                        value="verified"
+                                                                        class="btn btn-success px-4">
+                                                                    ✓ Accept Tutor
+                                                                </button>
 
-                                                            <button type="submit"
-                                                                    name="decision"
-                                                                    value="rejected"
-                                                                    class="btn btn-danger px-4"
-                                                                    onclick="return validateReject()">
-                                                                ✕ Reject Tutor
-                                                            </button>
+                                                                <button type="submit"
+                                                                        name="decision"
+                                                                        value="rejected"
+                                                                        class="btn btn-danger px-4"
+                                                                        onclick="return validateReject()">
+                                                                    ✕ Reject Tutor
+                                                                </button>
 
-                                                            <a href="{% url 'tutor_list' %}"
-                                                            class="btn btn-outline-secondary px-4">
-                                                                Cancel
-                                                            </a>
+                                                                <a href="{% url 'tutor_list' %}"
+                                                                class="btn btn-outline-secondary px-4">
+                                                                    Cancel
+                                                                </a>
 
-                                                        </div>
-                                                    </form>
+                                                            </div>
+                                                        </form>
 
+                                                    </div>
                                                 </div>
-                                            </div>
                                             {% endif %}
 
                                             <!-- Review Information -->
                                             <div class="card border-0 shadow-sm">
                                                 <div class="card-body p-4">
 
-                                                    <h6 class="fw-bold mb-3">Review Information</h6>
+                                                        <h6 class="fw-bold mb-3">Review Information</h6>
 
-                                                    <div class="row g-3">
-                                                        <div class="col-md-6">
-                                                            <small class="text-muted d-block mb-1">Reviewed By</small>
-                                                            <span>
-                                                                {{ tutor.verification_reviewed_by|default:"Not reviewed yet" }}
-                                                            </span>
-                                                        </div>
+                                                        <div class="row g-3">
+                                                            <div class="col-md-6">
+                                                                <small class="text-muted d-block mb-1">Reviewed By</small>
+                                                                <span>
+                                                                    {{ tutor.verification_reviewed_by|default:"Not reviewed yet" }}
+                                                                </span>
+                                                            </div>
 
-                                                        <div class="col-md-6">
-                                                            <small class="text-muted d-block mb-1">Review Date</small>
-                                                            <span>
-                                                                {{ tutor.verification_reviewed_at|date:"d M Y, h:i A"|default:"Not reviewed yet" }}
-                                                            </span>
+                                                            <div class="col-md-6">
+                                                                <small class="text-muted d-block mb-1">Review Date</small>
+                                                                <span>
+                                                                    {{ tutor.verification_reviewed_at|date:"d M Y, h:i A"|default:"Not reviewed yet" }}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
                                                 </div>
                                             </div>
+
+                                        </div>
+                                           
+
+                                    </div>
+
                                     </div>
 
                                 </div>
-                            </div>
+                            </div> 
 
-                        </div>
-
-                                                 
                         </div>
                     </div>
                     <!-- Page-body end -->
                 </div>
+                <!--Style Selector-->
                 <div id="styleSelector"> </div>
+
             </div>
         </div>
     </div>

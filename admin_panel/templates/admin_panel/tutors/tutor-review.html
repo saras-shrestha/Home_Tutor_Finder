@@ -38,15 +38,14 @@
                                                 </div>
                                                 <div class="row g-0">
                                                     <!-- Profile Sidebar -->
-                                                    <aside class="col-md-3 col-lg-3 profile-sidebar">
+                                                    <aside class="col-12 profile-sidebar text-center d-flex flex-column justify-content-center align-items-center">
                                                         <div>
-                                                        {% if tutor.profile_picture %}
-                                                            <img id="profilePreview" src="{{ tutor.profile_picture.url }}" alt="Profile Picture" class="profile-img">
-                                                        {% else %}
-                                                            <img id="profilePreview" src="{% static 'assets/images/profile/profile.png' %}" alt="Profile Picture" class="profile-img">
-                                                        {% endif %}
-
-                                                        <h5 class="profile-name">{{ tutor.full_name }}</h5>
+                                                            {% if tutor.profile_picture %}
+                                                                <img id="profilePreview" src="{{ tutor.profile_picture.url }}" alt="Profile Picture" class="profile-img">
+                                                            {% else %}
+                                                                <img id="profilePreview" src="{% static 'assets/images/profile/profile.png' %}" alt="Profile Picture" class="profile-img">
+                                                            {% endif %}
+                                                            <h5 class="profile-name">{{ tutor.full_name }}</h5>
                                                         </div>                                               
                                                         <div class="text-justify">
                                                             <span class="info-label">About Tutor:</span>
@@ -59,7 +58,7 @@
                                                     </aside>
 
                                                     <!-- User Profile Details -->
-                                                    <main class="col-md-9 col-lg-9">
+                                                    <main class="col-12">
 
                                                         <!-- Personal Information -->
                                                         <section class="section">
@@ -158,7 +157,7 @@
 
                                                             <div class="setting-row">
                                                                 
-                                                                <div class="border rounded p-3 mb-3
+                                                                <div class="col-12 border rounded p-3 mb-3
                                                                             d-flex justify-content-between
                                                                             align-items-center gap-3">
                                                                     <div>
@@ -184,7 +183,7 @@
                                                                     {% endif %}
                                                                 </div>
 
-                                                                <div class="border rounded p-3
+                                                                <div class="col-12 border rounded p-3
                                                                             d-flex justify-content-between
                                                                             align-items-center gap-3">
                                                                     <div>
@@ -223,31 +222,28 @@
                                                             <div class="setting-row">                                                               
                                                             {% if tutor.verification_status != "verified" and tutor.verification_status != "rejected" %}
 
-                                                                <form method="POST"
-                                                                    action="">
+                                                                <form method="POST" class="col-12 p-0">
                                                                     {% csrf_token %}
-                                                                    
-                                                                    <button type="submit"
-                                                                            name="decision"
-                                                                            value="verified"
-                                                                            class="btn btn-success w-100 mb-2">
-                                                                        Approve Tutor
-                                                                    </button>
+                                                                    <div class="d-flex w-100">
+                                                                        <button type="submit"
+                                                                                name="decision"
+                                                                                value="verified"
+                                                                                class="btn btn-primary w-50 rounded-2 mr-2">
+                                                                            Approve Tutor
+                                                                        </button>
 
-                                                                    <button type="submit"
-                                                                            name="decision"
-                                                                            value="rejected"
-                                                                            class="btn btn-outline-danger w-100"
-                                                                            onclick="return validateRejection()">
-                                                                        Reject Application
-                                                                    </button>
-
+                                                                        <button type="submit"
+                                                                                name="decision"
+                                                                                value="rejected"
+                                                                                class="btn btn-dark w-50 rounded-2 ml-2"
+                                                                                onclick="return validateRejection()">
+                                                                            Reject Application
+                                                                        </button>
+                                                                    </div>
              
                                                                 </form>
 
-
                                                             {% endif %}
-
                                                                                                                    
                                                             </div>
                                                             

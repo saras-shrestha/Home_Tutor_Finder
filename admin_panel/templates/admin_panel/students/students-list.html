@@ -63,7 +63,8 @@
                                                                 </div>
                                                             </div>
                                                             <div class="d-inline-block align-middle">
-                                                                <img src="{{ student.profile_picture.url }}" alt="user image"
+                                                                {% comment %} {{ student.profile_picture.url }} {% endcomment %}
+                                                                <img src="" alt="user image"
                                                                     class="img-radius img-40 align-top m-r-15">
                                                                 <div class="d-inline-block">
                                                                     <h6>{{ student.full_name }}</h6>

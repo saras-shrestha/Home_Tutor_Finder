@@ -12,10 +12,13 @@ class StudentProfile(models.Model):
         OTHER = "O", "Other"
 
     EDUCATION_LEVEL_CHOICES = (
-        ("school", "School"),
-        ("plus_two", "+2"),
-        ("bachelor", "Bachelor"),
-        ("master", "Master"),
+        ('primary', 'Primary Level (Class 1–5)'),
+        ('basic', 'Basic Level (Class 6–8)'),
+        ('secondary', 'Secondary Level (Class 9–10)'),
+        ('higher_secondary', 'Higher Secondary Level (+2)'),
+        ('undergraduate', "Undergraduate Level (Bachelor's)"),
+        ('postgraduate', "Postgraduate Level (Master's)"),        
+        ('other', 'Other'),
     )
 
     user = models.OneToOneField(
@@ -51,7 +54,7 @@ class StudentProfile(models.Model):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        related_name="students"
+        related_name="student_grade"
     )
     school_college = models.CharField(
         max_length=200,
@@ -67,7 +70,11 @@ class StudentProfile(models.Model):
         null=True,
         blank=True
     )
+    current_step = models.PositiveSmallIntegerField(default=1)
     profile_completed = models.BooleanField(default=False)
+    profile_completed_at = models.DateTimeField(
+        null=True, blank=True
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )

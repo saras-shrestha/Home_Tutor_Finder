@@ -19,11 +19,6 @@
                                         <p class="text-muted mb-0 small">
                                             Tutors waiting for verification
                                         </p>
-                                        <div class="card-header-right">
-                                            <a href="#" class="btn btn-sm btn-outline-primary">
-                                                View All
-                                            </a>
-                                        </div>
                                     </div>
                                     <div class="card-block">
                                         <div class="table-responsive">
@@ -31,16 +26,6 @@
                                                 <thead>
                                                     <tr>
                                                         <th>
-                                                            <div class="chk-option">
-                                                                <div class="checkbox-fade fade-in-primary">
-                                                                    <label class="check-task">
-                                                                        <input type="checkbox" value="">
-                                                                        <span class="cr">
-                                                                            <i class="cr-icon fa fa-check txt-default"></i>
-                                                                        </span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
                                                             Tutors
                                                         </th>
                                                         <th>Qualifications</th>
@@ -53,16 +38,6 @@
                                                     {% for pending_tutor in pending_tutors %}
                                                     <tr>
                                                         <td>
-                                                            <div class="chk-option">
-                                                                <div class="checkbox-fade fade-in-primary">
-                                                                    <label class="check-task">
-                                                                        <input type="checkbox" value="">
-                                                                        <span class="cr">
-                                                                            <i class="cr-icon fa fa-check txt-default"></i>
-                                                                        </span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
                                                             <div class="d-inline-block align-middle">
                                                                 <img src="{{ pending_tutor.profile_picture.url }}" alt="user image"
                                                                     class="img-radius img-40 align-top m-r-15">

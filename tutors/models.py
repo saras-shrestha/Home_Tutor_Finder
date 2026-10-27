@@ -64,6 +64,8 @@ class TutorProfile(models.Model):
         PENDING = 0, "Pending"
         VERIFIED = 1, "Verified"
         REJECTED = 2, "Rejected"
+        SUSPENDED = 3, "Suspended"
+        REACTIVATE = 4, "Reactivate"
 
     verification_status = models.IntegerField(
         choices=VerificationStatus.choices,
@@ -71,6 +73,9 @@ class TutorProfile(models.Model):
     )
     rejection_reason = models.TextField(
         blank=True
+    )
+    suspension_reason = models.TextField(
+            blank=True
     )
     created_at = models.DateTimeField(
         auto_now_add=True

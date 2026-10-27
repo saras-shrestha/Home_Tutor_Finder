@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from core.models import Location
-from core.models import Region
+from core.models import Location, Region
 from .models import TutorProfile, Qualification
 from django.http import JsonResponse
 from django.utils import timezone

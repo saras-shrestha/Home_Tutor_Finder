@@ -15,15 +15,7 @@
                                <div class="col-12">
                                 <div class="card table-card">
                                     <div class="card-header">
-                                        <h5>Pending Tutor Approvals</h5>
-                                        <p class="text-muted mb-0 small">
-                                            Tutors waiting for verification
-                                        </p>
-                                        <div class="card-header-right">
-                                            <a href="#" class="btn btn-sm btn-outline-primary">
-                                                View All
-                                            </a>
-                                        </div>
+                                        <h5>Students List</h5>
                                     </div>
                                     <div class="card-block">
                                         <div class="table-responsive">
@@ -31,52 +23,30 @@
                                                 <thead>
                                                     <tr>
                                                         <th>
-                                                            <div class="chk-option">
-                                                                <div class="checkbox-fade fade-in-primary">
-                                                                    <label class="check-task">
-                                                                        <input type="checkbox" value="">
-                                                                        <span class="cr">
-                                                                            <i class="cr-icon fa fa-check txt-default"></i>
-                                                                        </span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            Tutors
+                                                            S.N.
                                                         </th>
-                                                        <th>Qualifications</th>
-                                                        <th>Submitted</th>
+                                                        <th>Student</th>
+                                                        <th>Grade</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for student in students %}
                                                     <tr>
-                                                        <td>
-                                                            <div class="chk-option">
-                                                                <div class="checkbox-fade fade-in-primary">
-                                                                    <label class="check-task">
-                                                                        <input type="checkbox" value="">
-                                                                        <span class="cr">
-                                                                            <i class="cr-icon fa fa-check txt-default"></i>
-                                                                        </span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
+                                                        <td>{{forloop.counter}}</td>
+                                                        <td>                                                            
                                                             <div class="d-inline-block align-middle">
                                                                 {% comment %} {{ student.profile_picture.url }} {% endcomment %}
-                                                                <img src="" alt="user image"
+                                                                <img src="{{ student.profile_picture.url }}" alt="user image"
                                                                     class="img-radius img-40 align-top m-r-15">
                                                                 <div class="d-inline-block">
                                                                     <h6>{{ student.full_name }}</h6>
-                                                                    <p class="text-muted m-b-0">Graphics
-                                                                        Designer</p>
                                                                 </div>
                                                             </div>
                                                         </td>
                                                         <td>
                                                             {{ student.grade }}
                                                         </td>
-                                                        <td></td>
                                                         <td class="text-right">
                                                              <a href="#" class="btn btn-sm btn-primary">
                                                                 Review
@@ -93,14 +63,14 @@
                                             <div class="text-center m-r-20">
                                                 <span>
                                                     Pages:
-                                                    {% if tutors.has_previous %}
-                                                        <a href="?page={{ tutors.previous_page_number }}">Previous</a>
+                                                    {% if students.has_previous %}
+                                                        <a href="?page={{ students.previous_page_number }}">Previous</a>
                                                     {% endif %}
-                                                    {% for num in tutors.paginator.page_range %}
+                                                    {% for num in students.paginator.page_range %}
                                                         <a href="?page={{ num }}">{{ num }}</a>
                                                     {% endfor %}
-                                                    {% if tutors.has_next %}
-                                                        <a href="?page={{ tutors.next_page_number }}">Next</a>
+                                                    {% if students.has_next %}
+                                                        <a href="?page={{ students.next_page_number }}">Next</a>
                                                     {% endif %}                                                    
                                                 </span>
                                             </div>

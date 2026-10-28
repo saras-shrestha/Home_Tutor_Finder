@@ -352,7 +352,7 @@
                                                 <select id="grade" name="grade" required>                                                                                          
                                                     <option value="" selected disabled>Select your education level</option>
                                                     {% for grade in grades %}           
-                                                    <option value="{{grade.id}}" {% if student.grade == "grade.id" %} selected {% endif %}>{{ grade.name }}</option>
+                                                    <option value="{{ grade.id }}" {% if student.grade == "grade.id" %} selected {% endif %}>{{ grade.name }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -376,10 +376,9 @@
                                         <!--div for academic information ends-->
 
                                           <div class="progress-buttons">
-                                            <button type="button" id="backCV" class="back-btn">                            
+                                            <button type="button" id="backAcademic" class="back-btn">                            
                                                 ← Back
-                                            </button>
-                                            
+                                            </button>                                            
                                             <input type="submit" id="save_profile" name="save_profile" value="Save Profile" class="complete-profile-btn"/> 
                                         </div>
 

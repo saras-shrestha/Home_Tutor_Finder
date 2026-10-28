@@ -1,0 +1,52 @@
+{% extends 'admin_panel/admin-base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">
+                    <div class="row">
+                            <!--First row starts-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Edit Grade</h5>
+                                    </div>
+                                    <div class="card-block">                
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label" for="grade">Grade Name</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" id="grade" value="{{grade.name}}" name="grade" class="form-control"
+                                                                        placeholder="Enter grade name">
+                                                </div>
+                                                <div class="d-flex justify-content-center align-items-center mt-3">                                                                        
+                                                    <button type="submit" class="btn btn-dark px-4 mr-1">
+                                                        Update
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--First row ends-->                
+
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from tutors.models import TutorProfile
 from students.models import StudentProfile
+from core.models import Grade
 from django.core.paginator import Paginator
 
 def admin_login(request):
@@ -66,7 +67,7 @@ def admin_logout(request):
 
 def students_list(request):
     students = StudentProfile.objects.all()
-    paginator = Paginator(students, 2)
+    paginator = Paginator(students, 5)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     context={
@@ -144,3 +145,42 @@ def tutor_info(request, id):
 # locations
 def regions(request):
     return render(request, 'admin_panel/location/regions.html')
+# grades
+def grades_list(request):
+    if request.method == "POST":
+        grade=request.POST.get("grade")
+        if grade:
+            Grade.objects.create(
+            name=grade
+        )
+    grades=Grade.objects.all()
+    paginator = Paginator(grades, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context={
+            "grades":page_obj,
+        }
+    return render(
+        request,
+        'admin_panel/students/grades-list.html',
+        context
+    )
+
+def grade_edit(request, id):
+    grade=get_object_or_404(Grade, id=id)
+    if request.method == "POST":
+        updated_grade=request.POST.get("grade")
+        if updated_grade:
+            grade.name = updated_grade        
+            grade.save() 
+        return redirect('grades_list')   
+    
+    context={
+        "grade":grade
+    }
+    return render(request, 'admin_panel/students/grade-edit.html', context)
+
+def grade_delete(request, id):
+    grade = get_object_or_404(Grade, id=id)
+    grade.delete()
+    return redirect('grades_list')

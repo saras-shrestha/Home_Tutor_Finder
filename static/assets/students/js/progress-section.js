@@ -293,7 +293,7 @@ document
 /* Academic → About */
 
 document
-    .getElementById("backQualification")
+    .getElementById("backAcademic")
     .addEventListener("click", function () {
 
         showStep(3);

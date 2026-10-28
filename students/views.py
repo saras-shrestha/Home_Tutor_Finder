@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import StudentProfile
+from django.urls import reverse
 from core.models import Region, District, City, Location, Grade
 from django.http import JsonResponse
+from django.utils import timezone
 # Create your views here.
 
 @login_required
 def student_dashboard(request):
     if request.user.role != "student":
-        return redirect("home")
+        return redirect("home-page")
 
     profile = request.user.student_profile
 
@@ -125,21 +127,19 @@ def student_profile(request):
                 "next_step": 4
             })
         
-        # Step 4: Academic Information
+        # Step 4: Academic Information and Final
         elif section == "academic":
             student.education_level = request.POST.get('education_level')
-            student.grade = request.POST.get('grade')
-            student.school_college = request.POST.get('school_college')            
+            student.grade = Grade.objects.get(id=request.POST.get('grade'))
+            student.school_college = request.POST.get('school_college')
+            student.profile_completed = True
+            student.profile_completed_at= timezone.now() 
+            student.current_step = 5           
             student.save()
-
-            if student.current_step<5: 
-                student.current_step = 5
-            student.save()
-
             return JsonResponse({
                 "success": True,
                 "message": "Academic Information saved successfully.",
-                "next_step": 5
+                "redirect_url": reverse("student_dashboard")        
             })
         
     regions=Region.objects.all();
@@ -182,3 +182,7 @@ def get_cities(request, district_id):
     ]
 
     return JsonResponse(city_data, safe=False)
+
+# find tutors
+def find_tutors(request):
+    return render(request, 'students/tutor-management/find-tutors.html')

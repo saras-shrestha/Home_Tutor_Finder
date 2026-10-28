@@ -1,8 +1,6 @@
 from django.db import models
-
 from accounts.models import User
-from core.models import Grade
-from core.models import Location
+from core.models import Grade, Location
 
 # Create your models here.
 class StudentProfile(models.Model):

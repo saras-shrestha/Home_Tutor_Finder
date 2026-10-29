@@ -1,0 +1,238 @@
+{% extends "tutors/tutor-base.html" %}
+
+{% block content %}
+
+{% comment %} 
+<style>
+    .availability-page {
+        background: #fffdf7;
+        min-height: 100vh;
+    }
+
+    .btn-gold {
+        background: #E8B931;
+        color: #342500;
+        border: 1px solid #E8B931;
+        font-weight: 600;
+    }
+
+    .btn-gold:hover {
+        background: #D4A51F;
+        color: #342500;
+    }
+
+    .status-active {
+        background: #e1f7e9;
+        color: #187744;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+
+    .status-inactive {
+        background: #eeeeee;
+        color: #666666;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+
+    .btn-edit {
+        background: #fff4d2;
+        color: #805b00;
+    }
+
+    .btn-delete {
+        background: #ffe5e5;
+        color: #b42318;
+    }
+
+    .availability-page .form-control:focus,
+    .availability-page .form-select:focus {
+        border-color: #E8B931;
+        box-shadow: 0 0 0 .2rem rgba(232, 185, 49, .2);
+    }
+
+    .availability-page .card {
+        border-radius: 12px;
+    }
+</style>  {% endcomment %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">
+                    <div class="row">
+                            <!--First row starts-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>My Availability</h5>
+                                        <p class="text-muted mb-0">
+                                            Manage your teaching schedule and available time slots.
+                                        </p>
+                                    </div>
+
+                                    <!--Availability part starts -->
+                                    <div class="container-fluid py-4">
+
+                                        
+
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                                <div class="alert alert-info">{{ message }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        <div class="card mb-4">
+                                            <div class="card-body p-4">
+                                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                                    <h5 class="fw-bold mb-3">Weekly Availability</h5>
+                                                    <a href="#add-availability" class="btn btn-primary">
+                                                        + Add Availability
+                                                    </a>
+                                                </div>
+
+                                                <div class="table-responsive">
+                                                    <table class="table align-middle">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Day</th>
+                                                                <th>Available Time</th>
+                                                                <th>Status</th>
+                                                                <th>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for slot in availabilities %}
+                                                            <tr>
+                                                                <td class="fw-semibold">
+                                                                    {{ slot.get_day_display }}
+                                                                </td>
+
+                                                                <td>
+                                                                    {{ slot.start_time|time:"g:i A" }}
+                                                                    –
+                                                                    {{ slot.end_time|time:"g:i A" }}
+                                                                </td>
+
+                                                                <td>
+                                                                    {% if slot.is_active %}
+                                                                        <span class="status-active">
+                                                                            Available
+                                                                        </span>
+                                                                    {% else %}
+                                                                        <span class="status-inactive">
+                                                                            Inactive
+                                                                        </span>
+                                                                    {% endif %}
+                                                                </td>
+
+                                                                <td>
+                                                                    <a href="{% url 'edit_availability' slot.pk %}"
+                                                                    class="btn btn-primary btn-sm btn-edit">
+                                                                        Edit
+                                                                    </a>
+
+                                                                    <form method="post"
+                                                                        action="{% url 'delete_availability' slot.pk %}"
+                                                                        class="d-inline"
+                                                                        onsubmit="return confirm('Delete this time slot?');">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit"
+                                                                                class="btn btn-sm btn-danger btn-delete">
+                                                                            Delete
+                                                                        </button>
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                        {% empty %}
+                                                            <tr>
+                                                                <td colspan="4" class="text-center py-5">
+                                                                    <h6>No availability added yet</h6>
+                                                                    <p class="text-muted mb-0">
+                                                                        Add your available days and times below.
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card" id="add-availability">
+                                            <div class="card-body p-4">
+                                                <h5 class="fw-bold mb-1">Add New Availability</h5>
+                                                <p class="text-muted mb-4">
+                                                    Select a day and the time you are available for tutoring.
+                                                </p>
+
+                                                <form method="post">
+                                                    {% csrf_token %}
+
+                                                    {% if form.non_field_errors %}
+                                                        <div class="alert alert-danger">
+                                                            {{ form.non_field_errors }}
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <div class="row g-3">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label">Day</label>
+                                                            {{ form.day }}
+                                                            {{ form.day.errors }}
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <label class="form-label">Start Time</label>
+                                                            {{ form.start_time }}
+                                                            {{ form.start_time.errors }}
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <label class="form-label">End Time</label>
+                                                            {{ form.end_time }}
+                                                            {{ form.end_time.errors }}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-check mt-3">
+                                                        {{ form.is_active }}
+                                                        <label class="form-check-label">
+                                                            This time slot is active
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="text-end mt-4">
+                                                        <button type="submit" class="btn btn-primary px-4">
+                                                            Save Availability
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                    <!--Availability part ends -->
+
+                                </div>
+                            </div>
+                            <!--First row ends-->                           
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

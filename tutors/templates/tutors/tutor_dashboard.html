@@ -27,22 +27,16 @@
                                             <div class="profile-card-header">
                                                 <div>
                                                     <span class="eyebrow">Almost there!</span>
-                                                    <h3>Complete your tutor profile</h3>
+                                                    <h3>Complete your student profile</h3>
                                                 </div>
                                             </div>
-                                            <h6>
-                                                Help students find you!
-                                            </h6>
-                                            <p class="profile-description">                                              
-                                                Your tutor profile isn't complete yet. Add your teaching subjects,
-                                                experience, qualifications, availability, and other details so students
-                                                can discover you and understand what you offer.
 
-                                                Complete your profile to start getting noticed by students.
+                                            <p class="profile-description">
+                                                Tell us a little more about yourself so we can help you find
+                                                tutors who are the right match for your learning goals.
                                             </p>
 
-
-                                            {% comment %} <div class="profile-benefits">
+                                            <div class="profile-benefits">
                                                 <div class="benefit">
                                                     <div class="benefit-icon">🎯</div>
                                                     <span>Better tutor matches</span>
@@ -57,7 +51,7 @@
                                                     <div class="benefit-icon">✨</div>
                                                     <span>Personalized learning</span>
                                                 </div>
-                                            </div> {% endcomment %}
+                                            </div>
 
                                             <div class="profile-card-footer">
                                                 <div class="remaining">
@@ -65,7 +59,7 @@
                                                     Just a few details left
                                                 </div>
 
-                                                <a href="{% url 'tutor_profile' %}" />
+                                                <a href="{% url 'student_profile' %}" />
                                                 <button class="complete-profile-btn">
                                                     Complete my profile
                                                     <span>→</span>
@@ -334,10 +328,10 @@
                                                             </div>
                                                         </div>
                                                         <div class="d-inline-block align-middle">
-                                                            <img src="assets/images/avatar-4.jpg" alt="user image"
+                                                            <img src="{{ student.profile_picture.url }}" alt="user image"
                                                                 class="img-radius img-40 align-top m-r-15">
                                                             <div class="d-inline-block">
-                                                                <h6>John Deo</h6>
+                                                                <h6>{{ student.full_name }}</h6>
                                                                 <p class="text-muted m-b-0">Graphics
                                                                     Designer</p>
                                                             </div>

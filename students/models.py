@@ -26,9 +26,9 @@ class StudentProfile(models.Model):
     )
 
     profile_picture = models.ImageField(
-            upload_to="student_profiles/",
-            null=True,
-            blank=True
+        upload_to="student_profiles/",
+        null=True,
+        blank=True
     )
     full_name = models.CharField(max_length=100, blank=True)
     gender = models.CharField(
@@ -43,9 +43,9 @@ class StudentProfile(models.Model):
         blank=True
     )
     education_level = models.CharField(
-            max_length=20,
-            choices=EDUCATION_LEVEL_CHOICES,
-            blank=True
+        max_length=20,
+        choices=EDUCATION_LEVEL_CHOICES,
+        blank=True
     )
     grade = models.ForeignKey(
         Grade,

@@ -1,0 +1,116 @@
+<nav class="pcoded-navbar">
+    <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
+    <div class="pcoded-inner-navbar main-menu">
+        <!--navigation list -->
+       <div class="pcoded-navigation-label" data-i18n="nav.category.navigation"></div>
+        <ul class="pcoded-item pcoded-left-item">
+            <li class="active">
+                <a href="{% url 'admin_dashboard' %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                    <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="pcoded-navigation-label" data-i18n="nav.category.forms">Teaching Management</div>
+        <ul class="pcoded-item pcoded-left-item">
+            <li class="pcoded-hasmenu">
+                <a href="javascript:void(0)" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="ti-layout-grid2-alt"></i></span>
+                    <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Student Requests</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+                <ul class="pcoded-submenu">
+                    <li class=" ">
+                        <a href="auth-normal-sign-in.html" class="waves-effect waves-dark">
+                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                            <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Pending Requests</span>
+                            <span class="pcoded-mcaret"></span>
+                        </a>
+                    </li>
+                    <li class=" ">
+                        <a href="auth-sign-up.html" class="waves-effect waves-dark">
+                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                            <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Accepted Requests</span>
+                            <span class="pcoded-mcaret"></span>
+                        </a>
+                    </li>
+                    <li class=" ">
+                        <a href="sample-page.html" class="waves-effect waves-dark">
+                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                            <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Rejected Requests</span>
+                            <span class="pcoded-mcaret"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <li>
+                <a href="{% url 'tutors_approval' %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-person-check"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">My Students</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>
+            <li>
+                <a href="map-google.html" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-link-45deg"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Completed Sessions</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>            
+        </ul>
+        
+        <div class="pcoded-navigation-label" data-i18n="nav.category.forms">My Availability</div>
+        <ul class="pcoded-item pcoded-left-item">
+            <li>
+                <a href="chart.html" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-book"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Teaching Schedule</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'tutor_availability' %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-mortarboard"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Available Time Slots</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>
+            
+        </ul> 
+
+        <div class="pcoded-navigation-label" data-i18n="nav.category.forms">Account & Profile</div>
+        <ul class="pcoded-item pcoded-left-item">
+            <li>
+                <a href="chart.html" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-book"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Personal Information</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'grades_list' %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-mortarboard"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Qualifications & Experience</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'grades_list' %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-mortarboard"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Location & Address</span>
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>            
+        </ul> 
+
+        <div class="pcoded-navigation-label" data-i18n="nav.category.forms">
+            <a href="{% url 'logout' %}" class="text-primary">
+                <i class="ti-layout-sidebar-left"></i> Logout
+            </a>
+        </div>
+       
+    </div>
+</nav>

@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from core.models import Location, Region
 from .models import TutorProfile, Qualification
 from django.http import JsonResponse
 from django.utils import timezone
+from .models import TutorAvailability
+from .forms import TutorAvailabilityForm
+from django.contrib import messages
 # Create your views here.
 
 @login_required
@@ -35,7 +38,6 @@ def tutor_dashboard(request):
                     "profile": profile
                 }
             )
-
 
 @login_required
 def tutor_profile(request):
@@ -187,7 +189,6 @@ def tutor_profile(request):
                 "success": True,
                 "next_step": 6
             })
-
         
         # STEP 6 - CV and FINAL
         elif section == "cv":
@@ -222,3 +223,73 @@ def tutor_profile(request):
             "current_step": tutor.current_step
         }
     )
+
+@login_required
+def tutor_availability(request):
+    tutor = request.user.tutor_profile
+
+    if request.method == 'POST':
+        form = TutorAvailabilityForm(request.POST)
+
+        if form.is_valid():
+            slot = form.save(commit=False)
+            slot.tutor = tutor
+            slot.full_clean()
+            slot.save()
+
+            messages.success(request, 'Availability saved successfully.')
+            return redirect('tutor_availability')
+    else:
+        form = TutorAvailabilityForm()
+
+    availabilities = TutorAvailability.objects.filter(
+        tutor=tutor
+    ).order_by('day', 'start_time')
+
+    return render(request, 'tutors/availability/availability.html', {
+        'form': form,
+        'availabilities': availabilities,
+    })
+
+
+@login_required
+def edit_availability(request, pk):
+    tutor = request.user.tutor_profile
+
+    slot = get_object_or_404(
+        TutorAvailability, pk=pk, tutor=tutor
+    )
+
+    if request.method == 'POST':
+        form = TutorAvailabilityForm(request.POST, instance=slot)
+
+        if form.is_valid():
+            updated_slot = form.save(commit=False)
+            updated_slot.tutor = tutor
+            updated_slot.full_clean()
+            updated_slot.save()
+
+            messages.success(request, 'Availability updated.')
+            return redirect('tutor_availability')
+    else:
+        form = TutorAvailabilityForm(instance=slot)
+
+    return render(request, 'tutors/availability/edit_availability.html', {
+        'form': form,
+        'slot': slot,
+    })
+
+
+@login_required
+def delete_availability(request, pk):
+    tutor = request.user.tutor_profile
+
+    slot = get_object_or_404(
+        TutorAvailability, pk=pk, tutor=tutor
+    )
+
+    if request.method == 'POST':
+        slot.delete()
+        messages.success(request, 'Availability deleted.')
+
+    return redirect('tutor_availability')

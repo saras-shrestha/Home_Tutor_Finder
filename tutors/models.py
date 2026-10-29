@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
-
+from django.db.models import Q, F
 # Create your models here.
 class TutorProfile(models.Model):
     class Gender(models.TextChoices):
@@ -165,23 +165,47 @@ class TutorAvailability(models.Model):
         max_length=10,
         choices=DAYS
     )
-
     start_time = models.TimeField()
-
     end_time = models.TimeField()
+    is_active = models.BooleanField(default=True)
+
     def clean(self):
+        super().clean()
+
         if self.start_time and self.end_time:
             if self.start_time >= self.end_time:
+                raise ValidationError({
+                    'end_time': 'End time must be after start time.'
+                })
+
+        if self.tutor_id and self.day and self.start_time and self.end_time:
+            overlapping = TutorAvailability.objects.filter(
+                tutor_id=self.tutor_id,
+                day=self.day,
+                start_time__lt=self.end_time,
+                end_time__gt=self.start_time,
+            )
+
+            if self.pk:
+                overlapping = overlapping.exclude(pk=self.pk)
+
+            if overlapping.exists():
                 raise ValidationError(
-                    "End time must be after start time."
+                    'This time overlaps with an existing slot.'
                 )
 
     class Meta:
         ordering = ['day', 'start_time']
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(end_time__gt=F('start_time')),
+                name='availability_end_after_start',
+            ),
+        ]
 
     def __str__(self):
         return (
             f"{self.tutor.full_name} - "
-            f"{self.day} "
+            f"{self.get_day_display()} "
             f"{self.start_time} - {self.end_time}"
         )

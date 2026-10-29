@@ -36,7 +36,9 @@
     <link rel="stylesheet" href="{% static 'assets/tutors/css/styles.css' %}">
     <!--Tutor Availability-->
     <link rel="stylesheet" href="{% static 'assets/tutors/css/tutor-availability.css' %}">
-
+     <!-- scrollbar.css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/jquery.mCustomScrollbar.css' %}">
+     
     <!-- for location-->
     {% block location_css %}
     {% endblock %}
@@ -166,7 +168,7 @@
                                             <img class="d-flex align-self-center img-radius"
                                                 src="assets/images/avatar-2.jpg" alt="Generic placeholder image">
                                             <div class="media-body">
-                                                <h5 class="notification-user">John Doe</h5>
+                                                <h5 class="notification-user">{{profile.full_name}}</h5>
                                                 <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer
                                                     elit.</p>
                                                 <span class="notification-time">30 minutes ago</span>
@@ -201,8 +203,8 @@
                             </li>
                             <li class="user-profile header-notification">
                                 <a href="#!" class="waves-effect waves-light">
-                                    <img src="assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
-                                    <span>John Doe</span>
+                                    <img src="{{profile.profile_picture.url}}" class="img-radius" alt="User-Profile-Image">
+                                    <span> {{profile.full_name}} </span>
                                     <i class="ti-angle-down"></i>
                                 </a>
                                 <ul class="show-notification profile-notification">
@@ -212,7 +214,7 @@
                                         </a>
                                     </li>
                                     <li class="waves-effect waves-light">
-                                        <a href="{% url 'student_profile' %}">
+                                        <a href="{% url 'tutor_profile' %}">
                                             <i class="ti-user"></i> Profile
                                         </a>
                                     </li>
@@ -242,57 +244,9 @@
                 <div class="pcoded-wrapper">
 
                      <!--navigation Bar start -->
-                    <nav class="pcoded-navbar">
-                        <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
-                        <div class="pcoded-inner-navbar main-menu">
-
-                            <!--navigation list -->
-                            <div class="p-15 p-b-0">
-                                <ul class="pcoded-item pcoded-left-item">
-                                    <li class="active">
-                                        <a href="index.html" class="waves-effect waves-dark">
-                                            <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
-                                            <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
-                                            <span class="pcoded-mcaret"></span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="p-15 p-b-0">
-                                        <form class="form-material">
-                                            <div class="form-group form-primary">
-                                                <input type="text" name="footer-email" class="form-control" required="">
-                                                <span class="form-bar"></span>
-                                                <label class="float-label"><i class="fa fa-search m-r-10"></i>Find
-                                                    Tutors</label>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    </li>                                    
-                                </ul>                                    
-                            </div>
-                            
-                            <ul class="pcoded-item pcoded-left-item">                                    
-                                <li>
-                                    <a href="form-elements-component.html" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-layers"></i><b>FC</b></span>
-                                        <span class="pcoded-mtext" data-i18n="nav.form-components.main">My Requests</span>
-                                        <span class="pcoded-mcaret"></span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="bs-basic-table.html" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-layers"></i><b>FC</b></span>
-                                        <span class="pcoded-mtext" data-i18n="nav.form-components.main">Notifications</span>
-                                        <span class="pcoded-mcaret"></span>
-                                    </a>
-                                </li>
-                            </ul>                              
-                                                       
-                        </div>
-                    </nav>
+                 
                     <!--navigation Bar end -->
-
-                    
+                    {% include "tutors/tutor_sidebar.html" %}
                     <!--main body-->                     
                     {% block content %}
                     {% endblock content %}
@@ -301,51 +255,7 @@
             </div>
         </div>
     </div>
-    <!-- Warning Section Starts -->
-    <!-- Older IE warning message -->
-    <!--[if lt IE 10]>
-    <div class="ie-warning">
-        <h1>Warning!!</h1>
-        <p>You are using an outdated version of Internet Explorer, please upgrade <br/>to any of the following web browsers to access this website.</p>
-        <div class="iew-container">
-            <ul class="iew-download">
-                <li>
-                    <a href="http://www.google.com/chrome/">
-                        <img src="assets/images/browser/chrome.png" alt="Chrome">
-                        <div>Chrome</div>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.mozilla.org/en-US/firefox/new/">
-                        <img src="assets/images/browser/firefox.png" alt="Firefox">
-                        <div>Firefox</div>
-                    </a>
-                </li>
-                <li>
-                    <a href="http://www.opera.com">
-                        <img src="assets/images/browser/opera.png" alt="Opera">
-                        <div>Opera</div>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.apple.com/safari/">
-                        <img src="assets/images/browser/safari.png" alt="Safari">
-                        <div>Safari</div>
-                    </a>
-                </li>
-                <li>
-                    <a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">
-                        <img src="assets/images/browser/ie.png" alt="">
-                        <div>IE (9 & above)</div>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <p>Sorry for the inconvenience!</p>
-    </div>
-    <![endif]-->
-    <!-- Warning Section Ends -->
-
+    
     <!-- Required Jquery -->
     <script type="text/javascript" src="{% static 'assets/js/jquery/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'assets/js/jquery-ui/jquery-ui.min.js' %}"></script>
@@ -387,11 +297,8 @@
     <script src="{% static 'assets/js/profile/profile.js' %}"></script>
 
     <!--Script for location-->
-    {% block location_js %}
-    
+    {% block location_js %}    
     {% endblock %}
-
-
 </body>
 
 </html>

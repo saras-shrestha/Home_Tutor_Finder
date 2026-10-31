@@ -1,14 +1,38 @@
 from django.db import models
 # Create your models here.
 class Grade(models.Model):
-    name = models.CharField(max_length=50)     
+    name = models.CharField(max_length=50, unique=True)
     def __str__(self):
         return self.name
 
 class Subject(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.name
+
+class GradeSubject(models.Model):
+    grade = models.ForeignKey(
+        Grade,
+        on_delete=models.CASCADE,
+        related_name='subjects'
+    )
+
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        related_name='grades'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['grade', 'subject'],
+                name='unique_grade_subject'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.grade} - {self.subject}"
     
 # Location
 class Region(models.Model):

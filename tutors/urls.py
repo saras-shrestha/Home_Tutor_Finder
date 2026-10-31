@@ -9,21 +9,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('tutor-dashboard/', views.tutor_dashboard, name='tutor_dashboard'),
     path('tutor-profile/', views.tutor_profile, name='tutor_profile'),
-    path(
-        'availability/',
-        views.tutor_availability,
-        name='tutor_availability'
-    ),
-    path(
-        'availability/<int:pk>/edit/',
-        views.edit_availability,
-        name='edit_availability'
-    ),
-    path(
-        'availability/<int:pk>/delete/',
-        views.delete_availability,
-        name='delete_availability'
-    ),
+    path('availability/', views.tutor_availability, name='tutor_availability'),
+    path('availability/<int:pk>/edit/', views.edit_availability, name='edit_availability'),
+    path('availability/<int:pk>/delete/', views.delete_availability, name='delete_availability'),
+    # Location
+    path('manage-location/', views.manage_location, name='manage_location'),
 
 ]
 

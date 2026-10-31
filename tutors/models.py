@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import Q, F
@@ -107,42 +108,54 @@ class Qualification(models.Model):
     def __str__(self):
         return f"{self.degree_name}"
 
-    
+
 class TutorTeaching(models.Model):
+
     tutor = models.ForeignKey(
         TutorProfile,
         on_delete=models.CASCADE,
-        related_name='teachings'
+        related_name='teaching_subjects'
     )
 
-    subject = models.ForeignKey(
-        'core.Subject',
+    grade_subject = models.ForeignKey(
+        'core.GradeSubject',
         on_delete=models.PROTECT,
-        related_name='tutor_teachings'
-    )
-
-    grade = models.ForeignKey(
-        'core.Grade',
-        on_delete=models.PROTECT,
-        related_name='tutor_teachings'
+        related_name='tutor_teachings',
     )
 
     fee = models.DecimalField(
         max_digits=10,
-        decimal_places=2
+        decimal_places=2,
+        validators=[MinValueValidator(0.01)]
     )
+
+    class FeeType(models.TextChoices):
+        PER_HOUR = 'hour', 'Per Hour'
+        PER_DAY = 'day', 'Per Day'
+        PER_MONTH = 'month', 'Per Month'
+        PER_SESSION = 'session', 'Per Session'
+
+    fee_type = models.CharField(
+        max_length=10,
+        choices=FeeType.choices,
+        default=FeeType.PER_HOUR
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['tutor', 'subject', 'grade'],
-                name='unique_tutor_subject_grade'
+                fields=['tutor', 'grade_subject'],
+                name='unique_tutor_grade_subject'
             )
         ]
 
     def __str__(self):
-        return f"{self.tutor.full_name} - {self.subject} - {self.grade}"
-
+        return f"{self.tutor} - {self.grade_subject}"
 
 class TutorAvailability(models.Model):
     DAYS = [

@@ -293,3 +293,56 @@ def delete_availability(request, pk):
         messages.success(request, 'Availability deleted.')
 
     return redirect('tutor_availability')
+
+# Manage Location
+def manage_location(request):
+    tutor = request.user.tutor_profile
+    
+    if request.method=="POST":
+        region_id = request.POST.get("region")
+        district_id = request.POST.get("district")
+        city_id = request.POST.get("city")
+        address = request.POST.get("address")
+        latitude = request.POST.get("latitude")
+        longitude = request.POST.get("longitude")     
+
+        # If location already exists, update it
+        if tutor.location:
+
+            location = tutor.location
+
+            location.region_id = region_id
+            location.district_id = district_id
+            location.city_id = city_id
+            location.address = address
+            location.latitude = latitude or None
+            location.longitude = longitude or None
+
+            location.save()
+
+            # Otherwise create a new location
+        else:
+
+            location = Location.objects.create(
+                region_id=region_id,
+                district_id=district_id,
+                city_id=city_id,
+                address=address,
+                latitude=latitude or None,
+                longitude=longitude or None
+            )
+
+            tutor.location = location
+        tutor.save()
+        return redirect('tutor_dashboard')
+
+    regions=Region.objects.all();
+    return render(
+        request,
+        "tutors/location/location.html",
+        {
+            "tutor": tutor,
+            "regions": regions
+        }
+    )
+

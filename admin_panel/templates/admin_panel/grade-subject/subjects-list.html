@@ -16,16 +16,16 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5>Add Grades</h5>
+                                        <h5>Add Subjects</h5>
                                     </div>
                                     <div class="card-block">                
                                         <form method="POST">
                                             {% csrf_token %}
                                             <div class="form-group row">
-                                                <label class="col-sm-2 col-form-label" for="grade">Grade Name</label>
+                                                <label class="col-sm-2 col-form-label" for="subject">Subject Name</label>
                                                 <div class="col-sm-10">
-                                                    <input type="text" id="grade" name="grade" class="form-control"
-                                                                        placeholder="Enter grade name">
+                                                    <input type="text" id="subject" name="subject" class="form-control"
+                                                                        placeholder="Enter subject name">
                                                 </div>
                                                 <div class="d-flex justify-content-center align-items-center mt-3">                                                                        
                                                     <button type="submit" class="btn btn-dark px-4 mr-1">
@@ -45,9 +45,9 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-block">
-                                        <!--Div for grades list start-->
+                                        <!--Div for subjects list start-->
                                         <div class="section-title">
-                                            <h2>Grades List</h2>
+                                            <h2>Subjects List</h2>
                                         </div>
 
                                         <div class="table-responsive">
@@ -57,26 +57,31 @@
                                                         <th>
                                                             S.N. 
                                                         </th>
-                                                        <th>Grades</th>
+                                                        <th>Subject</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for grade in grades %}
+                                                    {% for subject in subjects %}
                                                     <tr>                                                        
                                                         <td>
                                                             {{ forloop.counter }}
                                                         </td>
-                                                        <td>{{ grade.name }}</td>
-                                                        <td class="text-right">
-                                                            <a href="{% url 'grade_delete' id=grade.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash" style="font-size: 14px;"></i></a>
-                                                             <a href="{% url 'grade_edit' id=grade.id %}" class="btn btn-sm btn-primary">
+                                                        <td>{{ subject.name }}</td>
+                                                        <td class="d-flex justify-content-end">
+                                                            <form method="POST" action="{% url 'subject_delete' subject.id %}">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-sm btn-danger mr-2">
+                                                                    <i class="bi bi-trash" style="font-size: 14px;"></i>
+                                                                </button>
+                                                            </form>
+                                                             <a href="{% url 'subject_edit' id=subject.id %}" class="btn btn-sm btn-primary mr-2">
                                                                 <i class="bi bi-pencil" style="font-size: 14px;"></i>
                                                             </a>
                                                         </td>
                                                     </tr>
                                                     {% empty %}
-                                                        <p>No grades found.</p>
+                                                        <p>No subjects found.</p>
                                                     {% endfor %}
                                                    
                                                 </tbody>
@@ -85,19 +90,19 @@
                                             <div class="text-center m-r-20">
                                                 <span>
                                                     Pages:
-                                                    {% if grades.has_previous %}
-                                                        <a href="?page={{ grades.previous_page_number }}">Previous</a>
+                                                    {% if subjects.has_previous %}
+                                                        <a href="?page={{ subjects.previous_page_number }}">Previous</a>
                                                     {% endif %}
-                                                    {% for num in grades.paginator.page_range %}
+                                                    {% for num in subjects.paginator.page_range %}
                                                         <a href="?page={{ num }}">{{ num }}</a>
                                                     {% endfor %}
-                                                    {% if tutors.has_next %}
-                                                        <a href="?page={{ grades.next_page_number }}">Next</a>
+                                                    {% if subjects.has_next %}
+                                                        <a href="?page={{ subjects.next_page_number }}">Next</a>
                                                     {% endif %}                                                    
                                                 </span>
                                             </div>
                                         </div>
-                                        <!--grades list ends-->
+                                        <!--subjects list ends-->
 
                                     </div>
                                 </div>

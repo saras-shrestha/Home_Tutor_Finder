@@ -1,0 +1,198 @@
+{% extends 'admin_panel/admin-base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">
+                    <div class="row">
+                            <!--First row starts-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Grade & Subject Mapping</h5>
+                                    </div>
+
+                                    <!--grade and subject mapping part starts -->  
+                                    <div class="container-fluid py-4">
+
+                                        <div class="mb-4">
+                                            <h4 class="fw-bold">
+                                                <i class="bi bi-journal-bookmark me-2"></i>
+                                                Grade–Subject Mapping
+                                            </h4>
+                                            <p class="text-muted">
+                                                Assign and manage subjects for each grade.
+                                            </p>
+                                        </div>
+
+                                        <div class="row g-4">
+
+                                            <!-- Assignment Form -->
+                                            <div class="col-lg-7">
+
+                                                <div class="card border-0 shadow-sm rounded-3">
+
+                                                    <div class="card-header bg-white p-3">
+                                                        <h5 class="fw-semibold mb-1">
+                                                            Assign Subjects
+                                                        </h5>
+                                                        <small class="text-muted">
+                                                            Select a grade and assign multiple subjects.
+                                                        </small>
+                                                    </div>
+
+                                                    <div class="card-body p-4">
+
+                                                        <form method="POST">
+
+                                                            {% csrf_token %}
+
+                                                            <!-- Grade -->
+                                                            <div class="mb-4">
+                                                                <label class="form-label fw-semibold">
+                                                                    Select Grade
+                                                                </label>
+
+                                                                <select name="grade"
+                                                                        id="gradeSelect"
+                                                                        class="form-select"
+                                                                        required>
+
+                                                                    <option value="">Choose Grade</option>
+
+                                                                    {% for grade in grades %}
+                                                                        <option value="{{ grade.id }}"
+                                                                            {% if selected_grade and selected_grade.id == grade.id %}selected{% endif %}>
+                                                                            {{ grade.name }}
+                                                                        </option>
+                                                                    {% endfor %}
+
+                                                                </select>
+                                                            </div>
+
+                                                            <!-- Subjects -->
+                                                            <div class="mb-4">
+                                                                <label class="form-label fw-semibold">
+                                                                    Select Subjects
+                                                                </label>
+
+                                                                <select name="subjects"
+                                                                        id="subjectSelect"
+                                                                        class="form-select"
+                                                                        multiple>
+
+                                                                    {% for subject in subjects %}
+                                                                        <option value="{{ subject.id }}"
+                                                                            {% if subject.id in assigned_subject_ids %}selected{% endif %}>
+                                                                            {{ subject.name }}
+                                                                        </option>
+                                                                    {% endfor %}
+
+                                                                </select>
+
+                                                                <small class="text-muted">
+                                                                    Search and select multiple subjects.
+                                                                </small>
+                                                            </div>
+
+                                                            <div class="d-flex justify-content-end">
+                                                                <button type="submit"
+                                                                        class="btn btn-primary px-4">
+                                                                    <i class="bi bi-check-circle me-2"></i>
+                                                                    Save Mapping
+                                                                </button>
+                                                            </div>
+
+                                                        </form>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Existing Assigned Subjects -->
+                                            <div class="col-lg-5">
+
+                                                <div class="card border-0 shadow-sm rounded-3">
+
+                                                    <div class="card-header bg-white p-3">
+                                                        <h5 class="fw-semibold mb-1">
+                                                            Assigned Subjects
+                                                        </h5>
+                                                        <small class="text-muted">
+                                                            Subjects currently assigned to the selected grade.
+                                                        </small>
+                                                    </div>
+
+                                                    <div class="card-body p-4">
+
+                                                        {% if selected_grade %}
+
+                                                            <div class="d-flex justify-content-between mb-3">
+                                                                <h6 class="fw-semibold">
+                                                                    {{ selected_grade.name }}
+                                                                </h6>
+
+                                                                <span class="badge bg-success">
+                                                                    {{ assigned_subjects.count }} Subjects
+                                                                </span>
+                                                            </div>
+
+                                                            {% for mapping in assigned_subjects %}
+                                                                <div class="d-flex align-items-center justify-content-between border rounded-2 p-2 mb-2">
+
+                                                                    <span>
+                                                                        <i class="bi bi-book me-2 text-primary"></i>
+                                                                        {{ mapping.subject.name }}
+                                                                    </span>
+
+                                                                </div>
+                                                            {% empty %}
+                                                                <div class="text-center py-4">
+                                                                    <i class="bi bi-book fs-2 text-muted"></i>
+                                                                    <p class="text-muted mt-2 mb-0">
+                                                                        No subjects assigned yet.
+                                                                    </p>
+                                                                </div>
+                                                            {% endfor %}
+
+                                                        {% else %}
+
+                                                            <div class="text-center py-5">
+                                                                <i class="bi bi-mortarboard fs-1 text-muted"></i>
+                                                                <p class="text-muted mt-2">
+                                                                    Select a grade to view its assigned subjects.
+                                                                </p>
+                                                            </div>
+
+                                                        {% endif %}
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!-- grade and subject maping part ends -->
+                                </div>
+                            </div>
+                            <!--First row ends-->                           
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

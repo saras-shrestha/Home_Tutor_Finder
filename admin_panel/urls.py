@@ -28,6 +28,11 @@ urlpatterns = [
     path('subjects/<int:id>/delete', views.subject_delete, name='subject_delete'),
 
     path('grade-subject/', views.grade_subject, name='grade_subject'),
+    path(
+    'get-grade-subjects/<int:grade_id>/',
+    views.get_grade_subjects,
+    name='get_grade_subjects'
+),
 
     # locations
     path('regions/', views.regions, name='regions'),

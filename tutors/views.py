@@ -6,8 +6,7 @@ from .models import TutorProfile, Qualification
 from django.http import JsonResponse
 from django.utils import timezone
 from .models import TutorAvailability
-from .forms import TutorAvailabilityForm
-from django.contrib import messages
+from .forms import TutorAvailabilityForm 
 # Create your views here.
 
 @login_required

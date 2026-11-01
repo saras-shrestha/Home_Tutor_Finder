@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.db import transaction
+from django.http import JsonResponse
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -315,3 +316,22 @@ def grade_subject(request):
         'admin_panel/grade-subject/grade-subject.html',
         context
     )
+
+
+def get_grade_subjects(request, grade_id):
+
+    assigned_subjects = GradeSubject.objects.filter(
+        grade_id=grade_id
+    ).select_related('subject')
+
+    subjects = [
+        {
+            'id': item.subject.id,
+            'name': item.subject.name
+        }
+        for item in assigned_subjects
+    ]
+
+    return JsonResponse({
+        'subjects': subjects
+    })

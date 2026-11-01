@@ -3,6 +3,149 @@
 
 {% block content %}
 
+<!-- Choices.js CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+<style>
+    .mapping-wrapper {
+        padding: 20px;
+    }
+
+    .mapping-card {
+        background: #fff;
+        border: 1px solid #e1e1e1;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .mapping-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 20px;
+    }
+
+    .mapping-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+    .mapping-select {
+        height: 50px !important;
+        padding-left: 18px;
+        border: 1px solid #ddd;
+    }
+
+    /* Multiple select styling */
+    .choices {
+        margin-bottom: 15px;
+    }
+
+    .choices__inner {
+        min-height: 90px;
+        border: 1px solid #ddd !important;
+        border-radius: 10px !important;
+        background: #fff !important;
+        padding: 8px 10px !important;
+        font-size: 15px;
+    }
+
+    .choices__input {
+        background: transparent !important;
+        font-size: 15px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .choices__list--multiple .choices__item {
+        background-color: #dcecff !important;
+        border: none !important;
+        color: #2879e8 !important;
+        border-radius: 20px !important;
+        padding: 5px 10px !important;
+        font-size: 14px;
+    }
+
+    .choices__list--multiple .choices__item
+    .choices__button {
+        border-left: none !important;
+        filter: invert(40%) sepia(80%) saturate(1000%);
+    }
+
+    .choices__list--dropdown {
+        border-radius: 8px !important;
+        z-index: 100;
+    }
+
+    .save-mapping-btn {
+        width: 100%;
+        background: #0c0c0c;
+        color: #fff;
+        border: none;
+        border-radius: 30px;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .save-mapping-btn:hover {
+        background: #333;
+        color: #fff;
+    }
+
+    .assigned-section {
+        border-top: 1px solid #eee;
+        margin-top: 25px;
+        padding-top: 25px;
+    }
+
+    .assigned-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 22px;
+    }
+
+    .grade-name {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .subject-count {
+        background: #d8f5e3;
+        color: #008f46;
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .assigned-subject {
+        display: inline-block;
+        background: #eee;
+        color: #222;
+        padding: 6px 12px;
+        border-radius: 20px;
+        margin: 4px 5px 4px 0;
+        font-size: 14px;
+    }
+
+    .mapping-alert {
+        border-radius: 8px;
+    }
+
+    @media(max-width: 576px) {
+        .mapping-wrapper {
+            padding: 10px;
+        }
+
+        .mapping-card {
+            padding: 15px;
+        }
+    }
+</style>
+
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
         <!-- Main-body start -->
@@ -18,19 +161,24 @@
                                 <div class="card">
                                     <div class="card-header">
                                         <h5>Grade & Subject Mapping</h5>
+                                        <p class="text-muted">
+                                            Assign and manage subjects for each grade.
+                                        </p>
                                     </div>
 
                                     <!--grade and subject mapping part starts -->  
                                     <div class="container-fluid py-4">
 
                                         <div class="mb-4">
-                                            <h4 class="fw-bold">
-                                                <i class="bi bi-journal-bookmark me-2"></i>
-                                                Grade–Subject Mapping
-                                            </h4>
-                                            <p class="text-muted">
-                                                Assign and manage subjects for each grade.
-                                            </p>
+                                        <!-- Django Messages -->
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                                <div class="alert alert-success mapping-alert">
+                                                    {{ message }}
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                            
                                         </div>
 
                                         <div class="row g-4">
@@ -40,13 +188,15 @@
 
                                                 <div class="card border-0 shadow-sm rounded-3">
 
-                                                    <div class="card-header bg-white p-3">
+                                                    <div class="card-header bg-white">
                                                         <h5 class="fw-semibold mb-1">
                                                             Assign Subjects
                                                         </h5>
-                                                        <small class="text-muted">
-                                                            Select a grade and assign multiple subjects.
-                                                        </small>
+                                                        <p>
+                                                            <small class="text-muted">
+                                                                Assign Subjects the particular grade.
+                                                            </small>
+                                                        </p>
                                                     </div>
 
                                                     <div class="card-body p-4">
@@ -55,55 +205,71 @@
 
                                                             {% csrf_token %}
 
-                                                            <!-- Grade -->
-                                                            <div class="mb-4">
-                                                                <label class="form-label fw-semibold">
+                                                            <!-- Select Grade -->
+                                                            <div class="form-group mb-4">
+
+                                                                <label class="mapping-label">
                                                                     Select Grade
                                                                 </label>
 
                                                                 <select name="grade"
                                                                         id="gradeSelect"
-                                                                        class="form-select"
+                                                                        class="form-control mapping-select"
                                                                         required>
 
-                                                                    <option value="">Choose Grade</option>
+                                                                    <option value="">
+                                                                        Select Grade
+                                                                    </option>
 
                                                                     {% for grade in grades %}
+
                                                                         <option value="{{ grade.id }}"
-                                                                            {% if selected_grade and selected_grade.id == grade.id %}selected{% endif %}>
+                                                                            {% if selected_grade and selected_grade.id == grade.id %}
+                                                                                selected
+                                                                            {% endif %}>
+
                                                                             {{ grade.name }}
+
                                                                         </option>
+
                                                                     {% endfor %}
 
                                                                 </select>
+
                                                             </div>
 
-                                                            <!-- Subjects -->
-                                                            <div class="mb-4">
-                                                                <label class="form-label fw-semibold">
+
+                                                            <!-- Select Subjects -->
+                                                            <div class="form-group mb-4">
+
+                                                                <label class="mapping-label">
                                                                     Select Subjects
                                                                 </label>
 
                                                                 <select name="subjects"
                                                                         id="subjectSelect"
-                                                                        class="form-select"
-                                                                        multiple>
+                                                                        multiple
+                                                                        required>
 
                                                                     {% for subject in subjects %}
+
                                                                         <option value="{{ subject.id }}"
-                                                                            {% if subject.id in assigned_subject_ids %}selected{% endif %}>
+                                                                            {% if subject in selected_subjects %}
+                                                                                selected
+                                                                            {% endif %}>
+
                                                                             {{ subject.name }}
+
                                                                         </option>
+
                                                                     {% endfor %}
 
                                                                 </select>
 
-                                                                <small class="text-muted">
-                                                                    Search and select multiple subjects.
-                                                                </small>
-                                                            </div>
+                                                            </div>                                                        
 
-                                                            <div class="d-flex justify-content-end">
+
+                                                            <div class="d-flex justify-content-center">
                                                                 <button type="submit"
                                                                         class="btn btn-primary px-4">
                                                                     <i class="bi bi-check-circle me-2"></i>
@@ -126,12 +292,16 @@
                                                         <h5 class="fw-semibold mb-1">
                                                             Assigned Subjects
                                                         </h5>
-                                                        <small class="text-muted">
-                                                            Subjects currently assigned to the selected grade.
-                                                        </small>
+                                                        <p>
+                                                            <small class="text-muted">
+                                                                Subjects currently assigned to the selected grade.
+                                                            </small>
+                                                        </p>
+                                                        
+                                                        
                                                     </div>
 
-                                                    <div class="card-body p-4">
+                                                    <div class="card-body p-4" id="assignedSubjectsContainer">
 
                                                         {% if selected_grade %}
 
@@ -195,4 +365,175 @@
 
 
 
+
+
+<!-- Choices.js JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+    const subjectSelect = document.getElementById('subjectSelect');
+    const gradeSelect = document.getElementById('gradeSelect');
+
+    const subjectChoices = new Choices(subjectSelect, {
+        removeItemButton: true,
+        searchEnabled: true,
+        searchPlaceholderValue: 'Search subjects...',
+        placeholder: true,
+        placeholderValue: 'Search subjects...',
+        shouldSort: false,
+        itemSelectText: '',
+        allowHTML: false
+    });
+
+
+    // Grade selection without page reload
+    gradeSelect.addEventListener('change', function () {
+
+        const gradeId = this.value;
+
+        // Clear previous selected subjects
+        subjectChoices.removeActiveItems();
+
+        if (!gradeId) {
+            updateAssignedSubjects([], '');
+            return;
+        }
+
+        const url = "{% url 'get_grade_subjects' 0 %}"
+            .replace('/0/', `/${gradeId}/`);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+
+                // Automatically select already assigned subjects
+                data.subjects.forEach(subject => {
+
+                    subjectChoices.setChoiceByValue(
+                        String(subject.id)
+                    );
+
+                });
+
+                // Update assigned subjects section
+                updateAssignedSubjects(
+                    data.subjects,
+                    gradeSelect.options[gradeSelect.selectedIndex].text
+                );
+
+            })
+            .catch(error => {
+                console.error('Error loading subjects:', error);
+            });
+
+    });
+
+
+    // Update right-side Assigned Subjects section
+    function updateAssignedSubjects(subjects, gradeName) {
+
+        const container = document.getElementById(
+            'assignedSubjectsContainer'
+        );
+
+        container.innerHTML = '';
+
+        if (!gradeName) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <p class="text-muted">
+                        Select a grade to view its assigned subjects.
+                    </p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="d-flex justify-content-between mb-3">
+                <h6 class="fw-semibold" id="gradeHeading"></h6>
+                <span class="badge bg-success" id="subjectCount"></span>
+            </div>
+            <div id="assignedSubjectsList"></div>
+        `;
+
+        container.querySelector('#gradeHeading').textContent = gradeName;
+
+        container.querySelector('#subjectCount').textContent =
+            `${subjects.length} Subjects`;
+
+        const list = container.querySelector('#assignedSubjectsList');
+
+        if (subjects.length === 0) {
+            list.innerHTML = `
+                <p class="text-muted">No subjects assigned yet.</p>
+            `;
+            return;
+        }
+
+        subjects.forEach(subject => {
+
+            const item = document.createElement('div');
+
+            item.className =
+                'd-flex align-items-center border rounded-2 p-2 mb-2';
+
+            const icon = document.createElement('i');
+            icon.className = 'bi bi-book me-2 text-primary';
+
+            const name = document.createElement('span');
+            name.textContent = subject.name;
+
+            item.appendChild(icon);
+            item.appendChild(name);
+
+            list.appendChild(item);
+
+        });
+
+    }
+
+});
+</script>
+
 {% endblock %}
+ <!-- 
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Multiple searchable subject dropdown
+        const subjectSelect = document.getElementById('subjectSelect');
+
+        const subjectChoices = new Choices(subjectSelect, {
+            removeItemButton: true,
+            searchEnabled: true,
+            searchPlaceholderValue: 'Search subjects...',
+            placeholder: true,
+            placeholderValue: 'Search subjects...',
+            shouldSort: false,
+            itemSelectText: '',
+            allowHTML: false
+        });
+
+
+      
+
+    });
+</script>
+
+
+ // Load existing subjects when grade changes
+        const gradeSelect = document.getElementById('gradeSelect');
+
+        gradeSelect.addEventListener('change', function () {
+
+            const gradeId = this.value;
+
+            if (gradeId) {
+                window.location.href =
+                    "{% url 'grade_subject' %}?grade=" + gradeId;
+            }
+
+        });-->

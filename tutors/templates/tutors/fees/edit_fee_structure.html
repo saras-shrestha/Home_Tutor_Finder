@@ -1,0 +1,249 @@
+{% extends "tutors/tutor-base.html" %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">
+                    <div class="row">
+                            <!--First row starts-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Fee Management</h5>
+                                        <p class="text-muted mb-0">
+                                            Manage your fee for subjects.
+                                        </p>
+                                    </div>
+
+                                    <!--fee management part starts -->
+                                    <div class="container-fluid py-4">                                        
+
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                                <div class="alert alert-info">{{ message }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        <div class="card">
+                                            <div class="card-body p-4">
+                                                <h5 class="fw-bold mb-3">Update My Fees</h5>
+                                                
+                                                <form method="post">
+                                                    {% csrf_token %}
+
+                                                    {% if form.non_field_errors %}
+                                                        <div class="alert alert-danger">
+                                                            {{ form.non_field_errors }}
+                                                        </div>
+                                                    {% endif %}
+                                                    <!-- Select Grade -->     
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6 mb-4">
+                                                            <label for="gradeSelect">
+                                                                Select Grade
+                                                            </label>
+
+                                                            <select name="grade"
+                                                                        id="gradeSelect"
+                                                                        class="form-control"
+                                                                        required disabled>
+
+                                                                <option value="{{ fee_structure.grade_subject.grade.id }}" selected disabled>
+                                                                    {{ fee_structure.grade_subject.grade.name }}
+                                                                </option>                                           
+
+                                                            </select>
+
+                                                        </div>
+
+                                                        <div class="col-12 col-sm-6 mb-4">
+                                                            <label for="subjectSelect">
+                                                                Select Subject
+                                                            </label>
+
+                                                            <select name="subject"
+                                                                id="subjectSelect"
+                                                                class="form-control"
+                                                                required disabled>
+
+                                                            <option value="{{ fee_structure.grade_subject.subject.id }}" selected disabled>
+                                                                {{ fee_structure.grade_subject.subject.name }}
+                                                            </option>
+
+                                                            </select>
+
+                                                        </div> 
+                                                    </div>   
+
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6 mb-4">
+                                                            <label for="fee">
+                                                                Enter Fees
+                                                            </label>
+                                                            <input type="text" name="fee" id="fee" class="form-control" placeholder="Update your fees" value="{{ fee_structure.fee }}" required>
+                                                        </div>
+
+                                                         <div class="col-12 col-sm-6 mb-4">
+                                                            <label for="feeTypeSelect">
+                                                                Fee Type
+                                                            </label>
+
+                                                            <select name="feeType"
+                                                                        id="feeTypeSelect"
+                                                                        class="form-control"
+                                                                        required>
+
+                                                                <option value="" disabled selected>
+                                                                    Fee Type
+                                                                </option>    
+                                                                {% for value, label in fee_types %}
+                                                                    <option value="{{ value }}"
+                                                                    {% if fee_structure.fee_type == value %}selected{% endif %}>
+                                                                        {{ label }}
+                                                                    </option>
+                                                                {% endfor %}  
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="text-center mt-4">
+                                                        <button type="submit" class="btn btn-primary px-4">
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>                                            
+                                        </div> 
+                                        <div>
+                                            <p><span class="font-weight-bold">Note:</span> You can edit only the fee amount and fee type. Grade and subject are fixed.</p>
+                                        </div>                                     
+                                    </div>
+                                       
+                                    <!--Fee management part ends -->
+                                </div>
+                            </div>
+                            <!--First row ends-->                       
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block grade_subject %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const gradeSelect = document.getElementById('gradeSelect');
+    const subjectSelect = document.getElementById('subjectSelect');
+
+    // Check whether dropdown elements exist
+    if (!gradeSelect || !subjectSelect) {
+        console.error("Grade or Subject dropdown not found!");
+        return;
+    }
+
+    // Function to load subjects based on selected grade
+    function loadSubjects(gradeId) {
+
+        if (!gradeId) {
+            subjectSelect.innerHTML =
+                '<option value="" selected disabled>Select Grade First</option>';
+            return;
+        }
+
+        const url = "{% url 'get_subjects' 0 %}".replace('/0/', `/${gradeId}/`);
+
+        console.log("Fetching URL:", url);
+
+        subjectSelect.innerHTML =
+            '<option value="">Loading subjects...</option>';
+
+        fetch(url)
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+
+                console.log("HTTP Status:", response.status);
+
+                return response.json();
+            })
+
+            .then(data => {
+
+                console.log("Subjects received:", data);
+
+                // Clear previous options
+                subjectSelect.innerHTML = '';
+
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select Subject';
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+
+                subjectSelect.appendChild(defaultOption);
+
+                // Check whether subjects exist
+                if (data.length === 0) {
+
+                    subjectSelect.innerHTML =
+                        '<option value="" disabled selected>No subjects available</option>';
+
+                    return;
+                }
+
+                // Populate subject dropdown
+                data.forEach(subject => {
+
+                    const option = document.createElement('option');
+
+                    option.value = subject.id;
+                    option.textContent = subject.name;
+
+                    subjectSelect.appendChild(option);
+
+                });
+
+                console.log("Total dropdown options:", subjectSelect.options.length);
+
+            })
+
+            .catch(error => {
+
+                console.error("Error loading subjects:", error);
+
+                subjectSelect.innerHTML =
+                    '<option value="" disabled selected>Unable to load subjects</option>';
+
+            });
+    }
+
+    // Listen for grade selection changes
+    gradeSelect.addEventListener('change', function () {
+
+        const gradeId = this.value;
+
+        console.log("Selected Grade ID:", gradeId);
+
+        loadSubjects(gradeId);
+
+    });
+
+});
+</script>
+{% endblock %}

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import StudentProfile
 from django.urls import reverse
-from core.models import Region, District, City, Location, Grade
+from core.models import GradeSubject, Region, District, City, Location, Grade
 from django.http import JsonResponse
 from django.utils import timezone
 # Create your views here.
@@ -185,4 +185,21 @@ def get_cities(request, district_id):
 
 # find tutors
 def find_tutors(request):
-    return render(request, 'students/tutor-management/find-tutors.html')
+
+    student_location = None
+
+    if hasattr(request.user, 'student_profile'):
+        student_location = request.user.student_profile.location
+
+    context = {
+        'grades': Grade.objects.all().order_by('id'),
+
+        'grade_subjects': GradeSubject.objects.select_related(
+            'grade',
+            'subject'
+        ).order_by('grade__id', 'subject__name'),
+
+        'student_location': student_location,
+    }
+
+    return render(request, 'students/tutor-management/find-tutors.html', context)

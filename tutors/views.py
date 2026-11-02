@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from core.models import Location, Region
-from .models import TutorProfile, Qualification
+from core.models import Grade, GradeSubject, Location, Region
+from .models import Qualification, TutorTeaching
 from django.http import JsonResponse
 from django.utils import timezone
 from .models import TutorAvailability
 from .forms import TutorAvailabilityForm 
+from django.contrib import messages
 # Create your views here.
 
 @login_required
@@ -345,3 +346,91 @@ def manage_location(request):
         }
     )
 
+def teaching_fees(request):
+    grades = Grade.objects.all()
+    tutor = request.user.tutor_profile
+
+    if request.method == "POST":
+        grade_subject_id = request.POST.get("subject")
+        fee = request.POST.get("fee")
+        fee_type = request.POST.get("feeType")
+
+        if grade_subject_id and fee and fee_type:
+            grade_subject = get_object_or_404(
+                GradeSubject,
+                id=grade_subject_id
+            )
+
+            TutorTeaching.objects.update_or_create(
+                tutor=tutor,
+                grade_subject=grade_subject,
+                defaults={
+                    'fee': fee,
+                    'fee_type': fee_type,
+                }
+            )
+
+            return redirect('teaching_fees')
+
+    fee_structures = TutorTeaching.objects.filter(tutor=tutor)
+
+    return render(request, "tutors/fees/teaching_fees.html", {
+        'grades': grades,
+        'fee_types': TutorTeaching.FeeType.choices,
+        'fee_structures': fee_structures,
+    })
+
+# Json for respective subjects of selected grade
+def get_subjects(request, grade_id):
+    subjects = GradeSubject.objects.filter(
+            grade_id=grade_id
+        ).select_related('subject').order_by('subject__name')
+
+    subject_data = [
+        {
+            'id': subject.id,
+            'name': subject.subject.name
+        }
+        for subject in subjects
+    ]
+    return JsonResponse(subject_data, safe=False)
+
+@login_required
+def edit_fee_structure(request, pk):
+    tutor = request.user.tutor_profile
+
+    fee_structure = get_object_or_404(
+        TutorTeaching, pk=pk, tutor=tutor
+    )
+
+    if request.method == "POST":
+        fee = request.POST.get('fee')
+        fee_type = request.POST.get('feeType')
+
+        if fee and fee_type:
+            fee_structure.fee = fee
+            fee_structure.fee_type = fee_type
+            fee_structure.save()
+
+            return redirect('teaching_fees')
+        
+    return render(request, 'tutors/fees/edit_fee_structure.html', {
+        # 'form': form,
+        'fee_structure': fee_structure,
+        'fee_types': TutorTeaching.FeeType.choices
+    })
+
+
+@login_required
+def delete_fee_structure(request, pk):
+    tutor = request.user.tutor_profile
+
+    fee_structure = get_object_or_404(
+        TutorTeaching, pk=pk, tutor=tutor
+    )
+
+    if request.method == 'POST':
+        fee_structure.delete()
+        messages.success(request, 'Fee structure deleted.')
+
+    return redirect('teaching_fees')

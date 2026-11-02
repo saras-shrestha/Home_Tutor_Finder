@@ -14,13 +14,13 @@ class GradeSubject(models.Model):
     grade = models.ForeignKey(
         Grade,
         on_delete=models.CASCADE,
-        related_name='subjects'
+        related_name='grade_subjects'
     )
 
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
-        related_name='grades'
+        related_name='grade_subjects'
     )
 
     class Meta:

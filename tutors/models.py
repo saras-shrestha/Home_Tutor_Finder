@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import Q, F
+
 # Create your models here.
 class TutorProfile(models.Model):
     class Gender(models.TextChoices):
@@ -155,7 +156,7 @@ class TutorTeaching(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.tutor} - {self.grade_subject}"
+        return f"{self.tutor} - {self.grade_subject} - NPR {self.fee}"
 
 class TutorAvailability(models.Model):
     DAYS = [

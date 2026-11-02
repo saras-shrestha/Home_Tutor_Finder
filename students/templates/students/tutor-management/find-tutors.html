@@ -3,69 +3,35 @@
 {% block content %}
 
 <style>
-    :root {
-        --primary-color: #E8B931;
-        --primary-dark: #B88A12;
-        --primary-light: #FFF5D6;
-        --page-bg: #FFFCF5;
+    #locationMap {
+    height: 300px;
+    width: 100%;
+    border-radius: 10px;
+    z-index: 1;
     }
 
-    body {
-        background-color: var(--page-bg);
+    .form-label {
+        font-size: 14px;
     }
 
-    .text-primary-custom {
-        color: var(--primary-dark);
+    .form-control,
+    .form-select {
+        min-height: 44px;
+        border-color: #dee2e6;
     }
 
-    .btn-primary-custom {
-        background-color: var(--primary-color);
-        color: #3D300D;
-        border: 1px solid var(--primary-color);
-        font-weight: 600;
+    .form-control:focus,
+    .form-select:focus {
+        box-shadow: none;
+        border-color: #86b7fe;
     }
 
-    .btn-primary-custom:hover {
-        background-color: #D5A51F;
-        border-color: #D5A51F;
-        color: #302508;
+    #changeLocation {
+        white-space: nowrap;
     }
 
-    .filter-card, .tutor-card {
-        border: 1px solid #F0E5C8;
-        border-radius: 16px;
-        background: #fff;
-    }
-
-    .tutor-card {
-        transition: transform .2s, box-shadow .2s;
-    }
-
-    .tutor-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(80, 60, 10, .08);
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 .2rem rgba(232, 185, 49, .2);
-    }
-
-    .tutor-avatar {
-        width: 90px;
-        height: 90px;
-        object-fit: cover;
-        border-radius: 14px;
-    }
-
-    .subject-badge {
-        background: var(--primary-light);
-        color: #795A0B;
-        font-weight: 500;
-    }
-
-    .rating {
-        color: #C18B00;
+    .card {
+        background-color: #ffffff;
     }
 </style>
 
@@ -87,138 +53,298 @@
                                     </div>
 
 
-                                    <div class="container-fluid py-4 px-lg-4">
+                                    <!--**********************-->
+
+                                    <div class="container py-5">
 
                                         <!-- Page Heading -->
                                         <div class="mb-4">
-                                            <h5 class="fw-bold mb-2">Find Your Perfect Tutor</h5>
-                                            <p class="text-secondary mb-0">
-                                                Discover tutors who match your learning needs.
+                                            <h2 class="fw-bold">Find Your Perfect Tutor</h2>
+                                            <p class="text-muted">
+                                                Find qualified tutors based on your learning needs.
                                             </p>
                                         </div>
 
-                                        <!-- Search Bar -->
-                                        <form method="get" class="mb-4">
-                                            <div class="input-group input-group-lg">
-                                                <input type="search"
-                                                    name="q"
-                                                    class="form-control"
-                                                    placeholder="Search by tutor name or subject..."
-                                                    value="{{ request.GET.q|default:'' }}">
+                                        <div class="card border-0 shadow-sm rounded-4">
+                                            <div class="card-body p-4">
 
-                                                <button class="btn btn-primary px-4" type="submit">
-                                                    Search
-                                                </button>
-                                            </div>
+                                                <form method="GET" action="" id="tutorSearchForm">
 
-                                            <div class="row g-4 mt-1">
-
-                                                <!-- Filter Sidebar -->
-                                                <div class="col-12">
-                                                    <div class="filter-card p-4">
-                                                        <div class="mb-4">
-                                                            <h5 class="fw-bold mb-0">Filter Tutors</h5>                                                            
+                                                    <!-- Grade and Subject -->
+                                                    {% if form.non_field_errors %}
+                                                        <div class="alert alert-danger">
+                                                            {{ form.non_field_errors }}
                                                         </div>
-                                                        <div class="row">
+                                                    {% endif %}
+                                                    <!-- Select Grade -->     
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6 mb-4">
+                                                            <label for="gradeSelect">
+                                                                Select Grade
+                                                            </label>
 
-                                                            <div class="mb-3 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Grade
-                                                                </label>
-                                                                <select name="grade" class="form-select">
-                                                                    <option value="">All grades</option>
-                                                                    {% for grade in grades %}
-                                                                        <option value="{{ grade.id }}"
-                                                                            {% if request.GET.grade == grade.id|stringformat:"s" %}
-                                                                                selected
-                                                                            {% endif %}>
-                                                                            {{ grade }}
-                                                                        </option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
+                                                            <select name="grade" id="gradeSelect" class="form-control" required>
 
-                                                            <div class="mb-3 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Subject
-                                                                </label>
-                                                                <select name="subject" class="form-select">
-                                                                    <option value="">All subjects</option>
-                                                                    {% for subject in subjects %}
-                                                                        <option value="{{ subject.id }}"
-                                                                            {% if request.GET.subject == subject.id|stringformat:"s" %}
-                                                                                selected
-                                                                            {% endif %}>
-                                                                            {{ subject }}
-                                                                        </option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
+                                                                <option value="" selected disabled>
+                                                                    Select Grade
+                                                                </option>
+
+                                                                {% for grade in grades %}
+                                                                    <option value="{{ grade.id }}">
+                                                                        {{ grade.name }}
+                                                                    </option>
+
+                                                                {% endfor %}
+
+                                                            </select>
+
                                                         </div>
 
-                                                        <div class="row">
-                                                            <div class="mb-3 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Location
-                                                                </label>
-                                                                <input type="text"
-                                                                    name="location"
-                                                                    class="form-control"
-                                                                    placeholder="e.g. Kathmandu"
-                                                                    value="{{ request.GET.location|default:'' }}">
+                                                        <div class="col-12 col-sm-6 mb-4">
+                                                            <label for="subjectSelect">
+                                                                Select Subject
+                                                            </label>
+
+                                                            <select name="subject" id="subjectSelect" class="form-control" required>
+
+                                                            <option value="" selected disabled>
+                                                                Select Grade First
+                                                            </option>
+
+                                                            </select>
+
+                                                        </div> 
+                                                    </div>                                                                                             
+                                                    
+
+                                                    <!-- Location -->
+                                                    <div class="mb-3">
+
+                                                        <label class="form-label fw-semibold">
+                                                            Search Location
+                                                        </label>
+
+                                                        <div class="border rounded-3 p-3">
+
+                                                            <div class="d-flex align-items-center gap-3">
+
+                                                                <div class="bg-light rounded-circle p-3">
+                                                                    <i class="bi bi-geo-alt text-success fs-5"></i>
+                                                                </div>
+
+                                                                <div class="flex-grow-1">
+                                                                    <div class="fw-semibold" id="locationName">
+                                                                        {% if student_location %}
+                                                                            {{ student_location.address }},
+                                                                            {{ student_location.city.name }}
+                                                                        {% else %}
+                                                                            Location not available
+                                                                        {% endif %}
+                                                                    </div>
+
+                                                                    <small class="text-muted" id="locationStatus">
+                                                                        {% if student_location %}
+                                                                            Using your saved profile location
+                                                                        {% else %}
+                                                                            Please select a search location
+                                                                        {% endif %}
+                                                                    </small>
+
+                                                                </div>
+
+                                                                <button type="button"
+                                                                        class="btn btn-outline-primary btn-sm"
+                                                                        id="changeLocation">
+                                                                    <i class="bi bi-pencil"></i>
+                                                                    Change
+                                                                </button>
+
                                                             </div>
-                                                            <div class="mb-3 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Availability
-                                                                </label>
-                                                                <select name="availability" class="form-select">
-                                                                    <option value="">Any Time</option>
-                                                                    {% for subject in subjects %}
-                                                                        <option value="{{ subject.id }}"
-                                                                            {% if request.GET.subject == subject.id|stringformat:"s" %}
-                                                                                selected
-                                                                            {% endif %}>
-                                                                            {{ subject }}
-                                                                        </option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
+
                                                         </div>
 
-                                                        <div class="row">
+                                                        <!-- Coordinates used for tutor search -->
+                                                        <input type="hidden" name="latitude" id="latitude"
+                                                            value="{{ student_location.latitude|default_if_none:'' }}">
 
-                                                            <div class="mb-4 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Maximum hourly fee (Rs.)
-                                                                </label>
-                                                                <input type="number"
-                                                                    name="max_fee"
-                                                                    class="form-control"
-                                                                    min="0"
-                                                                    placeholder="e.g. 1000"
-                                                                    value="{{ request.GET.max_fee|default:'' }}">
+                                                        <input type="hidden" name="longitude" id="longitude"
+                                                            value="{{ student_location.longitude|default_if_none:'' }}">
+
+                                                        <!-- Leaflet map -->
+                                                        <div id="locationMapContainer" class="mt-3 d-none">
+
+                                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                <small class="text-muted">
+                                                                    Select your preferred search location on the map.
+                                                                </small>
+
+                                                                <button type="button"
+                                                                        class="btn btn-sm btn-outline-secondary"
+                                                                        id="closeMap">
+                                                                    Close Map
+                                                                </button>
                                                             </div>
+
+                                                            <div id="locationMap"></div>
+
+                                                            <small class="text-muted mt-2 d-block">
+                                                                Click anywhere on the map to select a location.
+                                                            </small>
+
                                                         </div>
 
-                                                        <div class="d-flex justify-content-center">
-                                                            <button type="submit"
-                                                                class="btn btn-primary py-2 mr-1">
-                                                                Apply Filters
-                                                            </button>
-                                                            <a href="{% url 'find_tutors' %}"
-                                                                class="btn btn-outline-secondary ml-1">
-                                                                Reset Filters
-                                                            </a>
-                                                        </div>
                                                     </div>
-                                                </div>
+
+
+                                                    <!-- Fee -->
+                                                    <div class="row g-3 mb-3">
+
+                                                        <div class="col-md-6">
+
+                                                            <label class="form-label fw-semibold">
+                                                                Maximum Preferred Fee (NPR)
+                                                            </label>
+
+                                                            <input type="number"
+                                                                name="max_fee"
+                                                                class="form-control"
+                                                                placeholder="Enter your budget"
+                                                                min="1"
+                                                                step="0.01">
+
+                                                        </div>
+
+                                                        <div class="col-md-6">
+
+                                                            <label class="form-label fw-semibold">
+                                                                Fee Type
+                                                            </label>
+
+                                                            <select name="fee_type" class="form-select">
+                                                                <option value="">Any fee type</option>
+                                                                <option value="hour">Per Hour</option>
+                                                                <option value="day">Per Day</option>
+                                                                <option value="month">Per Month</option>
+                                                                <option value="session">Per Session</option>
+                                                            </select>
+
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <!-- More Filters -->
+                                                    <div class="mb-3">
+
+                                                        <button class="btn btn-link text-decoration-none p-0 fw-semibold"
+                                                                type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#moreFilters">
+
+                                                            <i class="bi bi-sliders me-2"></i>
+                                                            More Filters
+                                                            <i class="bi bi-chevron-down ms-1"></i>
+
+                                                        </button>
+
+                                                        <div class="collapse mt-3" id="moreFilters">
+
+                                                            <div class="bg-light rounded-3 p-3">
+
+                                                                <div class="row g-3">
+
+                                                                    <!-- Availability -->
+                                                                    <div class="col-md-6">
+
+                                                                        <label class="form-label fw-semibold">
+                                                                            Preferred Day
+                                                                        </label>
+
+                                                                        <select name="day" class="form-select">
+                                                                            <option value="">Any Day</option>
+                                                                            <option value="sunday">Sunday</option>
+                                                                            <option value="monday">Monday</option>
+                                                                            <option value="tuesday">Tuesday</option>
+                                                                            <option value="wednesday">Wednesday</option>
+                                                                            <option value="thursday">Thursday</option>
+                                                                            <option value="friday">Friday</option>
+                                                                            <option value="saturday">Saturday</option>
+                                                                        </select>
+
+                                                                    </div>
+
+                                                                    <!-- Preferred time -->
+                                                                    <div class="col-md-6">
+
+                                                                        <label class="form-label fw-semibold">
+                                                                            Preferred Time
+                                                                        </label>
+
+                                                                        <input type="time"
+                                                                            name="preferred_time"
+                                                                            class="form-control">
+
+                                                                    </div>
+
+                                                                    <!-- Radius -->
+                                                                    <div class="col-md-6">
+
+                                                                        <label class="form-label fw-semibold">
+                                                                            Search Radius
+                                                                        </label>
+
+                                                                        <select name="radius" class="form-select">
+                                                                            <option value="2">Within 2 km</option>
+                                                                            <option value="5" selected>Within 5 km</option>
+                                                                            <option value="10">Within 10 km</option>
+                                                                            <option value="15">Within 15 km</option>
+                                                                        </select>
+
+                                                                    </div>
+
+                                                                    <!-- Rating -->
+                                                                    <div class="col-md-6">
+
+                                                                        <label class="form-label fw-semibold">
+                                                                            Minimum Rating
+                                                                        </label>
+
+                                                                        <select name="min_rating" class="form-select">
+                                                                            <option value="">Any Rating</option>
+                                                                            <option value="3">3+ Stars</option>
+                                                                            <option value="4">4+ Stars</option>
+                                                                            <option value="4.5">4.5+ Stars</option>
+                                                                        </select>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <!-- Search Button -->
+                                                    <div class="d-flex justify-content-end mt-4">
+
+                                                        <button type="submit" class="btn btn-primary px-5 py-2">
+                                                            <i class="bi bi-search me-2"></i>
+                                                            Search Tutors
+                                                        </button>
+
+                                                    </div>
+
+                                                </form>
 
                                             </div>
+                                        </div>
 
-                                            
-                                        </form>
                                     </div>
 
+                                    <!--**********************-->
                                 </div>
                             </div>
                             <!--First row ends-->
@@ -417,4 +543,196 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block grade_subject %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const gradeSelect = document.getElementById('gradeSelect');
+    const subjectSelect = document.getElementById('subjectSelect');
+
+    // Check whether dropdown elements exist
+    if (!gradeSelect || !subjectSelect) {
+        console.error("Grade or Subject dropdown not found!");
+        return;
+    }
+
+    // Function to load subjects based on selected grade
+    function loadSubjects(gradeId) {
+
+        if (!gradeId) {
+            subjectSelect.innerHTML =
+                '<option value="" selected disabled>Select Grade First</option>';
+            return;
+        }
+
+        const url = "{% url 'get_subjects' 0 %}".replace('/0/', `/${gradeId}/`);
+
+        console.log("Fetching URL:", url);
+
+        subjectSelect.innerHTML =
+            '<option value="">Loading subjects...</option>';
+
+        fetch(url)
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+
+                console.log("HTTP Status:", response.status);
+
+                return response.json();
+            })
+
+            .then(data => {
+
+                console.log("Subjects received:", data);
+
+                // Clear previous options
+                subjectSelect.innerHTML = '';
+
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select Subject';
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+
+                subjectSelect.appendChild(defaultOption);
+
+                // Check whether subjects exist
+                if (data.length === 0) {
+
+                    subjectSelect.innerHTML =
+                        '<option value="" disabled selected>No subjects available</option>';
+
+                    return;
+                }
+
+                // Populate subject dropdown
+                data.forEach(subject => {
+
+                    const option = document.createElement('option');
+
+                    option.value = subject.id;
+                    option.textContent = subject.name;
+
+                    subjectSelect.appendChild(option);
+
+                });
+
+                console.log("Total dropdown options:", subjectSelect.options.length);
+
+            })
+
+            .catch(error => {
+
+                console.error("Error loading subjects:", error);
+
+                subjectSelect.innerHTML =
+                    '<option value="" disabled selected>Unable to load subjects</option>';
+
+            });
+    }
+
+    // Listen for grade selection changes
+    gradeSelect.addEventListener('change', function () {
+
+        const gradeId = this.value;
+
+        console.log("Selected Grade ID:", gradeId);
+
+        loadSubjects(gradeId);
+
+    });
+
+});
+</script>
+{% endblock %}
+{% block tutor_filter %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // -----------------------------
+    // 2. Leaflet Location Map
+    // -----------------------------
+
+    const mapContainer = document.getElementById("locationMapContainer");
+    const changeLocationBtn = document.getElementById("changeLocation");
+    const closeMapBtn = document.getElementById("closeMap");
+
+    const latitudeInput = document.getElementById("latitude");
+    const longitudeInput = document.getElementById("longitude");
+
+    let map = null;
+    let marker = null;
+
+    const defaultLat = 27.7172;
+    const defaultLng = 85.3240;
+
+    function initializeMap() {
+
+        if (map) {
+            map.invalidateSize();
+            return;
+        }
+
+        const lat = parseFloat(latitudeInput.value) || defaultLat;
+        const lng = parseFloat(longitudeInput.value) || defaultLng;
+
+        map = L.map("locationMap").setView([lat, lng], 14);
+
+        L.tileLayer(
+            "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            {
+                attribution: '&copy; OpenStreetMap &copy; CARTO'
+            }
+        ).addTo(map);
+
+        marker = L.marker([lat, lng]).addTo(map);
+
+        map.on("click", function (event) {
+
+            const selectedLat = event.latlng.lat;
+            const selectedLng = event.latlng.lng;
+
+            marker.setLatLng([selectedLat, selectedLng]);
+
+            latitudeInput.value = selectedLat.toFixed(6);
+            longitudeInput.value = selectedLng.toFixed(6);
+
+            document.getElementById("locationName").textContent =
+                "Selected map location";
+
+            document.getElementById("locationStatus").textContent =
+                "Coordinates updated for this search";
+
+        });
+
+    }
+
+
+    // Open map
+    changeLocationBtn.addEventListener("click", function () {
+
+        mapContainer.classList.remove("d-none");
+
+        setTimeout(function () {
+            initializeMap();
+            map.invalidateSize();
+        }, 200);
+
+    });
+
+
+    // Close map
+    closeMapBtn.addEventListener("click", function () {
+
+        mapContainer.classList.add("d-none");
+
+    });
+
+});
+</script>
 {% endblock %}

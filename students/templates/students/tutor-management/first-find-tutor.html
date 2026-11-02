@@ -1,0 +1,420 @@
+{% extends 'students/student-base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    :root {
+        --primary-color: #E8B931;
+        --primary-dark: #B88A12;
+        --primary-light: #FFF5D6;
+        --page-bg: #FFFCF5;
+    }
+
+    body {
+        background-color: var(--page-bg);
+    }
+
+    .text-primary-custom {
+        color: var(--primary-dark);
+    }
+
+    .btn-primary-custom {
+        background-color: var(--primary-color);
+        color: #3D300D;
+        border: 1px solid var(--primary-color);
+        font-weight: 600;
+    }
+
+    .btn-primary-custom:hover {
+        background-color: #D5A51F;
+        border-color: #D5A51F;
+        color: #302508;
+    }
+
+    .filter-card, .tutor-card {
+        border: 1px solid #F0E5C8;
+        border-radius: 16px;
+        background: #fff;
+    }
+
+    .tutor-card {
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .tutor-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(80, 60, 10, .08);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 .2rem rgba(232, 185, 49, .2);
+    }
+
+    .tutor-avatar {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 14px;
+    }
+
+    .subject-badge {
+        background: var(--primary-light);
+        color: #795A0B;
+        font-weight: 500;
+    }
+
+    .rating {
+        color: #C18B00;
+    }
+</style>
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">
+                    <div class="row">
+                            <!--First row starts-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Find Tutors</h5>
+                                    </div>
+
+
+                                    <div class="container-fluid py-4 px-lg-4">
+
+                                        <!-- Page Heading -->
+                                        <div class="mb-4">
+                                            <h5 class="fw-bold mb-2">Find Your Perfect Tutor</h5>
+                                            <p class="text-secondary mb-0">
+                                                Discover tutors who match your learning needs.
+                                            </p>
+                                        </div>
+
+                                        <!-- Search Bar -->
+                                        <form method="get" class="mb-4">
+                                            <div class="input-group input-group-lg">
+                                                <input type="search"
+                                                    name="q"
+                                                    class="form-control"
+                                                    placeholder="Search by tutor name or subject..."
+                                                    value="{{ request.GET.q|default:'' }}">
+
+                                                <button class="btn btn-primary px-4" type="submit">
+                                                    Search
+                                                </button>
+                                            </div>
+
+                                            <div class="row g-4 mt-1">
+
+                                                <!-- Filter Sidebar -->
+                                                <div class="col-12">
+                                                    <div class="filter-card p-4">
+                                                        <div class="mb-4">
+                                                            <h5 class="fw-bold mb-0">Filter Tutors</h5>                                                            
+                                                        </div>
+                                                        <div class="row">
+
+                                                            <div class="mb-3 col-12 col-lg-6 form-group">
+                                                                <label class="form-label fw-semibold">
+                                                                    Grade
+                                                                </label>
+                                                                <select name="grade" class="form-select">
+                                                                    <option value="">All grades</option>
+                                                                    {% for grade in grades %}
+                                                                        <option value="{{ grade.id }}"
+                                                                            {% if request.GET.grade == grade.id|stringformat:"s" %}
+                                                                                selected
+                                                                            {% endif %}>
+                                                                            {{ grade }}
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="mb-3 col-12 col-lg-6 form-group">
+                                                                <label class="form-label fw-semibold">
+                                                                    Subject
+                                                                </label>
+                                                                <select name="subject" class="form-select">
+                                                                    <option value="">All subjects</option>
+                                                                    {% for subject in subjects %}
+                                                                        <option value="{{ subject.id }}"
+                                                                            {% if request.GET.subject == subject.id|stringformat:"s" %}
+                                                                                selected
+                                                                            {% endif %}>
+                                                                            {{ subject }}
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="mb-3 col-12 col-lg-6 form-group">
+                                                                <label class="form-label fw-semibold">
+                                                                    Location
+                                                                </label>
+                                                                <input type="text"
+                                                                    name="location"
+                                                                    class="form-control"
+                                                                    placeholder="e.g. Kathmandu"
+                                                                    value="{{ request.GET.location|default:'' }}">
+                                                            </div>
+                                                            <div class="mb-3 col-12 col-lg-6 form-group">
+                                                                <label class="form-label fw-semibold">
+                                                                    Availability
+                                                                </label>
+                                                                <select name="availability" class="form-select">
+                                                                    <option value="">Any Time</option>
+                                                                    {% for subject in subjects %}
+                                                                        <option value="{{ subject.id }}"
+                                                                            {% if request.GET.subject == subject.id|stringformat:"s" %}
+                                                                                selected
+                                                                            {% endif %}>
+                                                                            {{ subject }}
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+
+                                                            <div class="mb-4 col-12 col-lg-6 form-group">
+                                                                <label class="form-label fw-semibold">
+                                                                    Maximum hourly fee (Rs.)
+                                                                </label>
+                                                                <input type="number"
+                                                                    name="max_fee"
+                                                                    class="form-control"
+                                                                    min="0"
+                                                                    placeholder="e.g. 1000"
+                                                                    value="{{ request.GET.max_fee|default:'' }}">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="d-flex justify-content-center">
+                                                            <button type="submit"
+                                                                class="btn btn-primary py-2 mr-1">
+                                                                Apply Filters
+                                                            </button>
+                                                            <a href="{% url 'find_tutors' %}"
+                                                                class="btn btn-outline-secondary ml-1">
+                                                                Reset Filters
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!--First row ends-->
+
+                            <!--Second row starts-->
+                        
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+                                        <!--div for grades list start-->
+                                        <div class="section-title">
+                                            <h2>Available Tutors</h2>
+                                        </div>
+                                        
+                                        {% comment %} ****************** {% endcomment %}
+                                                <!-- Tutor Results -->
+                                                <div class="col-12">
+
+                                                    <div class="d-flex flex-wrap justify-content-between
+                                                                align-items-center gap-2 mb-3">
+                                                        <div>
+                                                            <h5 class="fw-bold mb-1">Available Tutors</h5>
+                                                            <p class="text-secondary small mb-0">
+                                                                {{ tutors|length }} tutor{{ tutors|length|pluralize }}
+                                                                found
+                                                            </p>
+                                                        </div>
+
+                                                        <select class="form-select w-auto"
+                                                                name="sort"
+                                                                form="sortForm"
+                                                                aria-label="Sort tutors">
+                                                            <option value="">Sort by</option>
+                                                            <option value="fee">Lowest fee</option>
+                                                            <option value="rating">Highest rated</option>
+                                                        </select>
+                                                    </div>
+
+                                                    {% for tutor in tutors %}
+                                                        <div class="tutor-card p-3 p-md-4 mb-3">
+                                                            <div class="row align-items-center g-3">
+
+                                                                <!-- Tutor Photo -->
+                                                                <div class="col-auto">
+                                                                    {% if tutor.profile_pic %}
+                                                                        <img src="{{ tutor.profile_pic.url }}"
+                                                                            alt="{{ tutor.user.username }}"
+                                                                            class="tutor-avatar">
+                                                                    {% else %}
+                                                                        <div class="tutor-avatar bg-light
+                                                                                    d-flex align-items-center
+                                                                                    justify-content-center">
+                                                                            <span class="fs-2 text-secondary">
+                                                                                <i class="bi bi-person"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                </div>
+
+                                                                <!-- Tutor Details -->
+                                                                <div class="col">
+                                                                    <h5 class="fw-bold mb-1">
+                                                                        {{ tutor.user.get_full_name|default:tutor.user.username }}
+                                                                    </h5>
+
+                                                                    <p class="text-secondary small mb-2">
+                                                                        {{ tutor.qualification|default:"Tutor" }}
+                                                                    </p>
+
+                                                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                                                        {% for subject in tutor.subjects.all %}
+                                                                            <span class="badge subject-badge">
+                                                                                {{ subject }}
+                                                                            </span>
+                                                                        {% empty %}
+                                                                            <span class="text-secondary small">
+                                                                                Subjects not listed
+                                                                            </span>
+                                                                        {% endfor %}
+                                                                    </div>
+
+                                                                    <div class="small text-secondary">
+                                                                        {% if tutor.location %}
+                                                                            <span>
+                                                                                <i class="bi bi-geo-alt"></i>
+                                                                                {{ tutor.location }}
+                                                                            </span>
+                                                                        {% endif %}
+
+                                                                        {% if tutor.rating %}
+                                                                            <span class="ms-2 rating">
+                                                                                <i class="bi bi-star-fill"></i>
+                                                                                {{ tutor.rating }}
+                                                                            </span>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Fee and Actions -->
+                                                                <div class="col-12 col-md-auto text-md-end">
+                                                                    <h5 class="fw-bold text-primary-custom mb-3">
+                                                                        Rs. {{ tutor.hourly_fee }}
+                                                                        <small class="text-secondary fs-6">
+                                                                            /hr
+                                                                        </small>
+                                                                    </h5>
+
+                                                                    <a href="{% url 'tutor_detail' tutor.pk %}"
+                                                                    class="btn btn-outline-secondary btn-sm mb-2">
+                                                                        View Profile
+                                                                    </a>
+
+                                                                    <a href="{% url 'request_tutor' tutor.pk %}"
+                                                                    class="btn btn-primary-custom btn-sm mb-2">
+                                                                        Request Tutor
+                                                                    </a>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    {% empty %}
+                                                        <div class="text-center bg-white border rounded-4 p-5">
+                                                            <h5 class="fw-bold">No tutors found</h5>
+                                                            <p class="text-secondary">
+                                                                Try changing your search or filters.
+                                                            </p>
+                                                            <a href="{% url 'find_tutors' %}"
+                                                            class="btn btn-primary">
+                                                                Clear Filters
+                                                            </a>
+                                                        </div>
+                                                    {% endfor %}
+
+                                                </div>
+
+                                                {% comment %} *****************88 {% endcomment %}
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            S.N. 
+                                                        </th>
+                                                        <th>Grades</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for grade in grades %}
+                                                    <tr>                                                        
+                                                        <td>
+                                                            {{ forloop.counter }}
+                                                        </td>
+                                                        <td>{{ grade.name }}</td>
+                                                        <td class="text-right">
+                                                            <a href="{% url 'grade_delete' id=grade.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash" style="font-size: 14px;"></i></a>
+                                                             <a href="{% url 'grade_edit' id=grade.id %}" class="btn btn-sm btn-primary">
+                                                                <i class="bi bi-pencil" style="font-size: 14px;"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% empty %}
+                                                        <p>No grades found.</p>
+                                                    {% endfor %}
+                                                   
+                                                </tbody>
+                                            </table>
+
+                                            <div class="text-center m-r-20">
+                                                <span>
+                                                    Pages:
+                                                    {% if grades.has_previous %}
+                                                        <a href="?page={{ grades.previous_page_number }}">Previous</a>
+                                                    {% endif %}
+                                                    {% for num in grades.paginator.page_range %}
+                                                        <a href="?page={{ num }}">{{ num }}</a>
+                                                    {% endfor %}
+                                                    {% if tutors.has_next %}
+                                                        <a href="?page={{ grades.next_page_number }}">Next</a>
+                                                    {% endif %}                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <!--grades list ends-->
+
+                                    </div>
+                                </div>
+                            </div>                       
+                            <!--Second row ends--> 
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

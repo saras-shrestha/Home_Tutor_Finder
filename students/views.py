@@ -5,6 +5,11 @@ from django.urls import reverse
 from core.models import GradeSubject, Region, District, City, Location, Grade
 from django.http import JsonResponse
 from django.utils import timezone
+import requests
+from django.views.decorators.http import require_GET
+from django.contrib import messages
+from decimal import Decimal, InvalidOperation
+
 # Create your views here.
 
 @login_required
@@ -203,3 +208,108 @@ def find_tutors(request):
     }
 
     return render(request, 'students/tutor-management/find-tutors.html', context)
+
+@require_GET
+def address_autocomplete(request):
+
+    query = request.GET.get('q', '').strip()
+
+    if len(query) < 3:
+        return JsonResponse({'results': []})
+
+    try:
+        response = requests.get(
+            'https://photon.komoot.io/api/',
+            params={
+                'q': query,
+                'limit': 5,
+                'lat': 27.7172,
+                'lon': 85.3240,
+            }, 
+            headers={
+                'User-Agent': 'HomeTutorFinder/1.0'
+            },
+            timeout=20
+        )
+
+        response.raise_for_status()
+        data = response.json()
+
+        results = []
+
+        for feature in data.get('features', []):
+
+            properties = feature.get('properties', {})
+            coordinates = feature.get('geometry', {}).get(
+                'coordinates', []
+            )
+
+            if len(coordinates) != 2:
+                continue
+
+            name_parts = [
+                properties.get('name'),
+                properties.get('street'),
+                properties.get('district'),
+                properties.get('city'),
+                properties.get('state'),
+                properties.get('country'),
+            ]
+
+            address = ', '.join(
+                dict.fromkeys(
+                    part for part in name_parts if part
+                )
+            )
+
+            results.append({
+                'name': address,
+                'latitude': coordinates[1],
+                'longitude': coordinates[0],
+            })
+
+        return JsonResponse({'results': results})
+
+    except requests.RequestException:
+        return JsonResponse(
+            {'error': 'Address search is temporarily unavailable.'},
+            status=503
+        )
+
+
+@login_required
+def save_location(request):
+
+    if request.method == 'POST':
+
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        address = request.POST.get('address')
+
+        try:
+            latitude = Decimal(latitude)
+            longitude = Decimal(longitude)
+
+            if not (-90 <= latitude <= 90):
+                raise ValueError("Invalid latitude")
+
+            if not (-180 <= longitude <= 180):
+                raise ValueError("Invalid longitude")
+
+        except (TypeError, ValueError, InvalidOperation):
+            messages.error(request, "Please select a valid location.")
+            return redirect('select_location')
+
+        student = request.user.student_profile
+
+        student.latitude = latitude
+        student.longitude = longitude
+        student.address = address
+
+        student.save()
+
+        messages.success(request, "Location saved successfully!")
+
+        return redirect('student_dashboard')
+
+    return redirect('select_location')

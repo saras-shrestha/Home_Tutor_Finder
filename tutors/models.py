@@ -50,9 +50,9 @@ class TutorProfile(models.Model):
     description = models.TextField(
         blank=True
     )    
-    location = models.ForeignKey(
+    location = models.OneToOneField(
         'core.Location',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name="tutor_locations",
         null=True,
         blank=True

@@ -144,3 +144,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 LOGIN_URL = 'admin_login'
+
+# map
+
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'

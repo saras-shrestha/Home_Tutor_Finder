@@ -15,6 +15,10 @@ urlpatterns = [
 
     path('get-districts/<int:region_id>/', views.get_districts, name='get_districts'),
     path('get-cities/<int:district_id>/', views.get_cities, name='get_cities'),
+
+    # map
+    path('address-autocomplete/', views.address_autocomplete, name='address_autocomplete'),
+    path('save-location/', views.save_location, name='save_location'),
 ]
 
 if settings.DEBUG:

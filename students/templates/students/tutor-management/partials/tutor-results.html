@@ -1,0 +1,33 @@
+{% if tutors %}
+    <div class="row g-3">
+        {% for teaching in tutors %}
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h5>{{ teaching.tutor.full_name }}</h5>
+
+                    <p>
+                        Grade: {{ teaching.grade_subject.grade }}
+                    </p>
+
+                    <p>
+                        Subject: {{ teaching.grade_subject.subject }}
+                    </p>
+
+                    <p>
+                        Fee: Rs. {{ teaching.fee }}
+                        / {{ teaching.get_fee_type_display }}
+                    </p>
+
+                    <p>
+                        Rating:
+                        {{ teaching.avg_rating|default:"No ratings yet"|floatformat:1 }}
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-center text-muted">
+        No tutors found matching your search.
+    </p>
+{% endif %}

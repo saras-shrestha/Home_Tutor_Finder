@@ -1,0 +1,1052 @@
+{% extends 'students/student-base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+    
+.filter-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 5px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    height: 100%;
+    transition: 0.2s;
+}
+
+.filter-option i {
+    font-size: 24px;
+    color: #6c757d;
+}
+
+.filter-option span {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.filter-option:has(input:checked) {
+    border: 2px solid #0d6efd;
+    background: #eef5ff;
+}
+
+.filter-option:has(input:checked) i {
+    color: #0d6efd;
+}
+
+/* Hide all filter fields initially */
+.filter-section {
+    display: none;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .filter-option {
+        min-width: 90px;
+    }
+
+    .row.g-2.mb-4 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .row.g-2.mb-4 > .col {
+        flex: 0 0 33.333%;
+    }
+}
+
+</style>
+
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">
+                    <div class="row">
+                            <!--First row starts-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Find Tutors</h5>
+                                    </div>
+
+                                    <!--Tutor Filter part starts -->
+                                    
+<div class="container py-4">
+
+    <h3 class="fw-bold mb-2">Find Your Home Tutor</h3>
+    <p class="text-muted">Choose your preferred search filters.</p>
+
+    <!-- FILTER OPTIONS: SINGLE ROW -->
+    <div class="row g-2 mb-4">
+
+        <div class="col">
+            <label class="filter-option">
+                <input type="checkbox" class="filter-check"
+                       value="academic" hidden>
+                <i class="bi bi-book"></i>
+                <span>Grade & Subject</span>
+            </label>
+        </div>
+
+        <div class="col">
+            <label class="filter-option">
+                <input type="checkbox" class="filter-check"
+                       value="budget" hidden>
+                <i class="bi bi-wallet2"></i>
+                <span>Budget</span>
+            </label>
+        </div>
+
+        <div class="col">
+            <label class="filter-option">
+                <input type="checkbox" class="filter-check"
+                       value="location" hidden>
+                <i class="bi bi-geo-alt"></i>
+                <span>Location</span>
+            </label>
+        </div>
+
+        <div class="col">
+            <label class="filter-option">
+                <input type="checkbox" class="filter-check"
+                       value="availability" hidden>
+                <i class="bi bi-calendar-week"></i>
+                <span>Availability</span>
+            </label>
+        </div>
+
+        <div class="col">
+            <label class="filter-option">
+                <input type="checkbox" class="filter-check"
+                       value="rating" hidden>
+                <i class="bi bi-star"></i>
+                <span>Rating</span>
+            </label>
+        </div>
+
+    </div>
+
+
+    <!-- FILTER FORM -->
+    <form method="GET" action="{% url 'find_tutors' %}">
+
+        <!-- GRADE AND SUBJECT -->
+        <div class="filter-section" id="academic">
+
+            <h5 class="fw-semibold mb-3">Grade and Subject</h5>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Grade</label>
+                    <select name="grade" class="form-select">
+                        <option value="">Select Grade</option>
+                        {% for grade in grades %}
+                            <option value="{{ grade.id }}">
+                                {{ grade.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Subject</label>
+                    <select name="subject" class="form-select">
+                        <option value="">Select Subject</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- BUDGET -->
+        <div class="filter-section" id="budget">
+
+            <h5 class="fw-semibold mb-3">Budget</h5>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Maximum Budget (Rs.)</label>
+                    <input type="number" name="budget"
+                           class="form-control"
+                           placeholder="Enter your budget">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Fee Type</label>
+                    <select name="fee_type" class="form-select">
+                        <option value="">Any Fee Type</option>
+                        <option value="hour">Hourly</option>
+                        <option value="day">Daily</option>
+                        <option value="month">Monthly</option>
+                        <option value="session">Per Session</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- LOCATION -->
+        <div class="filter-section" id="location">
+
+            <h5 class="fw-semibold mb-3">Preferred Location</h5>
+
+            <div class="mb-3">
+                <label class="form-label">Enter Address or Area</label>
+                <input type="text" name="location_address"
+                       class="form-control"
+                       placeholder="Search your preferred location">
+            </div>
+
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+
+            <div id="map" style="height:250px;"></div>
+
+        </div>
+
+
+        <!-- AVAILABILITY -->
+        <div class="filter-section" id="availability">
+
+            <h5 class="fw-semibold mb-3">Availability</h5>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Available Day</label>
+                    <select name="day" class="form-select">
+                        <option value="">Any Day</option>
+                        {% for value, label in availability_days %}
+                            <option value="{{ value }}">
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Start Time</label>
+                    <input type="time" name="start_time"
+                           class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">End Time</label>
+                    <input type="time" name="end_time"
+                           class="form-control">
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- RATING -->
+        <div class="filter-section" id="rating">
+
+            <h5 class="fw-semibold mb-3">Minimum Rating</h5>
+
+            <select name="rating" class="form-select">
+                <option value="">Any Rating</option>
+                <option value="3">3+ Stars</option>
+                <option value="4">4+ Stars</option>
+                <option value="5">5 Stars</option>
+            </select>
+
+        </div>
+
+
+        <button type="submit" class="btn btn-primary mt-4">
+            <i class="bi bi-search me-2"></i>
+            Find Tutors
+        </button>
+
+    </form>
+
+</div>
+
+                                    <!--Tutor Filter part ends -->
+
+                                </div>
+                            </div>
+                            <!--First row ends-->
+
+                            <!--Second row starts-->
+                        
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-block">
+                                        <!--div for grades list start-->
+                                        <div class="section-title">
+                                            <h2>Available Tutors</h2>
+                                        </div>
+                                        
+                                        {% comment %} ****************** {% endcomment %}
+                                                <!-- Tutor Results -->
+                                                <div class="col-12">
+
+                                                    <div class="d-flex flex-wrap justify-content-between
+                                                                align-items-center gap-2 mb-3">
+                                                        <div>
+                                                            <h5 class="fw-bold mb-1">Available Tutors</h5>
+                                                            <p class="text-secondary small mb-0">
+                                                                {{ tutors|length }} tutor{{ tutors|length|pluralize }}
+                                                                found
+                                                            </p>
+                                                        </div>
+
+                                                        <select class="form-select w-auto"
+                                                                name="sort"
+                                                                form="sortForm"
+                                                                aria-label="Sort tutors">
+                                                            <option value="">Sort by</option>
+                                                            <option value="fee">Lowest fee</option>
+                                                            <option value="rating">Highest rated</option>
+                                                        </select>
+                                                    </div>
+
+                                                    {% for tutor in tutors %}
+                                                        <div class="tutor-card p-3 p-md-4 mb-3">
+                                                            <div class="row align-items-center g-3">
+
+                                                                <!-- Tutor Photo -->
+                                                                <div class="col-auto">
+                                                                    {% if tutor.profile_pic %}
+                                                                        <img src="{{ tutor.profile_pic.url }}"
+                                                                            alt="{{ tutor.user.username }}"
+                                                                            class="tutor-avatar">
+                                                                    {% else %}
+                                                                        <div class="tutor-avatar bg-light
+                                                                                    d-flex align-items-center
+                                                                                    justify-content-center">
+                                                                            <span class="fs-2 text-secondary">
+                                                                                <i class="bi bi-person"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                </div>
+
+                                                                <!-- Tutor Details -->
+                                                                <div class="col">
+                                                                    <h5 class="fw-bold mb-1">
+                                                                        {{ tutor.user.get_full_name|default:tutor.user.username }}
+                                                                    </h5>
+
+                                                                    <p class="text-secondary small mb-2">
+                                                                        {{ tutor.qualification|default:"Tutor" }}
+                                                                    </p>
+
+                                                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                                                        {% for subject in tutor.subjects.all %}
+                                                                            <span class="badge subject-badge">
+                                                                                {{ subject }}
+                                                                            </span>
+                                                                        {% empty %}
+                                                                            <span class="text-secondary small">
+                                                                                Subjects not listed
+                                                                            </span>
+                                                                        {% endfor %}
+                                                                    </div>
+
+                                                                    <div class="small text-secondary">
+                                                                        {% if tutor.location %}
+                                                                            <span>
+                                                                                <i class="bi bi-geo-alt"></i>
+                                                                                {{ tutor.location }}
+                                                                            </span>
+                                                                        {% endif %}
+
+                                                                        {% if tutor.rating %}
+                                                                            <span class="ms-2 rating">
+                                                                                <i class="bi bi-star-fill"></i>
+                                                                                {{ tutor.rating }}
+                                                                            </span>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Fee and Actions -->
+                                                                <div class="col-12 col-md-auto text-md-end">
+                                                                    <h5 class="fw-bold text-primary-custom mb-3">
+                                                                        Rs. {{ tutor.hourly_fee }}
+                                                                        <small class="text-secondary fs-6">
+                                                                            /hr
+                                                                        </small>
+                                                                    </h5>
+
+                                                                    <a href="{% url 'tutor_detail' tutor.pk %}"
+                                                                    class="btn btn-outline-secondary btn-sm mb-2">
+                                                                        View Profile
+                                                                    </a>
+
+                                                                    <a href="{% url 'request_tutor' tutor.pk %}"
+                                                                    class="btn btn-primary-custom btn-sm mb-2">
+                                                                        Request Tutor
+                                                                    </a>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    {% empty %}
+                                                        <div class="text-center bg-white border rounded-4 p-5">
+                                                            <h5 class="fw-bold">No tutors found</h5>
+                                                            <p class="text-secondary">
+                                                                Try changing your search or filters.
+                                                            </p>
+                                                            <a href="{% url 'find_tutors' %}"
+                                                            class="btn btn-primary">
+                                                                Clear Filters
+                                                            </a>
+                                                        </div>
+                                                    {% endfor %}
+
+                                                </div>
+
+                                        {% comment %} ***************** {% endcomment %}
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            S.N. 
+                                                        </th>
+                                                        <th>Grades</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for grade in grades %}
+                                                    <tr>                                                        
+                                                        <td>
+                                                            {{ forloop.counter }}
+                                                        </td>
+                                                        <td>{{ grade.name }}</td>
+                                                        <td class="text-right">
+                                                            <a href="{% url 'grade_delete' id=grade.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash" style="font-size: 14px;"></i></a>
+                                                             <a href="{% url 'grade_edit' id=grade.id %}" class="btn btn-sm btn-primary">
+                                                                <i class="bi bi-pencil" style="font-size: 14px;"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% empty %}
+                                                        <p>No grades found.</p>
+                                                    {% endfor %}
+                                                   
+                                                </tbody>
+                                            </table>
+
+                                            <div class="text-center m-r-20">
+                                                <span>
+                                                    Pages:
+                                                    {% if grades.has_previous %}
+                                                        <a href="?page={{ grades.previous_page_number }}">Previous</a>
+                                                    {% endif %}
+                                                    {% for num in grades.paginator.page_range %}
+                                                        <a href="?page={{ num }}">{{ num }}</a>
+                                                    {% endfor %}
+                                                    {% if tutors.has_next %}
+                                                        <a href="?page={{ grades.next_page_number }}">Next</a>
+                                                    {% endif %}                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <!--grades list ends-->
+
+                                    </div>
+                                </div>
+                            </div>                       
+                            <!--Second row ends--> 
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+{% block grade_subject %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const gradeSelect = document.getElementById('gradeSelect');
+    const subjectSelect = document.getElementById('subjectSelect');
+
+    // Check whether dropdown elements exist
+    if (!gradeSelect || !subjectSelect) {
+        console.error("Grade or Subject dropdown not found!");
+        return;
+    }
+
+    // Function to load subjects based on selected grade
+    function loadSubjects(gradeId) {
+
+        if (!gradeId) {
+            subjectSelect.innerHTML =
+                '<option value="" selected disabled>Select Grade First</option>';
+            return;
+        }
+
+        const url = "{% url 'get_subjects' 0 %}".replace('/0/', `/${gradeId}/`);
+
+        console.log("Fetching URL:", url);
+
+        subjectSelect.innerHTML =
+            '<option value="">Loading subjects...</option>';
+
+        fetch(url)
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+
+                console.log("HTTP Status:", response.status);
+
+                return response.json();
+            })
+
+            .then(data => {
+
+                console.log("Subjects received:", data);
+
+                // Clear previous options
+                subjectSelect.innerHTML = '';
+
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select Subject';
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+
+                subjectSelect.appendChild(defaultOption);
+
+                // Check whether subjects exist
+                if (data.length === 0) {
+
+                    subjectSelect.innerHTML =
+                        '<option value="" disabled selected>No subjects available</option>';
+
+                    return;
+                }
+
+                // Populate subject dropdown
+                data.forEach(subject => {
+
+                    const option = document.createElement('option');
+
+                    option.value = subject.id;
+                    option.textContent = subject.name;
+
+                    subjectSelect.appendChild(option);
+
+                });
+
+                console.log("Total dropdown options:", subjectSelect.options.length);
+
+            })
+
+            .catch(error => {
+
+                console.error("Error loading subjects:", error);
+
+                subjectSelect.innerHTML =
+                    '<option value="" disabled selected>Unable to load subjects</option>';
+
+            });
+    }
+
+    // Listen for grade selection changes
+    gradeSelect.addEventListener('change', function () {
+
+        const gradeId = this.value;
+
+        console.log("Selected Grade ID:", gradeId);
+
+        loadSubjects(gradeId);
+
+    });
+
+});
+</script>
+
+
+<script>
+    
+document.querySelectorAll('.filter-check').forEach(checkbox => {
+
+    checkbox.addEventListener('change', function () {
+
+        const section = document.getElementById(this.value);
+
+        if (this.checked) {
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+
+            // Clear values when filter is deselected
+            section.querySelectorAll('input, select, textarea')
+                .forEach(field => {
+                    if (field.type === 'checkbox' ||
+                        field.type === 'radio') {
+                        field.checked = false;
+                    } else {
+                        field.value = '';
+                    }
+                });
+        }
+
+    });
+
+});
+
+</script>
+
+{% endblock %}
+
+{% block location_map %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+    // ==========================================
+    // 1. INITIALIZE MAP
+    // ==========================================
+
+    const map = L.map('map').setView(
+        [27.7172, 85.3240],
+        13
+    );
+
+    L.tileLayer(
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        }
+    ).addTo(map);
+
+
+    // ==========================================
+    // 2. CREATE MAP MARKER
+    // ==========================================
+
+    let marker = L.marker(
+        [27.7172, 85.3240],
+        {
+            draggable: true
+        }
+    ).addTo(map);
+
+
+    // ==========================================
+    // 3. GET HTML ELEMENTS
+    // ==========================================
+
+    const addressInput = document.getElementById('address');
+
+    const suggestionsBox = document.getElementById(
+        'addressSuggestions'
+    );
+
+    const latitudeInput = document.getElementById('latitude');
+
+    const longitudeInput = document.getElementById('longitude');
+
+    const finalAddressInput = document.getElementById('finalAddress');
+
+    const selectedAddress = document.getElementById('selectedAddress');
+
+    const addressUrl = "{% url 'address_autocomplete' %}";
+
+    let selectedLocation = false;
+    let searchTimeout = null;
+
+
+    // ==========================================
+    // 4. UPDATE LOCATION AND MAP
+    // ==========================================
+
+    function updateLocation(lat, lng, address = null) {
+
+        marker.setLatLng([lat, lng]);
+
+        map.setView([lat, lng], 16);
+
+        latitudeInput.value = lat;
+        longitudeInput.value = lng;
+
+        selectedLocation = true;
+
+        if (address) {
+
+            addressInput.value = address;
+            finalAddressInput.value = address;
+
+            selectedAddress.innerText = address;
+
+        } else {
+
+            const coordinates = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+            finalAddressInput.value = coordinates;
+
+            selectedAddress.innerText = coordinates;
+
+            // Find the actual address from coordinates
+            reverseGeocode(lat, lng);
+        }
+
+        suggestionsBox.style.display = 'none';
+    }
+
+
+    // ==========================================
+    // 5. REVERSE GEOCODING
+    // COORDINATES TO ADDRESS
+    // ==========================================
+
+    async function reverseGeocode(lat, lng) {
+
+        try {
+
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
+            );
+
+            if (!response.ok) {
+                throw new Error('Address lookup failed');
+            }
+
+            const data = await response.json();
+
+            if (data.display_name) {
+
+                addressInput.value = data.display_name;
+
+                finalAddressInput.value = data.display_name;
+
+                selectedAddress.innerText = data.display_name;
+            }
+
+        } catch (error) {
+
+            console.error('Reverse geocoding error:', error);
+
+        }
+    }
+
+
+    // ==========================================
+    // 6. SEARCH ADDRESS AUTOCOMPLETE
+    // ==========================================
+
+    addressInput.addEventListener('input', function () {
+
+        const query = this.value.trim();
+
+        clearTimeout(searchTimeout);
+
+        selectedLocation = false;
+
+        latitudeInput.value = '';
+        longitudeInput.value = '';
+        finalAddressInput.value = '';
+
+        suggestionsBox.innerHTML = '';
+
+        if (query.length < 3) {
+
+            suggestionsBox.style.display = 'none';
+
+            return;
+        }
+
+        // Wait 400 milliseconds before searching
+        searchTimeout = setTimeout(async function () {
+
+            try {
+
+                const response = await fetch(
+                    `${addressUrl}?q=${encodeURIComponent(query)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Address search failed');
+                }
+
+                const data = await response.json();
+
+                suggestionsBox.innerHTML = '';
+
+                if (!data.results || data.results.length === 0) {
+
+                    suggestionsBox.innerHTML = `
+                        <div class="list-group-item text-muted">
+                            No locations found.
+                        </div>
+                    `;
+
+                } else {
+
+                    data.results.forEach(function (place) {
+
+                        const item = document.createElement('button');
+
+                        item.type = 'button';
+
+                        item.className =
+                            'list-group-item list-group-item-action';
+
+                        const icon = document.createElement('i');
+
+                        icon.className =
+                            'bi bi-geo-alt text-warning me-2';
+
+                        const text = document.createElement('span');
+
+                        text.textContent = place.name;
+
+                        item.appendChild(icon);
+                        item.appendChild(text);
+
+                        // Select suggested address
+                        item.addEventListener('click', function () {
+
+                            selectAddress(place);
+
+                        });
+
+                        suggestionsBox.appendChild(item);
+
+                    });
+
+                }
+
+                suggestionsBox.style.display = 'block';
+
+            } catch (error) {
+
+                console.error('Autocomplete error:', error);
+
+                suggestionsBox.innerHTML = `
+                    <div class="list-group-item text-danger">
+                        Unable to search locations.
+                    </div>
+                `;
+
+                suggestionsBox.style.display = 'block';
+
+            }
+
+        }, 400);
+
+    });
+
+
+    // ==========================================
+    // 7. SELECT ADDRESS FROM SUGGESTIONS
+    // ==========================================
+
+    function selectAddress(place) {
+
+        const lat = parseFloat(place.latitude);
+
+        const lng = parseFloat(place.longitude);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return;
+        }
+
+        updateLocation(lat, lng, place.name);
+
+    }
+    // ==========================================
+    // 8. SEARCH BUTTON
+    // ==========================================
+    document.getElementById('searchAddress')
+        .addEventListener('click', async function () {
+
+            const query = addressInput.value.trim();
+
+            if (query.length < 3) {
+
+                alert('Please enter at least 3 characters.');
+
+                return;
+            }
+
+            this.disabled = true;
+
+            try {
+
+                const response = await fetch(
+                    `${addressUrl}?q=${encodeURIComponent(query)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Search failed');
+                }
+
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+
+                    selectAddress(data.results[0]);
+
+                } else {
+
+                    alert('No matching address found.');
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert('Unable to search address. Please try again.');
+
+            } finally {
+
+                this.disabled = false;
+
+            }
+
+        });
+
+
+    // ==========================================
+    // 9. USE CURRENT GPS LOCATION
+    // ==========================================
+
+    document.getElementById('currentLocation')
+        .addEventListener('click', function () {
+
+            if (!navigator.geolocation) {
+
+                alert('Your browser does not support GPS location.');
+
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+
+                function (position) {
+
+                    const lat = position.coords.latitude;
+
+                    const lng = position.coords.longitude;
+
+                    updateLocation(lat, lng);
+
+                },
+
+                function (error) {
+
+                    alert(
+                        'Unable to detect your location. Please allow location permission or enter your address manually.'
+                    );
+
+                },
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000
+                }
+
+            );
+
+        });
+
+
+    // ==========================================
+    // 10. DRAG MARKER TO CHANGE LOCATION
+    // ==========================================
+
+    marker.on('dragend', function (event) {
+
+        const position = event.target.getLatLng();
+
+        updateLocation(
+            position.lat,
+            position.lng
+        );
+
+    });
+
+
+    // ==========================================
+    // 11. CLICK MAP TO SELECT LOCATION
+    // ==========================================
+
+    map.on('click', function (event) {
+
+        updateLocation(
+            event.latlng.lat,
+            event.latlng.lng
+        );
+
+    });
+
+
+    // ==========================================
+    // 12. HIDE SUGGESTIONS WHEN CLICKING OUTSIDE
+    // ==========================================
+
+    document.addEventListener('click', function (event) {
+
+        if (
+            !addressInput.contains(event.target) &&
+            !suggestionsBox.contains(event.target)
+        ) {
+
+            suggestionsBox.style.display = 'none';
+
+        }
+
+    });
+
+
+    // ==========================================
+    // 13. FORM VALIDATION
+    // ==========================================
+
+    document.getElementById('locationForm')
+        .addEventListener('submit', function (event) {
+
+            if (!selectedLocation) {
+
+                event.preventDefault();
+
+                alert('Please select your location first.');
+
+            }
+
+        });
+
+
+</script>
+
+{% endblock %}

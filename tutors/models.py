@@ -1,8 +1,9 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import Q, F
+from students.models import StudentProfile
 
 # Create your models here.
 class TutorProfile(models.Model):
@@ -223,3 +224,41 @@ class TutorAvailability(models.Model):
             f"{self.get_day_display()} "
             f"{self.start_time} - {self.end_time}"
         )
+
+class TutorReview(models.Model):
+
+    student = models.ForeignKey(
+        StudentProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tutor_reviews'
+    )
+
+    tutor_teaching = models.ForeignKey(
+        TutorTeaching,
+        on_delete=models.PROTECT,
+        related_name='reviews'
+    )
+
+    rating = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ]
+    )
+
+    comment = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['student', 'tutor_teaching'],
+                name='unique_student_tutor_teaching_review'
+            )
+        ]

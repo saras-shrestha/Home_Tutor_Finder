@@ -351,14 +351,16 @@ def teaching_fees(request):
     tutor = request.user.tutor_profile
 
     if request.method == "POST":
-        grade_subject_id = request.POST.get("subject")
+        grade=request.POST.get("grade")
+        subject=request.POST.get("subject")
         fee = request.POST.get("fee")
         fee_type = request.POST.get("feeType")
 
-        if grade_subject_id and fee and fee_type:
+        if grade and subject and fee and fee_type:
             grade_subject = get_object_or_404(
                 GradeSubject,
-                id=grade_subject_id
+                grade_id=grade,
+                subject_id=subject
             )
 
             TutorTeaching.objects.update_or_create(
@@ -388,7 +390,7 @@ def get_subjects(request, grade_id):
 
     subject_data = [
         {
-            'id': subject.id,
+            'id': subject.subject.id,
             'name': subject.subject.name
         }
         for subject in subjects

@@ -1,5 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+
+from tutors.models import TutorAvailability, TutorTeaching
 from .models import StudentProfile
 from django.urls import reverse
 from core.models import GradeSubject, Region, District, City, Location, Grade
@@ -9,6 +11,8 @@ import requests
 from django.views.decorators.http import require_GET
 from django.contrib import messages
 from decimal import Decimal, InvalidOperation
+from django.template.loader import render_to_string
+from django.db.models import Avg, Count
 
 # Create your views here.
 
@@ -189,12 +193,65 @@ def get_cities(request, district_id):
     return JsonResponse(city_data, safe=False)
 
 # find tutors
+
 def find_tutors(request):
 
     student_location = None
 
     if hasattr(request.user, 'student_profile'):
         student_location = request.user.student_profile.location
+
+    # Get eligible tutor teaching profiles
+    tutors = TutorTeaching.objects.filter(
+        tutor__verification_status=1,
+        tutor__profile_completed=True,
+        is_active=True
+    ).select_related(
+        'tutor',
+        'tutor__location',
+        'grade_subject',
+        'grade_subject__grade',
+        'grade_subject__subject'
+    ).annotate(
+        avg_rating=Avg('reviews__rating'),
+        total_reviews=Count('reviews', distinct=True)
+    )
+
+    # Get search values
+    grade = request.GET.get('grade')
+    subject = request.GET.get('subject')
+    budget = request.GET.get('budget')
+    fee_type = request.GET.get('fee_type')
+    rating = request.GET.get('rating')
+
+    # Apply academic filters
+    if grade and subject:
+        tutors = tutors.filter(
+            grade_subject__grade_id=grade,
+            grade_subject__subject_id=subject
+        )
+
+    # Apply budget filter
+    if budget:
+        try:
+            budget = Decimal(budget)
+            tutors = tutors.filter(fee__lte=budget)
+
+            if fee_type:
+                tutors = tutors.filter(fee_type=fee_type)
+
+        except (InvalidOperation, ValueError):
+            budget = None
+
+    # Apply rating filter
+    if rating:
+        try:
+            rating = float(rating)
+            tutors = tutors.filter(avg_rating__gte=rating)
+        except ValueError:
+            rating = None
+
+    tutors = tutors.distinct()
 
     context = {
         'grades': Grade.objects.all().order_by('id'),
@@ -204,10 +261,37 @@ def find_tutors(request):
             'subject'
         ).order_by('grade__id', 'subject__name'),
 
+        'availability_days': TutorAvailability.DAYS,
+
         'student_location': student_location,
+
+        'tutors': tutors,
+
+        'selected_grade': request.GET.get('grade', ''),
+        'selected_subject': request.GET.get('subject', ''),
+        'selected_budget': request.GET.get('budget', ''),
+        'selected_fee_type': request.GET.get('fee_type', ''),
+        'selected_rating': request.GET.get('rating', ''),
     }
 
-    return render(request, 'students/tutor-management/find-tutors.html', context)
+    # AJAX request: return only tutor results
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+
+        html = render_to_string(
+            'students/tutor-management/partials/tutor-results.html',
+            context,
+            request=request
+        )
+
+        return JsonResponse({'html': html})
+
+    # Normal request: return the complete page
+    return render(
+        request,
+        'students/tutor-management/find-tutors.html',
+        context
+    )
+
 
 @require_GET
 def address_autocomplete(request):

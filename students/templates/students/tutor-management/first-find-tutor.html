@@ -2,72 +2,67 @@
 {% load static %}
 {% block content %}
 
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
 <style>
-    :root {
-        --primary-color: #E8B931;
-        --primary-dark: #B88A12;
-        --primary-light: #FFF5D6;
-        --page-bg: #FFFCF5;
+    .location-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.07);
     }
 
-    body {
-        background-color: var(--page-bg);
+    #map {
+        height: 380px;
+        width: 100%;
+        border-radius: 12px;
+        z-index: 1;
     }
 
-    .text-primary-custom {
-        color: var(--primary-dark);
+    .location-btn {
+        background: #fff8e8;
+        color: #a66c00;
+        border: 1px solid #edcf8e;
+        border-radius: 8px;
+        padding: 11px;
     }
 
-    .btn-primary-custom {
-        background-color: var(--primary-color);
-        color: #3D300D;
-        border: 1px solid var(--primary-color);
-        font-weight: 600;
+    .location-btn:hover {
+        background: #ffefcc;
     }
 
-    .btn-primary-custom:hover {
-        background-color: #D5A51F;
-        border-color: #D5A51F;
-        color: #302508;
+    .search-btn {
+        background: #d99b26;
+        border: none;
+        color: white;
     }
 
-    .filter-card, .tutor-card {
-        border: 1px solid #F0E5C8;
-        border-radius: 16px;
-        background: #fff;
+    .search-btn:hover {
+        background: #bd831b;
+        color: white;
     }
 
-    .tutor-card {
-        transition: transform .2s, box-shadow .2s;
+    .location-hint {
+        font-size: 13px;
+        color: #777;
     }
 
-    .tutor-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(80, 60, 10, .08);
+    #addressSuggestions {
+    max-height: 250px;
+    overflow-y: auto;
+    background: white;
     }
 
-    .form-control:focus, .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 .2rem rgba(232, 185, 49, .2);
+    #addressSuggestions .list-group-item {
+        cursor: pointer;
+        padding: 12px 15px;
     }
 
-    .tutor-avatar {
-        width: 90px;
-        height: 90px;
-        object-fit: cover;
-        border-radius: 14px;
-    }
-
-    .subject-badge {
-        background: var(--primary-light);
-        color: #795A0B;
-        font-weight: 500;
-    }
-
-    .rating {
-        color: #C18B00;
+    #addressSuggestions .list-group-item:hover {
+        background: #fff8e8;
     }
 </style>
+
 
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
@@ -86,137 +81,305 @@
                                         <h5>Find Tutors</h5>
                                     </div>
 
+                                     <!--Tutor Filter part starts -->
+                                    <div class="container-fluid py-4">                                        
 
-                                    <div class="container-fluid py-4 px-lg-4">
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                                <div class="alert alert-info">{{ message }}</div>
+                                            {% endfor %}
+                                        {% endif %}
 
-                                        <!-- Page Heading -->
-                                        <div class="mb-4">
-                                            <h5 class="fw-bold mb-2">Find Your Perfect Tutor</h5>
-                                            <p class="text-secondary mb-0">
-                                                Discover tutors who match your learning needs.
-                                            </p>
-                                        </div>
+                                        <div class="card mb-4">
+                                            <div class="card-body p-4">
 
-                                        <!-- Search Bar -->
-                                        <form method="get" class="mb-4">
-                                            <div class="input-group input-group-lg">
-                                                <input type="search"
-                                                    name="q"
-                                                    class="form-control"
-                                                    placeholder="Search by tutor name or subject..."
-                                                    value="{{ request.GET.q|default:'' }}">
-
-                                                <button class="btn btn-primary px-4" type="submit">
-                                                    Search
-                                                </button>
-                                            </div>
-
-                                            <div class="row g-4 mt-1">
-                                                <!-- Filter Sidebar -->
-                                                <div class="col-12">
-                                                    <div class="filter-card p-4">
-                                                        <div class="mb-4">
-                                                            <h5 class="fw-bold mb-0">Filter Tutors</h5>                                                            
-                                                        </div>
-                                                        <div class="row">
-
-                                                            <div class="mb-3 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Grade
-                                                                </label>
-                                                                <select name="grade" class="form-select">
-                                                                    <option value="">All grades</option>
-                                                                    {% for grade in grades %}
-                                                                        <option value="{{ grade.id }}"
-                                                                            {% if request.GET.grade == grade.id|stringformat:"s" %}
-                                                                                selected
-                                                                            {% endif %}>
-                                                                            {{ grade }}
-                                                                        </option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="mb-3 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Subject
-                                                                </label>
-                                                                <select name="subject" class="form-select">
-                                                                    <option value="">All subjects</option>
-                                                                    {% for subject in subjects %}
-                                                                        <option value="{{ subject.id }}"
-                                                                            {% if request.GET.subject == subject.id|stringformat:"s" %}
-                                                                                selected
-                                                                            {% endif %}>
-                                                                            {{ subject }}
-                                                                        </option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row">
-                                                            <div class="mb-3 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Location
-                                                                </label>
-                                                                <input type="text"
-                                                                    name="location"
-                                                                    class="form-control"
-                                                                    placeholder="e.g. Kathmandu"
-                                                                    value="{{ request.GET.location|default:'' }}">
-                                                            </div>
-                                                            <div class="mb-3 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Availability
-                                                                </label>
-                                                                <select name="availability" class="form-select">
-                                                                    <option value="">Any Time</option>
-                                                                    {% for subject in subjects %}
-                                                                        <option value="{{ subject.id }}"
-                                                                            {% if request.GET.subject == subject.id|stringformat:"s" %}
-                                                                                selected
-                                                                            {% endif %}>
-                                                                            {{ subject }}
-                                                                        </option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row">
-
-                                                            <div class="mb-4 col-12 col-lg-6 form-group">
-                                                                <label class="form-label fw-semibold">
-                                                                    Maximum hourly fee (Rs.)
-                                                                </label>
-                                                                <input type="number"
-                                                                    name="max_fee"
-                                                                    class="form-control"
-                                                                    min="0"
-                                                                    placeholder="e.g. 1000"
-                                                                    value="{{ request.GET.max_fee|default:'' }}">
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="d-flex justify-content-center">
-                                                            <button type="submit"
-                                                                class="btn btn-primary py-2 mr-1">
-                                                                Apply Filters
-                                                            </button>
-                                                            <a href="{% url 'find_tutors' %}"
-                                                                class="btn btn-outline-secondary ml-1">
-                                                                Reset Filters
-                                                            </a>
-                                                        </div>
+                                                <div class="d-flex align-items-center mb-4">
+                                                    <div>
+                                                        <h4 class="font-weight-bold mb-1">Find Your Perfect Tutor</h4>
+                                                        <p class="text-muted mb-0">
+                                                            Search tutors using one or more of your preferences.
+                                                        </p>
                                                     </div>
+                                                </div>
+                                                <div class="row g-4 mt-1">
+                                                    <!-- Filter Sidebar -->
+                                                    <div class="col-12">
+                                                        <div class="filter-card p-0">
+
+                                                            <div class="row">
+                                                                <!-- Grade -->
+                                                                <div class="mb-3 col-12 form-group">
+                                                                    <label class="form-label fw-semibold" for="gradeSelect">
+                                                                        Grade
+                                                                    </label>
+                                                                    <select name="grade" class="form-select" id="gradeSelect">
+                                                                        <option value="">All grades</option>
+                                                                        {% for grade in grades %}
+                                                                            <option value="{{ grade.id }}">
+                                                                                {{ grade }}
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </div>
+                                                                <!-- Subject -->
+                                                                <div class="mb-3 col-12 form-group">
+                                                                    <label class="form-label fw-semibold" for="subjectSelect">
+                                                                        Subject
+                                                                    </label>
+                                                                    <select name="subject" class="form-select" id="subjectSelect">
+                                                                        <option value="" selected disabled>Select Grade First</option>
+                                                                       
+                                                                    </select>
+                                                                </div>
+
+                                                                <!-- Budget -->
+                                                                <div class="col-12 form-group">
+                                                                    <label class="form-label fw-semibold">
+                                                                        <i class="bi bi-wallet me-1 text-warning"></i>
+                                                                        Budget
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        name="budget"
+                                                                        class="form-control"
+                                                                        placeholder="Maximum fee (NPR)"
+                                                                        value="">                                                                                                                                
+                                                                </div>                                                          
+
+                                                                <div class="my-0 col-12 px-5">
+                                                                    <div class="form-check form-check-inline pr-4">
+                                                                        <input class="form-check-input" type="radio" name="fee_type" id="hourly" value="hour">
+                                                                        <label class="form-check-label p-0 mb-1 mr-2 font-weight-bold" for="hourly">
+                                                                            Hourly
+                                                                        </label>
+                                                                    </div>
+
+                                                                    <div class="form-check form-check-inline pr-4">
+                                                                        <input class="form-check-input"
+                                                                                type="radio"
+                                                                                name="fee_type"
+                                                                                id="daily"
+                                                                                value="day">
+                                                                        <label class="form-check-label p-0 mb-1 mr-2 font-weight-bold" for="daily">
+                                                                            Daily
+                                                                        </label>
+                                                                    </div>
+
+                                                                    <div class="form-check form-check-inline pr-4">
+                                                                        <input class="form-check-input"
+                                                                                type="radio"
+                                                                                name="fee_type"
+                                                                                id="monthly"
+                                                                                value="month" checked>
+                                                                        <label class="form-check-label p-0 mb-1 mr-2 font-weight-bold" for="monthly">
+                                                                            Monthly
+                                                                        </label>
+                                                                    </div>
+
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input"
+                                                                                type="radio"
+                                                                                name="fee_type"
+                                                                                id="session"
+                                                                                value="session">
+                                                                        <label class="form-check-label m-0 p-0 font-weight-bold" for="session">
+                                                                            Session
+                                                                        </label>
+                                                                    </div>                                                          
+                                                                    
+                                                                </div>
+                                                                <!-- Location -->
+                                                                <div class="mt-3 col-12 form-group">
+                                                                    <h5 class="font-weight-bold mb-2">
+                                                                        Location
+                                                                    </h5>
+                                                                    <div class="position-relative mb-2">
+                                                                        <label class="form-label fw-semibold">
+                                                                            Enter your address
+                                                                        </label>
+                                                                        <div class="input-group">
+
+                                                                            <input type="text"
+                                                                                id="address"
+                                                                                class="form-control"
+                                                                                placeholder="e.g. New Baneshwor, Kathmandu"
+                                                                                autocomplete="off">
+
+                                                                            <button type="button"
+                                                                                    class="btn search-btn"
+                                                                                    id="searchAddress">
+                                                                                Search
+                                                                            </button>
+
+                                                                        </div>
+                                                                        <!-- Autocomplete suggestions -->
+                                                                        <div id="addressSuggestions"
+                                                                            class="list-group position-absolute w-100 shadow"
+                                                                            style="z-index: 1000; display: none;">
+                                                                        </div>
+                                                                    </div>             
+
+                                                                    <p class="location-hint">
+                                                                        Enter an area, street, or landmark.
+                                                                    </p>
+
+                                                                    <!-- GPS -->
+                                                                    <button type="button"
+                                                                            class="btn location-btn w-100 mb-4"
+                                                                            id="currentLocation">
+
+                                                                        <i class="bi bi-crosshair"></i>
+                                                                        Use My Current Location
+
+                                                                    </button>
+
+                                                                    <div class="d-flex justify-content-between mb-2">
+
+                                                                        <label class="form-label fw-semibold">
+                                                                            Select your location on map
+                                                                        </label>
+
+                                                                        <small class="text-muted">
+                                                                            Drag the marker to adjust
+                                                                        </small>
+
+                                                                    </div>
+
+                                                                    <!-- Map -->
+                                                                    <div id="map" class="mb-3"></div>
+
+                                                                    <!-- Selected address -->
+                                                                    <div class="alert alert-light border">
+
+                                                                        <strong>
+                                                                            <i class="bi bi-geo-alt-fill text-danger"></i>
+                                                                            Selected Location
+                                                                        </strong>
+
+                                                                        <p class="mb-0 mt-1" id="selectedAddress">
+                                                                            No location selected yet.
+                                                                        </p>
+
+                                                                    </div>
+
+                                                                    <!-- Hidden coordinates -->
+                                                                    <input type="hidden"
+                                                                        name="latitude"
+                                                                        id="latitude">
+
+                                                                    <input type="hidden"
+                                                                        name="longitude"
+                                                                        id="longitude">
+
+                                                                    <input type="hidden"
+                                                                        name="address"
+                                                                        id="finalAddress">
+
+                                                                    <button type="submit"
+                                                                            class="btn search-btn w-100 py-2"
+                                                                            id="confirmLocation">
+
+                                                                        Confirm Location & Find Tutors
+
+                                                                    </button>
+                                                                </div>
+
+                                                                
+                                                                <!-- AVAILABILITY -->
+                                                                <div class="col-12 form-group">
+                                                                    <label class="form-label fw-semibold">
+                                                                        Available Day
+                                                                    </label>
+
+                                                                    <select name="day" class="form-select">
+                                                                        <option value="" selected disabled>Select Day</option>
+
+                                                                        {% for value, label in availability_days %}
+                                                                            <option value="{{ value }}">
+                                                                                {{ label }}
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>                                                                
+                                                                </div> 
+                                                                <div class="col-12">
+                                                                    <div class="row g-3">
+                                                                        <div class="col-12 col-sm-6">
+                                                                            <label class="form-label font-weight-semibold">From</label>
+                                                                            <input type="time"
+                                                                                name="start_time"
+                                                                                class="form-control"
+                                                                                value="{{ request.GET.start_time }}">
+                                                                        </div>
+
+                                                                        <div class="col-12 col-sm-6">
+                                                                            <label class="form-label font-weight-semibold">To</label>
+                                                                            <input type="time"
+                                                                                name="end_time"
+                                                                                class="form-control"
+                                                                                value="{{ request.GET.end_time }}">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- RATING -->
+                                                                <div class="col-12 form-group mt-3">
+                                                                    <label class="form-label fw-semibold">
+                                                                        <i class="bi bi-star me-1 text-warning"></i>
+                                                                        Minimum Tutor Rating
+                                                                    </label>
+
+                                                                    <select name="rating" class="form-select">
+                                                                        <option value="" selected disabled>Select Rating</option>
+
+                                                                        <option value="3"
+                                                                            {% if request.GET.rating == "3" %}selected{% endif %}>
+                                                                            3+ Stars
+                                                                        </option>
+
+                                                                        <option value="4"
+                                                                            {% if request.GET.rating == "4" %}selected{% endif %}>
+                                                                            4+ Stars
+                                                                        </option>
+
+                                                                        <option value="4.5"
+                                                                            {% if request.GET.rating == "4.5" %}selected{% endif %}>
+                                                                            4.5+ Stars
+                                                                        </option>
+                                                                    </select>
+
+                                                                    <small class="text-muted">
+                                                                        Find tutors with your preferred rating.
+                                                                    </small>
+                                                                </div>
+
+                                                            </div>  
+
+                                                            <!-- Action Buttons -->
+                                                            <div class="d-flex justify-content-center">
+                                                                <button type="submit"
+                                                                    class="btn btn-primary py-2 mr-1">
+                                                                    Apply Filters
+                                                                </button>
+                                                                <a href="{% url 'find_tutors' %}"
+                                                                    class="btn btn-outline-secondary ml-1">
+                                                                    Reset Filters
+                                                                </a>
+                                                            </div>
+                                                            <div class="text-center mt-3">                                                                
+                                                                <small>
+                                                                    <strong>Note:</strong><span class="text-muted"> You can search using one criterion or combine multiple criteria. All filters are optional.</span>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    
                                                 </div>
 
                                             </div>
+                                        </div>
 
-                                            
-                                        </form>
                                     </div>
+                                    <!--Tutor Filter part ends -->
 
                                 </div>
                             </div>
@@ -353,7 +516,7 @@
 
                                                 </div>
 
-                                                {% comment %} *****************88 {% endcomment %}
+                                        {% comment %} ***************** {% endcomment %}
 
                                         <div class="table-responsive">
                                             <table class="table table-hover">
@@ -416,4 +579,536 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block grade_subject %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const gradeSelect = document.getElementById('gradeSelect');
+    const subjectSelect = document.getElementById('subjectSelect');
+
+    // Check whether dropdown elements exist
+    if (!gradeSelect || !subjectSelect) {
+        console.error("Grade or Subject dropdown not found!");
+        return;
+    }
+
+    // Function to load subjects based on selected grade
+    function loadSubjects(gradeId) {
+
+        if (!gradeId) {
+            subjectSelect.innerHTML =
+                '<option value="" selected disabled>Select Grade First</option>';
+            return;
+        }
+
+        const url = "{% url 'get_subjects' 0 %}".replace('/0/', `/${gradeId}/`);
+
+        console.log("Fetching URL:", url);
+
+        subjectSelect.innerHTML =
+            '<option value="">Loading subjects...</option>';
+
+        fetch(url)
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+
+                console.log("HTTP Status:", response.status);
+
+                return response.json();
+            })
+
+            .then(data => {
+
+                console.log("Subjects received:", data);
+
+                // Clear previous options
+                subjectSelect.innerHTML = '';
+
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select Subject';
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+
+                subjectSelect.appendChild(defaultOption);
+
+                // Check whether subjects exist
+                if (data.length === 0) {
+
+                    subjectSelect.innerHTML =
+                        '<option value="" disabled selected>No subjects available</option>';
+
+                    return;
+                }
+
+                // Populate subject dropdown
+                data.forEach(subject => {
+
+                    const option = document.createElement('option');
+
+                    option.value = subject.id;
+                    option.textContent = subject.name;
+
+                    subjectSelect.appendChild(option);
+
+                });
+
+                console.log("Total dropdown options:", subjectSelect.options.length);
+
+            })
+
+            .catch(error => {
+
+                console.error("Error loading subjects:", error);
+
+                subjectSelect.innerHTML =
+                    '<option value="" disabled selected>Unable to load subjects</option>';
+
+            });
+    }
+
+    // Listen for grade selection changes
+    gradeSelect.addEventListener('change', function () {
+
+        const gradeId = this.value;
+
+        console.log("Selected Grade ID:", gradeId);
+
+        loadSubjects(gradeId);
+
+    });
+
+});
+</script>
+{% endblock %}
+
+{% block location_map %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+    // ==========================================
+    // 1. INITIALIZE MAP
+    // ==========================================
+
+    const map = L.map('map').setView(
+        [27.7172, 85.3240],
+        13
+    );
+
+    L.tileLayer(
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        }
+    ).addTo(map);
+
+
+    // ==========================================
+    // 2. CREATE MAP MARKER
+    // ==========================================
+
+    let marker = L.marker(
+        [27.7172, 85.3240],
+        {
+            draggable: true
+        }
+    ).addTo(map);
+
+
+    // ==========================================
+    // 3. GET HTML ELEMENTS
+    // ==========================================
+
+    const addressInput = document.getElementById('address');
+
+    const suggestionsBox = document.getElementById(
+        'addressSuggestions'
+    );
+
+    const latitudeInput = document.getElementById('latitude');
+
+    const longitudeInput = document.getElementById('longitude');
+
+    const finalAddressInput = document.getElementById('finalAddress');
+
+    const selectedAddress = document.getElementById('selectedAddress');
+
+    const addressUrl = "{% url 'address_autocomplete' %}";
+
+    let selectedLocation = false;
+    let searchTimeout = null;
+
+
+    // ==========================================
+    // 4. UPDATE LOCATION AND MAP
+    // ==========================================
+
+    function updateLocation(lat, lng, address = null) {
+
+        marker.setLatLng([lat, lng]);
+
+        map.setView([lat, lng], 16);
+
+        latitudeInput.value = lat;
+        longitudeInput.value = lng;
+
+        selectedLocation = true;
+
+        if (address) {
+
+            addressInput.value = address;
+            finalAddressInput.value = address;
+
+            selectedAddress.innerText = address;
+
+        } else {
+
+            const coordinates = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+            finalAddressInput.value = coordinates;
+
+            selectedAddress.innerText = coordinates;
+
+            // Find the actual address from coordinates
+            reverseGeocode(lat, lng);
+        }
+
+        suggestionsBox.style.display = 'none';
+    }
+
+
+    // ==========================================
+    // 5. REVERSE GEOCODING
+    // COORDINATES TO ADDRESS
+    // ==========================================
+
+    async function reverseGeocode(lat, lng) {
+
+        try {
+
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
+            );
+
+            if (!response.ok) {
+                throw new Error('Address lookup failed');
+            }
+
+            const data = await response.json();
+
+            if (data.display_name) {
+
+                addressInput.value = data.display_name;
+
+                finalAddressInput.value = data.display_name;
+
+                selectedAddress.innerText = data.display_name;
+            }
+
+        } catch (error) {
+
+            console.error('Reverse geocoding error:', error);
+
+        }
+    }
+
+
+    // ==========================================
+    // 6. SEARCH ADDRESS AUTOCOMPLETE
+    // ==========================================
+
+    addressInput.addEventListener('input', function () {
+
+        const query = this.value.trim();
+
+        clearTimeout(searchTimeout);
+
+        selectedLocation = false;
+
+        latitudeInput.value = '';
+        longitudeInput.value = '';
+        finalAddressInput.value = '';
+
+        suggestionsBox.innerHTML = '';
+
+        if (query.length < 3) {
+
+            suggestionsBox.style.display = 'none';
+
+            return;
+        }
+
+        // Wait 400 milliseconds before searching
+        searchTimeout = setTimeout(async function () {
+
+            try {
+
+                const response = await fetch(
+                    `${addressUrl}?q=${encodeURIComponent(query)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Address search failed');
+                }
+
+                const data = await response.json();
+
+                suggestionsBox.innerHTML = '';
+
+                if (!data.results || data.results.length === 0) {
+
+                    suggestionsBox.innerHTML = `
+                        <div class="list-group-item text-muted">
+                            No locations found.
+                        </div>
+                    `;
+
+                } else {
+
+                    data.results.forEach(function (place) {
+
+                        const item = document.createElement('button');
+
+                        item.type = 'button';
+
+                        item.className =
+                            'list-group-item list-group-item-action';
+
+                        const icon = document.createElement('i');
+
+                        icon.className =
+                            'bi bi-geo-alt text-warning me-2';
+
+                        const text = document.createElement('span');
+
+                        text.textContent = place.name;
+
+                        item.appendChild(icon);
+                        item.appendChild(text);
+
+                        // Select suggested address
+                        item.addEventListener('click', function () {
+
+                            selectAddress(place);
+
+                        });
+
+                        suggestionsBox.appendChild(item);
+
+                    });
+
+                }
+
+                suggestionsBox.style.display = 'block';
+
+            } catch (error) {
+
+                console.error('Autocomplete error:', error);
+
+                suggestionsBox.innerHTML = `
+                    <div class="list-group-item text-danger">
+                        Unable to search locations.
+                    </div>
+                `;
+
+                suggestionsBox.style.display = 'block';
+
+            }
+
+        }, 400);
+
+    });
+
+
+    // ==========================================
+    // 7. SELECT ADDRESS FROM SUGGESTIONS
+    // ==========================================
+
+    function selectAddress(place) {
+
+        const lat = parseFloat(place.latitude);
+
+        const lng = parseFloat(place.longitude);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return;
+        }
+
+        updateLocation(lat, lng, place.name);
+
+    }
+    // ==========================================
+    // 8. SEARCH BUTTON
+    // ==========================================
+    document.getElementById('searchAddress')
+        .addEventListener('click', async function () {
+
+            const query = addressInput.value.trim();
+
+            if (query.length < 3) {
+
+                alert('Please enter at least 3 characters.');
+
+                return;
+            }
+
+            this.disabled = true;
+
+            try {
+
+                const response = await fetch(
+                    `${addressUrl}?q=${encodeURIComponent(query)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Search failed');
+                }
+
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+
+                    selectAddress(data.results[0]);
+
+                } else {
+
+                    alert('No matching address found.');
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert('Unable to search address. Please try again.');
+
+            } finally {
+
+                this.disabled = false;
+
+            }
+
+        });
+
+
+    // ==========================================
+    // 9. USE CURRENT GPS LOCATION
+    // ==========================================
+
+    document.getElementById('currentLocation')
+        .addEventListener('click', function () {
+
+            if (!navigator.geolocation) {
+
+                alert('Your browser does not support GPS location.');
+
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+
+                function (position) {
+
+                    const lat = position.coords.latitude;
+
+                    const lng = position.coords.longitude;
+
+                    updateLocation(lat, lng);
+
+                },
+
+                function (error) {
+
+                    alert(
+                        'Unable to detect your location. Please allow location permission or enter your address manually.'
+                    );
+
+                },
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000
+                }
+
+            );
+
+        });
+
+
+    // ==========================================
+    // 10. DRAG MARKER TO CHANGE LOCATION
+    // ==========================================
+
+    marker.on('dragend', function (event) {
+
+        const position = event.target.getLatLng();
+
+        updateLocation(
+            position.lat,
+            position.lng
+        );
+
+    });
+
+
+    // ==========================================
+    // 11. CLICK MAP TO SELECT LOCATION
+    // ==========================================
+
+    map.on('click', function (event) {
+
+        updateLocation(
+            event.latlng.lat,
+            event.latlng.lng
+        );
+
+    });
+
+
+    // ==========================================
+    // 12. HIDE SUGGESTIONS WHEN CLICKING OUTSIDE
+    // ==========================================
+
+    document.addEventListener('click', function (event) {
+
+        if (
+            !addressInput.contains(event.target) &&
+            !suggestionsBox.contains(event.target)
+        ) {
+
+            suggestionsBox.style.display = 'none';
+
+        }
+
+    });
+
+
+    // ==========================================
+    // 13. FORM VALIDATION
+    // ==========================================
+
+    document.getElementById('locationForm')
+        .addEventListener('submit', function (event) {
+
+            if (!selectedLocation) {
+
+                event.preventDefault();
+
+                alert('Please select your location first.');
+
+            }
+
+        });
+
+
+</script>
+
 {% endblock %}

@@ -13,6 +13,8 @@ from django.contrib import messages
 from decimal import Decimal, InvalidOperation
 from django.template.loader import render_to_string
 from django.db.models import Avg, Count
+import math
+from datetime import time
 
 # Create your views here.
 
@@ -193,7 +195,6 @@ def get_cities(request, district_id):
     return JsonResponse(city_data, safe=False)
 
 # find tutors
-
 def find_tutors(request):
 
     student_location = None
@@ -201,72 +202,187 @@ def find_tutors(request):
     if hasattr(request.user, 'student_profile'):
         student_location = request.user.student_profile.location
 
-    # Get eligible tutor teaching profiles
-    tutors = TutorTeaching.objects.filter(
-        tutor__verification_status=1,
-        tutor__profile_completed=True,
-        is_active=True
-    ).select_related(
-        'tutor',
-        'tutor__location',
-        'grade_subject',
-        'grade_subject__grade',
-        'grade_subject__subject'
-    ).annotate(
-        avg_rating=Avg('reviews__rating'),
-        total_reviews=Count('reviews', distinct=True)
-    )
+    tutors = TutorTeaching.objects.none()
 
-    # Get search values
-    grade = request.GET.get('grade')
-    subject = request.GET.get('subject')
-    budget = request.GET.get('budget')
-    fee_type = request.GET.get('fee_type')
-    rating = request.GET.get('rating')
+    if request.GET.get('search'):
 
-    # Apply academic filters
-    if grade and subject:
-        tutors = tutors.filter(
-            grade_subject__grade_id=grade,
-            grade_subject__subject_id=subject
+        tutors = TutorTeaching.objects.filter(
+            tutor__verification_status=1,
+            tutor__profile_completed=True,
+            is_active=True
+        ).select_related(
+            'tutor',
+            'tutor__location',
+            'grade_subject',
+            'grade_subject__grade',
+            'grade_subject__subject'
+        ).annotate(
+            avg_rating=Avg('reviews__rating'),
+            total_reviews=Count('reviews', distinct=True)
         )
 
-    # Apply budget filter
-    if budget:
-        try:
-            budget = Decimal(budget)
-            tutors = tutors.filter(fee__lte=budget)
+        grade = request.GET.get('grade')
+        subject = request.GET.get('subject')
+        budget = request.GET.get('budget')
+        fee_type = request.GET.get('fee_type')
+        rating = request.GET.get('rating')
+        day = request.GET.get('day')
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
+        latitude = request.GET.get('latitude')
+        longitude = request.GET.get('longitude')
 
-            if fee_type:
-                tutors = tutors.filter(fee_type=fee_type)
+        has_criteria = any([
+            grade,
+            subject,
+            budget,
+            rating
+        ])
 
-        except (InvalidOperation, ValueError):
-            budget = None
+        if request.GET.get('search') and has_criteria:
 
-    # Apply rating filter
-    if rating:
-        try:
-            rating = float(rating)
-            tutors = tutors.filter(avg_rating__gte=rating)
-        except ValueError:
-            rating = None
+            # Academic filters
+            if grade and subject:
+                tutors = tutors.filter(
+                    grade_subject__grade_id=grade,
+                    grade_subject__subject_id=subject
+                )
 
-    tutors = tutors.distinct()
+            # Budget filter
+            if budget:
+                try:
+                    budget = Decimal(budget)
+                    tutors = tutors.filter(fee__lte=budget)
+
+                    if fee_type:
+                        tutors = tutors.filter(fee_type=fee_type)
+
+                except (InvalidOperation, ValueError):
+                    budget = None
+
+            # Availability filter
+            if day:
+                tutors = tutors.filter(
+                    tutor__availabilities__day=day
+                )
+
+                if start_time and end_time:
+                    try:
+                        start_time = time.fromisoformat(start_time)
+                        end_time = time.fromisoformat(end_time)
+
+                        if end_time <= start_time:
+                            return JsonResponse({
+                                'error': 'End time must be later than start time.'
+                            }, status=400)
+
+                        tutors = tutors.filter(
+                            tutor__availabilities__start_time__lte=start_time,
+                            tutor__availabilities__end_time__gte=end_time
+                        )
+
+                    except ValueError:
+                        return JsonResponse({
+                            'error': 'Please provide valid availability times.'
+                        }, status=400)
+
+            # Location filter - 5 km radius
+            if latitude or longitude:
+
+                try:
+                    latitude = float(latitude)
+                    longitude = float(longitude)
+
+                    if not (-90 <= latitude <= 90):
+                        raise ValueError
+
+                    if not (-180 <= longitude <= 180):
+                        raise ValueError
+
+                except (TypeError, ValueError):
+                    return JsonResponse({
+                        'error': 'Please select a valid location on the map.'
+                    }, status=400)
+
+                radius = 5  # kilometres
+
+                # Calculate approximate bounding box
+                lat_range = radius / 110.574
+
+                lng_range = radius / (
+                    111.320 * math.cos(math.radians(latitude))
+                )
+
+                # First, get tutors within the bounding box
+                nearby_candidates = tutors.filter(
+                    tutor__location__latitude__range=(
+                        latitude - lat_range,
+                        latitude + lat_range
+                    ),
+                    tutor__location__longitude__range=(
+                        longitude - lng_range,
+                        longitude + lng_range
+                    )
+                )
+
+                # Calculate exact distance using Haversine formula
+                matching_ids = []
+
+                for teaching in nearby_candidates:
+
+                    tutor_lat = float(teaching.tutor.location.latitude)
+                    tutor_lng = float(teaching.tutor.location.longitude)
+
+                    lat1 = math.radians(latitude)
+                    lng1 = math.radians(longitude)
+
+                    lat2 = math.radians(tutor_lat)
+                    lng2 = math.radians(tutor_lng)
+
+                    dlat = lat2 - lat1
+                    dlng = lng2 - lng1
+
+                    a = (
+                        math.sin(dlat / 2) ** 2
+                        + math.cos(lat1)
+                        * math.cos(lat2)
+                        * math.sin(dlng / 2) ** 2
+                    )
+
+                    distance = 6371 * 2 * math.atan2(
+                        math.sqrt(a),
+                        math.sqrt(1 - a)
+                    )
+
+                    if distance <= radius:
+                        matching_ids.append(teaching.id)
+
+                tutors = tutors.filter(id__in=matching_ids)
+
+
+
+            # Rating filter
+            if rating:
+                try:
+                    rating = float(rating)
+                    tutors = tutors.filter(avg_rating__gte=rating)
+
+                except ValueError:
+                    rating = None
+
+        tutors = tutors.distinct()
 
     context = {
         'grades': Grade.objects.all().order_by('id'),
 
         'grade_subjects': GradeSubject.objects.select_related(
-            'grade',
-            'subject'
+            'grade', 'subject'
         ).order_by('grade__id', 'subject__name'),
 
         'availability_days': TutorAvailability.DAYS,
-
         'student_location': student_location,
-
         'tutors': tutors,
-
+        'searched': bool(request.GET.get('search')),
         'selected_grade': request.GET.get('grade', ''),
         'selected_subject': request.GET.get('subject', ''),
         'selected_budget': request.GET.get('budget', ''),
@@ -277,22 +393,39 @@ def find_tutors(request):
     # AJAX request: return only tutor results
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
 
-        html = render_to_string(
-            'students/tutor-management/partials/tutor-results.html',
-            context,
-            request=request
-        )
+        tutor_data = []
 
-        return JsonResponse({'html': html})
+        for tutor in tutors:
+            tutor_data.append({
+                'name': tutor.tutor.full_name,
+                'profile_picture': 
+                (
+                    tutor.tutor.profile_picture.url
+                    if tutor.tutor.profile_picture
+                    else ''
+                ),
+                'status': True if (tutor.tutor.verification_status==1 or tutor.tutor.verification_status==4) else False,
+                'experience':str(tutor.tutor.experience),
+                'grade': str(tutor.grade_subject.grade),
+                'subject': str(tutor.grade_subject.subject),
+                'fee': str(tutor.fee),
+                'fee_type': tutor.get_fee_type_display(),
+                'location': (
+                    tutor.tutor.location.address
+                    if tutor.tutor.location else ''
+                ),
 
-    # Normal request: return the complete page
+                'total_reviews': tutor.total_reviews,
+                'rating': round(tutor.avg_rating, 1) if tutor.avg_rating else 'No ratings'
+            })
+
+        return JsonResponse({'tutors': tutor_data})
+
     return render(
         request,
         'students/tutor-management/find-tutors.html',
         context
     )
-
-
 @require_GET
 def address_autocomplete(request):
 

@@ -1,0 +1,93 @@
+results.innerHTML = data.tutors.map(tutor => `
+                <div class="tutor-card mb-3">
+
+                    <div class="d-flex gap-3">
+
+                        <!-- Profile Picture -->
+                        <div class="tutor-photo">
+                            <img src="${tutor.profile_picture || '/static/images/default-profile.png'}"
+                                alt="${tutor.name}">
+                        </div>
+
+                        <!-- Tutor Information -->
+                        <div class="flex-grow-1">
+
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <h5 class="mb-0">${tutor.name}</h5>
+
+                                ${tutor.is_verified ? `
+                                    <span class="verified">
+                                        <i class="bi bi-patch-check-fill"></i> Verified
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            <p class="text-muted small mt-1 mb-2">
+                                ${tutor.experience} years experience
+                            </p>
+
+                            <!-- Rating -->
+                            <div class="mb-2">
+                                ${
+                                    tutor.rating !== null && tutor.rating !== undefined
+                                    ? `
+                                        <span class="rating-stars">
+                                            ${Array.from({length: 5}, (_, i) =>
+                                                `<i class="bi ${
+                                                    i < Math.round(tutor.rating)
+                                                    ? 'bi-star-fill'
+                                                    : 'bi-star'
+                                                }"></i>`
+                                            ).join('')}
+                                        </span>
+
+                                        <strong>${Number(tutor.rating).toFixed(1)}</strong>
+                                        <small class="text-muted">
+                                            (${tutor.total_reviews} reviews)
+                                        </small>
+                                    `
+                                    : `<small class="text-muted">No reviews yet</small>`
+                                }
+                            </div>
+
+                            <p class="text-muted small mb-2">
+                                <i class="bi bi-geo-alt"></i>
+                                ${tutor.location || 'Location unavailable'}
+                            </p>
+
+                            <!-- Grade and Subject -->
+                            <div class="mb-3">
+                                <span class="subject-tag">${tutor.grade}</span>
+                                <span class="subject-tag">${tutor.subject}</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                                <div>
+                                    <small class="text-muted">Teaching Fee</small>
+                                    <h5 class="text-success mb-0">
+                                        Rs. ${tutor.fee}
+                                        <small class="text-muted">
+                                            / ${tutor.fee_type}
+                                        </small>
+                                    </h5>
+                                </div>
+
+                                <div>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        View Profile
+                                    </a>
+
+                                    <a href="#" class="btn btn-primary btn-sm">
+                                        Send Request
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+        })

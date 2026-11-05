@@ -208,8 +208,13 @@
                             </li>
                             <li class="user-profile header-notification">
                                 <a href="#!" class="waves-effect waves-light">
-                                    <img src="{{profile.profile_picture.url}}" class="img-radius" alt="User-Profile-Image">
-                                    <span> {{profile.full_name}} </span>
+                                {% if request.user.tutor_profile.profile_picture or request.user.tutor_profile.full_name %}
+                                    <img src="{{request.user.tutor_profile.profile_picture.url}}" class="img-radius" alt="User-Profile-Image">
+                                    <span>{{request.user.tutor_profile.full_name}}</span>
+                                {% else %}
+                                    <img src="{% static 'assets/images/profile/profile.png' %}" class="img-radius" alt="User-Profile-Image">
+                                    <span>{{request.user.name}}</span>
+                                {% endif %}
                                     <i class="ti-angle-down"></i>
                                 </a>
                                 <ul class="show-notification profile-notification">

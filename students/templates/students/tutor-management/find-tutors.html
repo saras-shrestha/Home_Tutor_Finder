@@ -1,5 +1,6 @@
 {% extends 'students/student-base.html' %}
 {% load static %}
+
 {% block content %}
 
 <link rel="stylesheet"
@@ -39,9 +40,9 @@
     }
 
     #addressSuggestions {
-    max-height: 250px;
-    overflow-y: auto;
-    background: white;
+        max-height: 250px;
+        overflow-y: auto;
+        background: white;
     }
 
     #addressSuggestions .list-group-item {
@@ -162,6 +163,70 @@
             grid-template-columns: repeat(2, 1fr);
         }
     }
+
+    /* Tutor Search Result */
+    .tutor-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.2s ease;
+    }
+
+    .tutor-card:hover {
+        border-color: #b8c9e8;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .tutor-photo {
+        width: 105px;
+        height: 105px;
+        flex-shrink: 0;
+    }
+
+    .tutor-photo img {
+        width: 95%;
+        height: 95%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .verified {
+        background: #e8f5ed;
+        color: #198754;
+        padding: 4px 9px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .rating-stars {
+        color: #f5a623;
+        letter-spacing: 2px;
+    }
+
+    .subject-tag {
+        background: #eef4ff;
+        color: #315b9a;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        margin-right: 5px;
+    }
+
+    @media(max-width: 576px) {
+        .tutor-card {
+            padding: 14px;
+        }
+
+        .tutor-photo {
+            width: 75px;
+            height: 75px;
+        }
+
+        .tutor-card .d-flex.gap-3 {
+            gap: 12px !important;
+        }
+    }
 </style>
 
 <div class="pcoded-content">
@@ -254,7 +319,6 @@
                                                     </label>
 
                                                 </div>
-
 
                                                 <!-- FILTER FORM -->
                                                 <form method="GET" action="{% url 'find_tutors' %}" id="tutorSearchForm">
@@ -530,8 +594,10 @@
 
                                                     <!-- Action Buttons -->
                                                     <div class="d-flex justify-content-center">
-                                                        <button type="submit"
-                                                                    class="btn btn-primary py-2 mr-1">
+                                                        <!--for if request.GET.get('search'): in backend -->
+                                                        <input type="hidden" name="search" value="1">
+
+                                                        <button type="submit"class="btn btn-primary py-2 mr-1">
                                                             <i class="bi bi-search me-2"></i>
                                                             Find Tutors
                                                         </button>
@@ -552,28 +618,15 @@
                                         </div>
 
                                         <div id="searchResults" class="mt-4">
-                                            <!-- Tutor results will appear here -->
-                                            {% include 'students/tutor-management/partials/tutor-results.html' %}
-                                        </div>
-
-
-                                        
+                                           
+                                        </div>                                        
 
                                     </div>
                                     <!--Tutor Filter part ends -->
 
-
-                                    
-
-
                                 </div>
                             </div>
                             <!--First row ends-->
-
-                            <!--Second row starts-->
-                        
-                                                   
-                            <!--Second row ends--> 
                     </div>
                 </div>
                 <!-- Page-body end -->
@@ -586,204 +639,292 @@
 
 {% block extra_js %}
 <script>    
-document.querySelectorAll('.filter-check').forEach(checkbox => {
+    document.querySelectorAll('.filter-check').forEach(checkbox => {
 
-    checkbox.addEventListener('change', function () {
+        checkbox.addEventListener('change', function () {
 
-        const section = document.getElementById(this.value);
+            const section = document.getElementById(this.value);
 
-        if (this.checked) {
+            if (this.checked) {
 
-            section.style.display = 'block';
+                section.style.display = 'block';
 
-            // Refresh Leaflet map when location section is displayed
-            if (this.value === 'location') {
+                // Refresh Leaflet map when location section is displayed
+                if (this.value === 'location') {
 
-                setTimeout(() => {
+                    setTimeout(() => {
 
-                    if (window.tutorMap) {
-                        window.tutorMap.invalidateSize();
-                    }
+                        if (window.tutorMap) {
+                            window.tutorMap.invalidateSize();
+                        }
 
-                }, 200);
+                    }, 200);
+                }
+
+            } else {
+
+                section.style.display = 'none';
+
+                // Clear values when filter is deselected
+                section.querySelectorAll('input, select, textarea')
+                    .forEach(field => {
+
+                        if (field.type === 'checkbox' ||
+                            field.type === 'radio') {
+
+                            field.checked = false;
+
+                        } else {
+                            field.value = '';
+                        }
+                    });
             }
 
-        } else {
-
-            section.style.display = 'none';
-
-            // Clear values when filter is deselected
-            section.querySelectorAll('input, select, textarea')
-                .forEach(field => {
-
-                    if (field.type === 'checkbox' ||
-                        field.type === 'radio') {
-
-                        field.checked = false;
-
-                    } else {
-                        field.value = '';
-                    }
-
-                });
-
-        }
+        });
 
     });
-
-});
-
 </script>
+
 <script>
     document.getElementById('tutorSearchForm').addEventListener('submit', function(e) {
 
-    e.preventDefault();
+        e.preventDefault();
 
-    const form = this;
-    const formData = new FormData(form);
-    const params = new URLSearchParams(formData);
+        const form = this;
+        const params = new URLSearchParams(new FormData(form));
+        const results = document.getElementById('searchResults');
 
-    const results = document.getElementById('searchResults');
+        results.innerHTML = '<p>Searching tutors...</p>';
 
-    results.innerHTML = `
-        <div class="text-center p-4">
-            <div class="spinner-border text-primary"></div>
-            <p class="mt-2">Searching tutors...</p>
-        </div>
-    `;
+        fetch(`${form.action}?${params}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
 
-    fetch(`${form.action}?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Unable to search tutors');
-        }
-        return response.json();
-    })
-    .then(data => {
-        results.innerHTML = data.html;
-    })
-    .catch(error => {
-        results.innerHTML = `
-            <div class="alert alert-danger">
-                Something went wrong. Please try again.
-            </div>
-        `;
-        console.error(error);
+            if (data.tutors.length === 0) {
+                results.innerHTML = '<p>No tutors found.</p>';
+                return;
+            }
+
+            results.innerHTML = data.tutors.map(tutor => `
+                <div class="tutor-card mb-3">
+
+                    <div class="d-flex">
+
+                        <!-- Profile Picture -->
+                        <div class="tutor-photo mr-9">
+                            <img src="${tutor.profile_picture || '/assets/images/profile/profile.png'}"
+                                alt="${tutor.name}">
+                        </div>
+
+                        <!-- Tutor Information -->
+                        <div>
+
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <h5 class="mb-0">${tutor.name}</h5>
+
+                                ${tutor.status ? `
+                                    <span class="verified mx-2">
+                                        <i class="bi bi-patch-check-fill"></i> Verified
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            <p class="text-muted small mt-1 mb-2">
+                                ${tutor.experience} years experience
+                            </p>
+
+                            <!-- Rating -->
+                            <div class="mb-2">
+                                ${
+                                    tutor.rating !== null && tutor.rating !== undefined
+                                    ? `
+                                        <span class="rating-stars">
+                                            ${Array.from({length: 5}, (_, i) =>
+                                                `<i class="bi ${
+                                                    i < Math.round(tutor.rating)
+                                                    ? 'bi-star-fill'
+                                                    : 'bi-star'
+                                                }"></i>`
+                                            ).join('')}
+                                        </span>
+
+                                        <strong>${Number(tutor.rating).toFixed(1)}</strong>
+                                        <small class="text-muted">
+                                            (${tutor.total_reviews} reviews)
+                                        </small>
+                                    `
+                                    : `<small class="text-muted">No reviews yet</small>`
+                                }
+                            </div>
+
+                            <p class="text-muted small mb-2">
+                                <i class="bi bi-geo-alt"></i>
+                                ${tutor.location || 'Location unavailable'}
+                            </p>                            
+
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="d-flex gap-3">
+
+                        <!-- Teaching Information -->
+                        <div class="flex-grow-1 w-100">                          
+
+                            <!-- Grade and Subject -->
+                            <div class="mb-3">
+                                <span class="subject-tag">${tutor.grade}</span>
+                                <span class="subject-tag">${tutor.subject}</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                                <div>
+                                    <small class="text-muted">Teaching Fee</small>
+                                    <h5 class="text-success mb-0">
+                                        Rs. ${tutor.fee}
+                                        <small class="text-muted">
+                                            / ${tutor.fee_type}
+                                        </small>
+                                    </h5>
+                                </div>
+
+                                <div>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        View Profile
+                                    </a>
+
+                                    <a href="#" class="btn btn-primary btn-sm">
+                                        Send Request
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            `).join('');
+
+        })
+        .catch(error => {
+            console.error(error);
+            results.innerHTML = '<p class="text-danger">Something went wrong.</p>';
+        });
+
     });
-
-});
 </script>
+
 {% endblock %}
 
 {% block grade_subject %}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
 
-    const gradeSelect = document.getElementById('gradeSelect');
-    const subjectSelect = document.getElementById('subjectSelect');
+        const gradeSelect = document.getElementById('gradeSelect');
+        const subjectSelect = document.getElementById('subjectSelect');
 
-    // Check whether dropdown elements exist
-    if (!gradeSelect || !subjectSelect) {
-        console.error("Grade or Subject dropdown not found!");
-        return;
-    }
-
-    // Function to load subjects based on selected grade
-    function loadSubjects(gradeId) {
-
-        if (!gradeId) {
-            subjectSelect.innerHTML =
-                '<option value="" selected disabled>Select Grade First</option>';
+        // Check whether dropdown elements exist
+        if (!gradeSelect || !subjectSelect) {
+            console.error("Grade or Subject dropdown not found!");
             return;
         }
 
-        const url = "{% url 'get_subjects' 0 %}".replace('/0/', `/${gradeId}/`);
+        // Function to load subjects based on selected grade
+        function loadSubjects(gradeId) {
 
-        console.log("Fetching URL:", url);
+            if (!gradeId) {
+                subjectSelect.innerHTML =
+                    '<option value="" selected disabled>Select Grade First</option>';
+                return;
+            }
 
-        subjectSelect.innerHTML =
-            '<option value="">Loading subjects...</option>';
+            const url = "{% url 'get_subjects' 0 %}".replace('/0/', `/${gradeId}/`);
 
-        fetch(url)
-            .then(response => {
+            console.log("Fetching URL:", url);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status}`);
-                }
+            subjectSelect.innerHTML =
+                '<option value="">Loading subjects...</option>';
 
-                console.log("HTTP Status:", response.status);
+            fetch(url)
+                .then(response => {
 
-                return response.json();
-            })
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status}`);
+                    }
 
-            .then(data => {
+                    console.log("HTTP Status:", response.status);
 
-                console.log("Subjects received:", data);
+                    return response.json();
+                })
 
-                // Clear previous options
-                subjectSelect.innerHTML = '';
+                .then(data => {
 
-                // Add default option
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'Select Subject';
-                defaultOption.disabled = true;
-                defaultOption.selected = true;
+                    console.log("Subjects received:", data);
 
-                subjectSelect.appendChild(defaultOption);
+                    // Clear previous options
+                    subjectSelect.innerHTML = '';
 
-                // Check whether subjects exist
-                if (data.length === 0) {
+                    // Add default option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select Subject';
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+
+                    subjectSelect.appendChild(defaultOption);
+
+                    // Check whether subjects exist
+                    if (data.length === 0) {
+
+                        subjectSelect.innerHTML =
+                            '<option value="" disabled selected>No subjects available</option>';
+
+                        return;
+                    }
+
+                    // Populate subject dropdown
+                    data.forEach(subject => {
+
+                        const option = document.createElement('option');
+
+                        option.value = subject.id;
+                        option.textContent = subject.name;
+
+                        subjectSelect.appendChild(option);
+
+                    });
+
+                    console.log("Total dropdown options:", subjectSelect.options.length);
+
+                })
+
+                .catch(error => {
+
+                    console.error("Error loading subjects:", error);
 
                     subjectSelect.innerHTML =
-                        '<option value="" disabled selected>No subjects available</option>';
-
-                    return;
-                }
-
-                // Populate subject dropdown
-                data.forEach(subject => {
-
-                    const option = document.createElement('option');
-
-                    option.value = subject.id;
-                    option.textContent = subject.name;
-
-                    subjectSelect.appendChild(option);
+                        '<option value="" disabled selected>Unable to load subjects</option>';
 
                 });
+        }
 
-                console.log("Total dropdown options:", subjectSelect.options.length);
+        // Listen for grade selection changes
+        gradeSelect.addEventListener('change', function () {
 
-            })
+            const gradeId = this.value;
 
-            .catch(error => {
+            console.log("Selected Grade ID:", gradeId);
 
-                console.error("Error loading subjects:", error);
+            loadSubjects(gradeId);
 
-                subjectSelect.innerHTML =
-                    '<option value="" disabled selected>Unable to load subjects</option>';
-
-            });
-    }
-
-    // Listen for grade selection changes
-    gradeSelect.addEventListener('change', function () {
-
-        const gradeId = this.value;
-
-        console.log("Selected Grade ID:", gradeId);
-
-        loadSubjects(gradeId);
+        });
 
     });
-
-});
 </script>
 
 {% endblock %}
@@ -793,9 +934,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
 
-    // ==========================================
     // 1. INITIALIZE MAP
-    // ==========================================
 
     window.tutorMap = L.map('map').setView(
         [27.7172, 85.3240],
@@ -814,9 +953,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ).addTo(map);
 
 
-    // ==========================================
     // 2. CREATE MAP MARKER
-    // ==========================================
 
     let marker = L.marker(
         [27.7172, 85.3240],
@@ -826,9 +963,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ).addTo(map);
 
 
-    // ==========================================
     // 3. GET HTML ELEMENTS
-    // ==========================================
 
     const addressInput = document.getElementById('address');
 
@@ -850,9 +985,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let searchTimeout = null;
 
 
-    // ==========================================
     // 4. UPDATE LOCATION AND MAP
-    // ==========================================
 
     function updateLocation(lat, lng, address = null) {
 
@@ -888,11 +1021,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // ==========================================
     // 5. REVERSE GEOCODING
     // COORDINATES TO ADDRESS
-    // ==========================================
-
     async function reverseGeocode(lat, lng) {
 
         try {
@@ -924,9 +1054,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // ==========================================
     // 6. SEARCH ADDRESS AUTOCOMPLETE
-    // ==========================================
 
     addressInput.addEventListener('input', function () {
 
@@ -1031,9 +1159,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // ==========================================
     // 7. SELECT ADDRESS FROM SUGGESTIONS
-    // ==========================================
 
     function selectAddress(place) {
 
@@ -1048,9 +1174,8 @@ document.addEventListener('DOMContentLoaded', function () {
         updateLocation(lat, lng, place.name);
 
     }
-    // ==========================================
+
     // 8. SEARCH BUTTON
-    // ==========================================
     document.getElementById('searchAddress')
         .addEventListener('click', async function () {
 
@@ -1102,9 +1227,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
 
-    // ==========================================
     // 9. USE CURRENT GPS LOCATION
-    // ==========================================
 
     document.getElementById('currentLocation')
         .addEventListener('click', function () {
@@ -1146,9 +1269,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
 
-    // ==========================================
     // 10. DRAG MARKER TO CHANGE LOCATION
-    // ==========================================
 
     marker.on('dragend', function (event) {
 
@@ -1162,9 +1283,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // ==========================================
     // 11. CLICK MAP TO SELECT LOCATION
-    // ==========================================
 
     map.on('click', function (event) {
 
@@ -1176,9 +1295,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // ==========================================
     // 12. HIDE SUGGESTIONS WHEN CLICKING OUTSIDE
-    // ==========================================
 
     document.addEventListener('click', function (event) {
 
@@ -1194,9 +1311,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // ==========================================
     // 13. FORM VALIDATION
-    // ==========================================
 
     document.getElementById('locationForm')
         .addEventListener('submit', function (event) {

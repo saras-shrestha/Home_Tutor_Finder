@@ -56,11 +56,11 @@
                                                         <td>{{ pending_tutor.profile_completed_at }}</td>
                                                         <td>
                                                             {% if pending_tutor.verification_status == 0 %}
-                                                            <p>Pending</p>
-                                                            {% elif pending_tutor.verification_status == 1 %}
-                                                            <p>Verified</p>
-                                                            {% elif pending_tutor.verification_status == 2 %}
-                                                            <p>Rejected</p>
+                                                            <p><span class="badge bg-warning text-dark">Pending</span></p>
+                                                            {% elif  pending_tutor.verification_status == 2 and pending_tutor.profile_completed %}
+                                                            <p><span class="badge bg-warning text-dark">Pending</span></p>
+                                                            {% elif pending_tutor.verification_status == 2 and not pending_tutor.profile_completed %}
+                                                            <p><span class="badge bg-warning text-danger">Rejected</span></p>
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-right">

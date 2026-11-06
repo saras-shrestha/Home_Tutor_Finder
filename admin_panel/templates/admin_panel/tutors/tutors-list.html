@@ -27,7 +27,8 @@
                                                         </th>
                                                         <th>Qualifications</th>
                                                         <th>Submission Date</th>
-                                                        <th>Status</th>
+                                                        <th>Verification Status</th>
+                                                        <th>Account Status</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
@@ -53,15 +54,20 @@
                                                         <td>{{ tutor.profile_completed_at }}</td>
                                                         <td>
                                                             {% if tutor.verification_status == 0 %}
-                                                            <p>Pending</p>
+                                                            <p><span class="badge bg-warning text-dark">Pending</span></p>
                                                             {% elif tutor.verification_status == 1 %}
-                                                            <p>Verified</p>
+                                                            <p><span class="badge bg-success">Verified</span></p>
                                                             {% elif tutor.verification_status == 2 %}
-                                                            <p>Rejected</p>
-                                                            {% elif tutor.verification_status == 3 %}
-                                                            <p>Suspended</p>
-                                                            {% elif tutor.verification_status == 4 %}
-                                                            <p>Reactivated</p>
+                                                            <p><span class="badge bg-danger">Rejected</span></p>                                                            
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if tutor.verification_status == 1 and tutor.user.is_active %}
+                                                            <p><span class="badge bg-success">Active</span></p>
+                                                            {% elif tutor.verification_status != 1 and tutor.user.is_active %}
+                                                            <p><span class="badge bg-danger">Inactive</span></p>  
+                                                            {% elif not tutor.user.is_active %}
+                                                            <p><span class="badge bg-danger">Suspended</span></p> 
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-right">

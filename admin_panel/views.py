@@ -88,7 +88,7 @@ def students_list(request):
 
 @admin_required
 def tutors_list(request):
-    tutors = TutorProfile.objects.exclude(verification_status=0).all()
+    tutors = TutorProfile.objects.filter(verification_status=1).all()
     paginator = Paginator(tutors, 5)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -103,7 +103,7 @@ def tutors_list(request):
 
 @admin_required
 def tutors_approval(request):
-    pending_tutors=TutorProfile.objects.filter(verification_status=0).prefetch_related('qualifications')
+    pending_tutors=TutorProfile.objects.filter(verification_status__in=[0, 2]).prefetch_related('qualifications')
     paginator = Paginator(pending_tutors, 5)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -126,8 +126,15 @@ def tutor_review(request, id):
             tutor.verification_status = 1
         if status == "rejected":
             tutor.verification_status = 2
-            rejection_reason = request.POST.get("rejection_reason")
+            tutor.current_step = 6
+            tutor.profile_completed=False
+            rejection_reason = request.POST.get("rejection_reason").strip()
             tutor.rejection_reason = rejection_reason
+        if status == "update_reason":
+            rejection_reason = request.POST.get("update_reason").strip()
+            tutor.rejection_reason = rejection_reason
+            tutor.save()
+            return redirect("tutors_approval")
         tutor.save()
         return redirect("tutors_list")
     context={
@@ -141,11 +148,13 @@ def tutor_info(request, id):
     if request.method == "POST":
             status=request.POST.get("decision")
             if status == "reactivate":
-                tutor.verification_status = 4
+                tutor.user.is_active = True
+                
             if status == "suspended":
-                tutor.verification_status = 3
+                tutor.user.is_active = False                
                 suspension_reason = request.POST.get("suspension_reason")
                 tutor.suspension_reason = suspension_reason
+            tutor.user.save()
             tutor.save()
             return redirect("tutors_list")
     context={

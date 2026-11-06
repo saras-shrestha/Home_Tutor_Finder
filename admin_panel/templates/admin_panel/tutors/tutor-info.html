@@ -28,11 +28,11 @@
                                             <div class="profile-card">
                                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                                     <h5 class="fw-bold mb-0">Tutor Information</h5>
-                                                    {% if tutor.verification_status == "verified" %}
+                                                    {% if tutor.verification_status == 1 or tutor.verification_status == 4 %}
                                                         <span class="badge bg-success">Verified</span>
-                                                    {% elif tutor.verification_status == "rejected" %}
+                                                    {% elif tutor.verification_status == 2 %}
                                                         <span class="badge bg-danger">Rejected</span>
-                                                    {% elif tutor.verification_status == "suspended" %}
+                                                    {% elif tutor.verification_status == 3 %}
                                                         <span class="badge bg-danger">Suspended</span>
                                                     {% else %}
                                                         <span class="badge bg-warning text-dark">Pending</span>
@@ -225,12 +225,13 @@
 
                                                                     {% csrf_token %}
                                                                     <div>
-                                                                        {% if tutor.verification_status == 3 %}                                                  
+                                                                        {% if not tutor.user.is_active %}                                                  
                                                                         <button type="submit" name="decision" value="reactivate" class="btn btn-outline-danger"> 
                                                                             Reactivate
                                                                         </button>
-                                                                        {% else %}
-                                                                        <button type="submit" name="decision" value="suspend" class="btn btn-outline-danger" onclick="return tutorSuspend()"> 
+                                                                        {% endif %}   
+                                                                        {% if tutor.user.is_active %}
+                                                                        <button value="suspend" class="btn btn-outline-danger" onclick="return tutorSuspend()"> 
                                                                             Suspend
                                                                         </button>
                                                                         {% endif %}                                                                        

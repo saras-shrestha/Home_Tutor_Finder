@@ -22,6 +22,7 @@
                                             <table class="table table-hover">
                                                 <thead>
                                                     <tr>
+                                                        <th>S.N.</th>
                                                         <th>
                                                            Tutors
                                                         </th>
@@ -33,8 +34,9 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for tutor in tutors %}
+                                                    {% for tutor in tutors %}                                                    
                                                     <tr>
+                                                        <td>{{forloop.counter }}</td>
                                                         <td>
                                                             <div class="d-inline-block align-middle">
                                                                 <img src="{{ tutor.profile_picture.url }}" alt="user image"

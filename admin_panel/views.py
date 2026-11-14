@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from tutors.models import TutorProfile
+from tutors.models import TutorProfile, TutorRequest
 from students.models import StudentProfile
 from core.models import Grade, Subject, GradeSubject
 from django.core.paginator import Paginator
@@ -161,6 +161,38 @@ def tutor_info(request, id):
         "tutor":tutor
     }
     return render(request, 'admin_panel/tutors/tutor-info.html', context)
+
+@admin_required
+def student_tutor_requests(request):
+    tutor_requests = TutorRequest.objects.select_related(
+        'student',
+        'tutor_teaching__tutor',
+        'tutor_teaching__grade_subject__grade',
+        'tutor_teaching__grade_subject__subject'
+    ).order_by('-created_at')
+
+    # Search
+    search = request.GET.get('search', '').strip()
+
+    if search:
+        tutor_requests = tutor_requests.filter(
+            student__full_name__icontains=search
+        ) | tutor_requests.filter(
+            tutor_teaching__tutor__full_name__icontains=search
+        )
+
+    # Filter by status
+    status = request.GET.get('status', '')
+
+    if status:
+        tutor_requests = tutor_requests.filter(status=status)
+
+    context = {
+        'tutor_requests': tutor_requests,
+        'search': search,
+        'selected_status': status,
+    }
+    return render(request, 'admin_panel/student-tutor/student-tutor-requests.html', context)
 
 # locations
 @admin_required

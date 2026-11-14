@@ -19,10 +19,10 @@ class TutorProfile(models.Model):
     )
 
     profile_picture = models.ImageField(
-            upload_to="tutor_profiles/",
-            default = "tutor_profiles/default_profile_picture.jpg",
-            null=True,
-            blank=True
+        upload_to="tutor_profiles/",
+        default = "tutor_profiles/default_profile_picture.jpg",
+        null=True,
+        blank=True
     )
     full_name = models.CharField(max_length=100, blank=True)
     gender = models.CharField(
@@ -260,3 +260,45 @@ class TutorReview(models.Model):
                 name='unique_student_tutor_teaching_review'
             )
         ]
+
+
+class TutorRequest(models.Model):
+
+    student = models.ForeignKey(
+        StudentProfile,
+        on_delete=models.CASCADE,
+        related_name='tutor_requests'
+    )
+
+    tutor_teaching = models.ForeignKey(
+        TutorTeaching,
+        on_delete=models.PROTECT,
+        related_name='student_requests'
+    )
+
+    message = models.TextField(blank=True)
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+        ('cancelled', 'Cancelled'),
+        ('completed', 'Completed'),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    responded_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return f"{self.student} - {self.tutor_teaching.tutor}"

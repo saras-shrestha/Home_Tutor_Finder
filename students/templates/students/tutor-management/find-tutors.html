@@ -597,7 +597,7 @@
                                                         <!--for if request.GET.get('search'): in backend -->
                                                         <input type="hidden" name="search" value="1">
 
-                                                        <button type="submit"class="btn btn-primary py-2 mr-1">
+                                                        <button type="submit" class="btn btn-primary py-2 mr-1">
                                                             <i class="bi bi-search me-2"></i>
                                                             Find Tutors
                                                         </button>
@@ -683,6 +683,25 @@
         });
 
     });
+
+function sendRequest(button){
+    const tutorCard = button.closest('.tutor-card');
+
+    const requestBox = tutorCard.querySelector('.send-request');
+
+    requestBox.classList.remove('d-none');
+}
+
+function cancelAndClear(button) {
+    const tutorCard = button.closest('.tutor-card');
+
+    const requestBox = tutorCard.querySelector('.send-request');
+
+    requestBox.querySelector('form').reset();
+
+    requestBox.classList.add('d-none');
+}
+
 </script>
 
 <script>
@@ -797,13 +816,64 @@
                                         View Profile
                                     </a>
 
-                                    <a href="#" class="btn btn-primary btn-sm">
+                                    <button class="btn btn-primary btn-sm" onclick="sendRequest(this)">
                                         Send Request
-                                    </a>
+                                    </button>
                                 </div>
 
                             </div>
 
+                        </div>
+                    </div>
+                    <div class="d-none send-request">
+                        <hr/>
+                        <div class="d-flex gap-3">
+                            <!-- Sending Request -->
+                            <div class="flex-grow-1 w-100">                          
+
+                                <div class="d-flex align-items-center mb-4">
+                                    <div>
+                                        <h4 class="font-weight-bold mb-1">Send Tutor Request</h4>
+                                        <p class="text-muted mb-0">
+                                            Send a request to this tutor. You can include a message about your learning requirements.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <form method="POST" class="request-form" action="{% url 'send_tutor_request' %}">
+                                        {% csrf_token %}
+
+                                        <input type="hidden" name="tutor_teaching_id" value="${tutor.id}">
+
+                                        <div class="mb-3 w-100">
+                                            <label class="form-label">
+                                                Message <span class="text-muted">(Optional)</span>
+                                            </label>
+
+                                            <textarea
+                                                name="message"
+                                                class="form-control w-100"
+                                                rows="4"
+                                                placeholder="Write a message to the tutor..."
+                                            ></textarea>
+                                        </div>
+
+                                        <div class="d-flex justify-content-center">
+                                            <!--for if request.GET.get('search'): in backend -->
+                                            <input type="hidden" name="search" value="1">
+
+                                            <button type="submit"class="btn btn-primary py-2 mr-1">
+                                                Send Request
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary ml-1" onclick="cancelAndClear(this)">
+                                                Cancel
+                                            </button>
+                                        </div>                                        
+                                    </form>
+                                </div>
+                            
+
+                            </div>
                         </div>
                     </div>
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
-from tutors.models import TutorAvailability, TutorTeaching
+from tutors.models import TutorAvailability, TutorTeaching, TutorRequest
 from .models import StudentProfile
 from django.urls import reverse
 from core.models import GradeSubject, Region, District, City, Location, Grade
@@ -15,6 +15,7 @@ from django.template.loader import render_to_string
 from django.db.models import Avg, Count
 import math
 from datetime import time
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 
@@ -202,65 +203,86 @@ def find_tutors(request):
     if hasattr(request.user, 'student_profile'):
         student_location = request.user.student_profile.location
 
+    # Initially, no tutors are displayed
     tutors = TutorTeaching.objects.none()
 
     if request.GET.get('search'):
 
-        tutors = TutorTeaching.objects.filter(
-            tutor__verification_status=1,
-            tutor__profile_completed=True,
-            is_active=True
-        ).select_related(
-            'tutor',
-            'tutor__location',
-            'grade_subject',
-            'grade_subject__grade',
-            'grade_subject__subject'
-        ).annotate(
-            avg_rating=Avg('reviews__rating'),
-            total_reviews=Count('reviews', distinct=True)
-        )
-
+        # Get search criteria
         grade = request.GET.get('grade')
         subject = request.GET.get('subject')
         budget = request.GET.get('budget')
         fee_type = request.GET.get('fee_type')
         rating = request.GET.get('rating')
+
         day = request.GET.get('day')
         start_time = request.GET.get('start_time')
         end_time = request.GET.get('end_time')
+
         latitude = request.GET.get('latitude')
         longitude = request.GET.get('longitude')
 
+        # Check whether the student has entered at least one criterion
         has_criteria = any([
             grade,
             subject,
             budget,
-            rating
+            rating,
+            day,
+            latitude,
+            longitude
         ])
 
-        if request.GET.get('search') and has_criteria:
+        # Only fetch tutors if search criteria are provided
+        if has_criteria:
+
+            tutors = TutorTeaching.objects.filter(
+                tutor__verification_status=1,
+                tutor__profile_completed=True,
+                is_active=True
+            ).select_related(
+                'tutor',
+                'tutor__location',
+                'grade_subject',
+                'grade_subject__grade',
+                'grade_subject__subject'
+            ).annotate(
+                avg_rating=Avg('reviews__rating'),
+                total_reviews=Count('reviews', distinct=True)
+            )
 
             # Academic filters
-            if grade and subject:
+
+            if grade:
                 tutors = tutors.filter(
-                    grade_subject__grade_id=grade,
+                    grade_subject__grade_id=grade
+                )
+
+            if subject:
+                tutors = tutors.filter(
                     grade_subject__subject_id=subject
                 )
 
             # Budget filter
+
             if budget:
                 try:
                     budget = Decimal(budget)
-                    tutors = tutors.filter(fee__lte=budget)
+
+                    tutors = tutors.filter(
+                        fee__lte=budget
+                    )
 
                     if fee_type:
-                        tutors = tutors.filter(fee_type=fee_type)
+                        tutors = tutors.filter(
+                            fee_type=fee_type
+                        )
 
                 except (InvalidOperation, ValueError):
-                    budget = None
+                    tutors = TutorTeaching.objects.none()
 
             # Availability filter
+
             if day:
                 tutors = tutors.filter(
                     tutor__availabilities__day=day
@@ -287,9 +309,14 @@ def find_tutors(request):
                         }, status=400)
 
             # Location filter - 5 km radius
+
             if latitude or longitude:
 
                 try:
+                    # Both coordinates are required
+                    if not latitude or not longitude:
+                        raise ValueError
+
                     latitude = float(latitude)
                     longitude = float(longitude)
 
@@ -307,14 +334,18 @@ def find_tutors(request):
                 radius = 5  # kilometres
 
                 # Calculate approximate bounding box
+
                 lat_range = radius / 110.574
 
                 lng_range = radius / (
                     111.320 * math.cos(math.radians(latitude))
                 )
 
-                # First, get tutors within the bounding box
+                # Get tutors within the bounding box
+
                 nearby_candidates = tutors.filter(
+                    tutor__location__latitude__isnull=False,
+                    tutor__location__longitude__isnull=False,
                     tutor__location__latitude__range=(
                         latitude - lat_range,
                         latitude + lat_range
@@ -326,6 +357,7 @@ def find_tutors(request):
                 )
 
                 # Calculate exact distance using Haversine formula
+
                 matching_ids = []
 
                 for teaching in nearby_candidates:
@@ -357,32 +389,43 @@ def find_tutors(request):
                     if distance <= radius:
                         matching_ids.append(teaching.id)
 
-                tutors = tutors.filter(id__in=matching_ids)
-
-
+                tutors = tutors.filter(
+                    id__in=matching_ids
+                )
 
             # Rating filter
+
             if rating:
                 try:
                     rating = float(rating)
-                    tutors = tutors.filter(avg_rating__gte=rating)
 
-                except ValueError:
-                    rating = None
+                    tutors = tutors.filter(
+                        avg_rating__gte=rating
+                    )
 
-        tutors = tutors.distinct()
+                except (ValueError, TypeError):
+                    tutors = TutorTeaching.objects.none()
+
+            tutors = tutors.distinct()
+
+    # Page context
 
     context = {
         'grades': Grade.objects.all().order_by('id'),
 
         'grade_subjects': GradeSubject.objects.select_related(
-            'grade', 'subject'
+            'grade',
+            'subject'
         ).order_by('grade__id', 'subject__name'),
 
         'availability_days': TutorAvailability.DAYS,
+
         'student_location': student_location,
+
         'tutors': tutors,
+
         'searched': bool(request.GET.get('search')),
+
         'selected_grade': request.GET.get('grade', ''),
         'selected_subject': request.GET.get('subject', ''),
         'selected_budget': request.GET.get('budget', ''),
@@ -391,41 +434,64 @@ def find_tutors(request):
     }
 
     # AJAX request: return only tutor results
+
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
 
         tutor_data = []
 
         for tutor in tutors:
+
             tutor_data.append({
+                'id': tutor.id,
+
                 'name': tutor.tutor.full_name,
-                'profile_picture': 
-                (
+
+                'profile_picture': (
                     tutor.tutor.profile_picture.url
                     if tutor.tutor.profile_picture
                     else ''
                 ),
-                'status': True if (tutor.tutor.verification_status==1 or tutor.tutor.verification_status==4) else False,
-                'experience':str(tutor.tutor.experience),
+
+                'status': (
+                    True if tutor.tutor.verification_status in [1, 4]
+                    else False
+                ),
+
+                'experience': str(tutor.tutor.experience),
+
                 'grade': str(tutor.grade_subject.grade),
+
                 'subject': str(tutor.grade_subject.subject),
+
                 'fee': str(tutor.fee),
+
                 'fee_type': tutor.get_fee_type_display(),
+
                 'location': (
                     tutor.tutor.location.address
-                    if tutor.tutor.location else ''
+                    if tutor.tutor.location
+                    else ''
                 ),
 
                 'total_reviews': tutor.total_reviews,
-                'rating': round(tutor.avg_rating, 1) if tutor.avg_rating else 'No ratings'
+
+                'rating': (
+                    round(tutor.avg_rating, 1)
+                    if tutor.avg_rating
+                    else 'No ratings'
+                )
             })
 
-        return JsonResponse({'tutors': tutor_data})
+        return JsonResponse({
+            'tutors': tutor_data
+        })
 
     return render(
         request,
         'students/tutor-management/find-tutors.html',
         context
     )
+
 @require_GET
 def address_autocomplete(request):
 
@@ -530,3 +596,83 @@ def save_location(request):
         return redirect('student_dashboard')
 
     return redirect('select_location')
+
+
+@login_required
+@require_POST
+def send_tutor_request(request):
+
+    if request.user.role != "student":
+        return redirect("home-page")
+
+    student = request.user.student_profile
+
+    tutor_teaching_id = request.POST.get('tutor_teaching_id')
+    message = request.POST.get('message', '').strip()
+
+    if not tutor_teaching_id:
+        messages.error(request, "Please select a valid tutor.")
+        return redirect("find_tutors")
+
+    tutor_teaching = get_object_or_404(
+        TutorTeaching,
+        id=tutor_teaching_id,
+        is_active=True,
+        tutor__verification_status=1,
+        tutor__profile_completed=True
+    )
+
+    if tutor_teaching.tutor.user_id == request.user.id:
+        messages.error(request, "You cannot send a request to yourself.")
+        return redirect("find_tutors")
+
+    existing_request = TutorRequest.objects.filter(
+        student=student,
+        tutor_teaching=tutor_teaching,
+        status='pending'
+    ).exists()
+
+    if existing_request:
+        messages.warning(
+            request,
+            "You have already sent a pending request to this tutor."
+        )
+        return redirect("tutor_requests")
+
+    TutorRequest.objects.create(
+        student=student,
+        tutor_teaching=tutor_teaching,
+        message=message
+    )
+
+    messages.success(request, "Tutor request sent successfully!")
+
+    return redirect("tutor_requests")
+
+
+
+@login_required
+def tutor_requests(request):
+
+    if request.user.role != "student":
+        return redirect("home-page")
+
+    student = request.user.student_profile
+
+    tutor_requests = TutorRequest.objects.filter(
+        student=student
+    ).select_related(
+        'tutor_teaching',
+        'tutor_teaching__tutor',
+        'tutor_teaching__grade_subject',
+        'tutor_teaching__grade_subject__grade',
+        'tutor_teaching__grade_subject__subject'
+    ).order_by('-created_at')
+
+    return render(
+        request,
+        'students/tutor-management/tutor-requests.html',
+        {
+            'tutor_requests': tutor_requests
+        }
+    )

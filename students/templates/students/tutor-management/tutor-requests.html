@@ -1,0 +1,395 @@
+{% extends 'students/student-base.html' %}
+    {% load static %}
+    {% block content %}
+    <style>
+    .request-summary {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 18px;
+        background: #fff;
+        height: 100%;
+    }
+
+    .request-summary h3 {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .request-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: 0.2s ease;
+    }
+
+    .request-card:hover {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .tutor-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-accepted {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .status-rejected {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .status-cancelled {
+        background: #e2e3e5;
+        color: #41464b;
+    }
+
+    .status-completed {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .filter-btn {
+        border: 1px solid #dee2e6;
+        background: #fff;
+        color: #495057;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .filter-btn.active {
+        background: #0d6efd;
+        color: #fff;
+        border-color: #0d6efd;
+    }
+
+    .request-message {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 14px;
+        color: #495057;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        background: #fff;
+        border: 1px dashed #dee2e6;
+        border-radius: 12px;
+    }
+</style>
+
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <!-- Main-body start -->
+
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <!-- Page-body start -->
+
+                    <div class="page-body">
+                        <div class="row">
+                            <!--first row-->                            
+                            <!--  Tutor Pending approvals starts -->
+                            <div class="col-12">
+                                <div class="card table-card">
+                                    <div class="card-header">
+                                        <h5>My Tutor Requests</h5>
+                                        <p class="text-muted mb-0 small">
+                                            Track and manage your tutor requests.
+                                        </p>
+                                    </div>
+                                    <div class="card-block mt-3">                                      
+
+                                        <div class="container-fluid">   
+
+                                            <!-- Summary cards -->
+                                            <div class="row mb-4">
+
+                                                <div class="col-md-3 col-6 mb-3">
+                                                    <div class="request-summary">
+                                                        <p class="text-muted mb-2">Total Requests</p>
+                                                        <h3>{{ tutor_requests.count }}</h3>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3 col-6 mb-3">
+                                                    <div class="request-summary">
+                                                        <p class="text-muted mb-2">Pending</p>
+                                                        <h3 class="text-warning">
+                                                            {{ pending_count }}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3 col-6 mb-3">
+                                                    <div class="request-summary">
+                                                        <p class="text-muted mb-2">Accepted</p>
+                                                        <h3 class="text-success">
+                                                            {{ accepted_count }}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3 col-6 mb-3">
+                                                    <div class="request-summary">
+                                                        <p class="text-muted mb-2">Rejected</p>
+                                                        <h3 class="text-danger">
+                                                            {{ rejected_count }}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+
+                                            <!-- Status filters -->
+                                            <div>
+                                                <h5 class="font-weight-bold mb-2">Your Requests</h5>
+                                            </div>
+                                            <div class="d-flex flex-wrap align-items-center mb-3" style="gap: 8px;">
+
+                                                <button class="filter-btn active" data-filter="all">
+                                                    All
+                                                </button>
+
+                                                <button class="filter-btn" data-filter="pending">
+                                                    Pending
+                                                </button>
+
+                                                <button class="filter-btn" data-filter="accepted">
+                                                    Accepted
+                                                </button>
+
+                                                <button class="filter-btn" data-filter="rejected">
+                                                    Rejected
+                                                </button>
+
+                                                <button class="filter-btn" data-filter="cancelled">
+                                                    Cancelled
+                                                </button>
+
+                                                <button class="filter-btn" data-filter="completed">
+                                                    Completed
+                                                </button>
+
+                                            </div>
+
+
+                                            <!-- Request list -->
+                                            <div id="requestList">
+
+                                                {% for req in tutor_requests %}
+
+                                                <div class="request-card"
+                                                    data-status="{{ req.status }}">
+
+                                                    <!-- Tutor information -->
+                                                    <div class="d-flex justify-content-between align-items-start flex-wrap">
+
+                                                        <div class="d-flex align-items-center mb-3">
+
+                                                            {% if req.tutor_teaching.tutor.profile_picture %}
+                                                                <img
+                                                                    src="{{ req.tutor_teaching.tutor.profile_picture.url }}"
+                                                                    class="tutor-avatar mr-3"
+                                                                    alt="Tutor profile">
+                                                            {% else %}
+                                                                <div class="tutor-avatar bg-light d-flex align-items-center justify-content-center mr-3">
+                                                                    <i class="fas fa-user text-secondary"></i>
+                                                                </div>
+                                                            {% endif %}
+
+                                                            <div>
+                                                                <h6 class="font-weight-bold mb-1">
+                                                                    {{ req.tutor_teaching.tutor.full_name }}
+                                                                </h6>
+
+                                                                <small class="text-muted">
+                                                                    Grade {{ req.tutor_teaching.grade_subject.grade }}
+                                                                    &nbsp;·&nbsp;
+                                                                    {{ req.tutor_teaching.grade_subject.subject }}
+                                                                </small>
+                                                            </div>
+
+                                                        </div>
+
+
+                                                        <!-- Status -->
+                                                        <span class="status-badge status-{{ req.status }}">
+                                                            {{ req.get_status_display }}
+                                                        </span>
+
+                                                    </div>
+
+
+                                                    <!-- Fee and date -->
+                                                    <div class="d-flex flex-wrap justify-content-between mb-3">
+
+                                                        <div>
+                                                            <small class="text-muted">Teaching fee</small>
+                                                            <p class="font-weight-bold mb-0">
+                                                                NPR {{ req.tutor_teaching.fee }}
+                                                                / {{ req.tutor_teaching.get_fee_type_display }}
+                                                            </p>
+                                                        </div>
+
+                                                        <div>
+                                                            <small class="text-muted">Request sent</small>
+                                                            <p class="mb-0">
+                                                                {{ req.created_at|date:"M d, Y · h:i A" }}
+                                                            </p>
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <!-- Student message -->
+                                                    <div class="request-message mb-3">
+
+                                                        <small class="text-muted d-block mb-1">
+                                                            Your message
+                                                        </small>
+
+                                                        {% if req.message %}
+                                                            {{ req.message|linebreaksbr }}
+                                                        {% else %}
+                                                            <span class="text-muted">No message provided.</span>
+                                                        {% endif %}
+
+                                                    </div>
+
+
+                                                    <!-- Actions -->
+                                                    <div class="d-flex justify-content-end">
+
+                                                        {% if req.status == 'pending' %}
+
+                                                            <button type="button"
+                                                                    class="btn btn-outline-danger btn-sm">
+                                                                Cancel Request
+                                                            </button>
+
+                                                        {% elif req.status == 'accepted' %}
+
+                                                            <span class="text-success small font-weight-bold">
+                                                                <i class="fas fa-check-circle"></i>
+                                                                Your request has been accepted.
+                                                            </span>
+
+                                                        {% elif req.status == 'rejected' %}
+
+                                                            <span class="text-danger small">
+                                                                Your request was rejected.
+                                                            </span>
+
+                                                        {% elif req.status == 'completed' %}
+
+                                                            <span class="text-primary small">
+                                                                This tutoring request is completed.
+                                                            </span>
+
+                                                        {% endif %}
+
+                                                    </div>
+
+                                                </div>
+
+                                                {% empty %}
+
+                                                <div class="empty-state">
+                                                    <i class="fas fa-paper-plane fa-3x text-muted mb-3"></i>
+
+                                                    <h5>No tutor requests yet</h5>
+
+                                                    <p class="text-muted">
+                                                        Your tutor requests will appear here after you contact a tutor.
+                                                    </p>
+
+                                                    <a href="{% url 'find_tutors' %}"
+                                                    class="btn btn-primary btn-sm">
+                                                        Find Tutors
+                                                    </a>
+                                                </div>
+
+                                                {% endfor %}
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div> 
+                            <!--first row ends-->
+                                                                                  
+                        </div>
+                    </div>
+                    <!-- Page-body end -->
+                </div>
+                <div id="styleSelector"> </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Status filter JavaScript -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const requestCards = document.querySelectorAll('.request-card');
+
+        filterButtons.forEach(button => {
+
+            button.addEventListener('click', function () {
+
+                filterButtons.forEach(btn =>
+                    btn.classList.remove('active')
+                );
+
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+
+                requestCards.forEach(card => {
+
+                    if (
+                        filter === 'all' ||
+                        card.dataset.status === filter
+                    ) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+
+                });
+
+            });
+
+        });
+
+    });
+    </script>
+
+    {% endblock content %}

@@ -25,6 +25,7 @@
                                             <table class="table table-hover">
                                                 <thead>
                                                     <tr>
+                                                        <th>S.N.</th>
                                                         <th>
                                                             Tutors
                                                         </th>
@@ -37,6 +38,7 @@
                                                 <tbody>
                                                     {% for pending_tutor in pending_tutors %}
                                                     <tr>
+                                                        <td>{{forloop.counter}}</td>
                                                         <td>
                                                             <div class="d-inline-block align-middle">
                                                                 <img src="{{ pending_tutor.profile_picture.url }}" alt="user image"

@@ -17,6 +17,9 @@ urlpatterns = [
     # students    
     path('students-list/', views.students_list, name='students_list'),
 
+    # student-tutor
+    path('student-tutor-requests/', views.student_tutor_requests, name='student_tutor_requests'),
+
     # grades
     path('grades-list/', views.grades_list, name='grades_list'),
     path('grade/<int:id>/edit', views.grade_edit, name='grade_edit'),

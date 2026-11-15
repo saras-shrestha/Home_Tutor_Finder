@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from core.models import Grade, GradeSubject, Location, Region
-from .models import Qualification, TutorTeaching
+from .models import Qualification, TutorTeaching, TutorAvailability, TutorRequest
 from django.http import JsonResponse
-from django.utils import timezone
-from .models import TutorAvailability
+from django.utils import timezone 
 from .forms import TutorAvailabilityForm 
 from django.contrib import messages
+from django.core.paginator import Paginator
 # Create your views here.
 
 @login_required
@@ -436,3 +436,61 @@ def delete_fee_structure(request, pk):
         messages.success(request, 'Fee structure deleted.')
 
     return redirect('teaching_fees')
+
+@login_required
+def pending_request(request):
+    tutor = request.user.tutor_profile
+    pending_requests = TutorRequest.objects.filter(
+        tutor_teaching__tutor=tutor,
+        status='pending'
+    ).select_related(
+        'student',
+        'student__user',
+        'tutor_teaching__grade_subject__grade',
+        'tutor_teaching__grade_subject__subject'
+    )
+    paginator = Paginator(pending_requests, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+        
+    context={
+        "pending_requests":page_obj,
+    }    
+    return render(request, 'tutors/teaching_management/pending-request.html', context)
+
+@login_required
+def accepted_request(request):
+    tutor = request.user.tutor_profile
+
+    accepted_requests = TutorRequest.objects.filter(
+        tutor_teaching__tutor=tutor,
+        status='accepted'
+    ).select_related(
+        'student',
+        'student__user',
+        'tutor_teaching__grade_subject__grade',
+        'tutor_teaching__grade_subject__subject'
+    )
+
+    paginator = Paginator(accepted_requests, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "accepted_requests": page_obj,
+    }
+
+    return render(
+        request,
+        'tutors/teaching_management/accepted-request.html',
+        context
+    )
+
+@login_required
+def rejected_request(request):
+    return render(request, 'tutors/teaching_management/rejected-request.html')
+
+@login_required
+def completed_session(request):
+    return render(request, 'tutors/teaching_management/completed-request.html')
+

@@ -11,6 +11,12 @@ urlpatterns = [
     path('availability/<int:pk>/edit/', views.edit_availability, name='edit_availability'),
     path('availability/<int:pk>/delete/', views.delete_availability, name='delete_availability'),
 
+    # teaching management
+    path('teaching/pending-requests', views.pending_request, name='pending_request'),
+    path('teaching/accepted-requests', views.accepted_request, name='accepted_request'),
+    path('teaching/rejected-requests', views.rejected_request, name='rejected_request'),
+    path('teaching/completed-sessions', views.completed_session, name='completed_session'),
+
     # manage teaching fees
     path('fees-management/', views.teaching_fees, name='teaching_fees'),
     path('grade-subjects/<int:grade_id>/', views.get_subjects, name='get_subjects'),

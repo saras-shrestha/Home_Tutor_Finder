@@ -283,6 +283,7 @@ class TutorRequest(models.Model):
         ('accepted', 'Accepted'),
         ('rejected', 'Rejected'),
         ('cancelled', 'Cancelled'),
+        ('in_progress', 'In Progress'),
         ('completed', 'Completed'),
     ]
 
@@ -296,6 +297,10 @@ class TutorRequest(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     responded_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+    teaching_started_at = models.DateTimeField(
         null=True,
         blank=True
     )

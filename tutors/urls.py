@@ -12,10 +12,14 @@ urlpatterns = [
     path('availability/<int:pk>/delete/', views.delete_availability, name='delete_availability'),
 
     # teaching management
-    path('teaching/pending-requests', views.pending_request, name='pending_request'),
-    path('teaching/accepted-requests', views.accepted_request, name='accepted_request'),
-    path('teaching/rejected-requests', views.rejected_request, name='rejected_request'),
-    path('teaching/completed-sessions', views.completed_session, name='completed_session'),
+    path('teaching/pending-requests', views.pending_student_request, name='pending_request'),
+    path('teaching/accepted-requests', views.accepted_student_request, name='accepted_request'),
+    path('teaching/rejected-requests', views.rejected_student_request, name='rejected_request'),   
+    path('teaching/completed_sessions', views.completed_sessions, name='completed_sessions'),     
+    path('student-request/<int:request_id>/respond/', views.respond_student_request, name='respond_student_request'),
+    path('teaching/my-stdents', views.my_students, name='my_students'),  
+    path('teaching/my-stdents', views.my_students, name='my_students'),          
+    path('teaching/<int:id>/student_detail', views.student_detail, name='student_detail'),
 
     # manage teaching fees
     path('fees-management/', views.teaching_fees, name='teaching_fees'),

@@ -1,0 +1,470 @@
+{% extends 'tutors/tutor-base.html' %}
+    {% block content %}
+    {% load static %}
+    
+
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <!-- Main-body start -->
+
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <!-- Page-body start -->
+
+                    <div class="page-body">
+                        <div class="row">
+                            <!--first row-->                            
+                            <!-- Student Pending requests starts -->
+                            <div class="col-12">
+                                <div class="card table-card">
+                                    <div class="card-header">
+                                        <h5>Accepted Requests</h5>
+                                        <p class="text-muted mb-0 small">
+                                            Students you have accepted for teaching
+                                        </p>
+                                    </div>
+                                    <div class="card-block">
+
+
+                                        <div class="container-fluid py-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="font-weight-bold mb-1">Accepted Requests</h4>
+            <p class="text-muted mb-0">
+                Manage your accepted student requests and teaching progress.
+            </p>
+        </div>
+    </div>
+
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+
+        <div class="col-md-6 mb-3 mb-md-0">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+
+                    <div class="rounded bg-primary p-3 mr-3 text-white">
+                        <i class="bi bi-hourglass-split"
+                           style="font-size: 22px;"></i>
+                    </div>
+
+                    <div>
+                        <h3 class="font-weight-bold mb-0">
+                            {{ accepted_students.count }}
+                        </h3>
+                        <small class="text-muted">
+                            Accepted - Not Started
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+
+                    <div class="rounded bg-success p-3 mr-3 text-white">
+                        <i class="bi bi-play-circle"
+                           style="font-size: 22px;"></i>
+                    </div>
+
+                    <div>
+                        <h3 class="font-weight-bold mb-0">
+                            {{ started_students.count }}
+                        </h3>
+                        <small class="text-muted">
+                            Teaching In Progress
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white pt-3 pb-0">
+
+            <h6 class="font-weight-bold mb-3">
+                Student Teaching Management
+            </h6>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs" id="acceptedTabs" role="tablist">
+
+                <li class="nav-item">
+                    <a class="nav-link active"
+                       id="not-started-tab"
+                       data-toggle="tab"
+                       href="#not-started"
+                       role="tab">
+
+                        <i class="bi bi-hourglass-split mr-1"></i>
+                        Not Started
+
+                        <span class="badge badge-primary ml-1">
+                            {{ accepted_students.count }}
+                        </span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       id="in-progress-tab"
+                       data-toggle="tab"
+                       href="#in-progress"
+                       role="tab">
+
+                        <i class="bi bi-play-circle mr-1"></i>
+                        In Progress
+
+                        <span class="badge badge-success ml-1">
+                            {{ started_students.count }}
+                        </span>
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="acceptedTabsContent">
+
+
+                <!-- ================================= -->
+                <!-- NOT STARTED TAB -->
+                <!-- ================================= -->
+
+                <div class="tab-pane fade show active"
+                     id="not-started"
+                     role="tabpanel">
+
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold mb-1">
+                            Accepted Students
+                        </h6>
+                        <small class="text-muted">
+                            These students are waiting for teaching to begin.
+                        </small>
+                    </div>
+
+
+                    <!-- Search and Filter -->
+                    <form method="GET" class="row mb-3">
+
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <input type="text"
+                                   name="search"
+                                   class="form-control"
+                                   placeholder="Search student name..."
+                                   value="{{ request.GET.search }}">
+                        </div>
+
+                        <div class="col-md-3 mb-2 mb-md-0">
+                            <select name="grade" class="form-control">
+                                <option value="">All Grades</option>
+
+                                {% for grade in grades %}
+                                    <option value="{{ grade.id }}"
+                                        {% if request.GET.grade == grade.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ grade.name }}
+                                    </option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                <i class="bi bi-search mr-1"></i>
+                                Search
+                            </button>
+
+                            <a href=""
+                               class="btn btn-outline-secondary">
+                                Reset
+                            </a>
+                        </div>
+
+                    </form>
+
+
+                    <!-- Not Started Table -->
+                    <div class="table-responsive">
+
+                        <table class="table table-hover">
+
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>S.N.</th>
+                                    <th>Student</th>
+                                    <th>Grade</th>
+                                    <th>Subject</th>
+                                    <th>Fee</th>
+                                    <th>Accepted Date</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for student in accepted_students %}
+
+                                    <tr>
+                                        <td>{{forloop.counter}}</td>
+
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if student.student.profile_picture %}
+                                                    <img src="{{ student.student.profile_picture.url }}"
+                                                        class="rounded-circle"
+                                                        width="85"
+                                                        height="85"
+                                                        style="object-fit: cover;">
+                                                {% else %}
+                                                    <img src="{% static 'images/default-profile.png' %}"
+                                                        class="rounded-circle"
+                                                        width="85"
+                                                        height="85"
+                                                        style="object-fit: cover;">
+                                                {% endif %}
+                                                <div class="font-weight-bold ml-2">
+                                                    {{ student.student.full_name }}
+                                                    <p>
+                                                        <small class="text-muted">
+                                                            {{ student.student.user.email }}
+                                                        </small>
+                                                    </p>
+                                                </div>
+                                                
+                                            </div>
+                                            
+                                        </td>
+
+                                        <td>
+                                            {{ student.tutor_teaching.grade_subject.grade.name }}
+                                        </td>
+
+                                        <td>
+                                            {{ student.tutor_teaching.grade_subject.subject.name }}
+                                        </td>
+
+                                        <td>
+                                            Rs. {{ student.tutor_teaching.fee }}
+                                            <small class="text-muted">
+                                                / {{ student.tutor_teaching.get_fee_type_display }}
+                                            </small>
+                                        </td>
+
+                                        <td>
+                                            {{ student.responded_at|date:"M d, Y" }}
+                                        </td>
+
+                                        <td class="text-center">
+
+                                            <a href="{% url 'student_detail' student.id %}"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            <form method="POST" action="" class="d-inline">
+                                                {% csrf_token %}
+
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-success"
+                                                        onclick="return confirm('Are you sure you want to start teaching this student?')">
+                                                    <i class="bi bi-play-fill mr-1"></i>
+                                                    Start
+                                                </button>
+                                            </form>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% empty %}
+
+                                    <tr>
+                                        <td colspan="6"
+                                            class="text-center py-5">
+
+                                            <i class="bi bi-people text-muted"
+                                               style="font-size: 35px;"></i>
+
+                                            <h6 class="font-weight-bold mt-3">
+                                                No Accepted Requests
+                                            </h6>
+
+                                            <p class="text-muted mb-0">
+                                                No students are waiting for teaching to start.
+                                            </p>
+
+                                        </td>
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================================= -->
+                <!-- IN PROGRESS TAB -->
+                <!-- ================================= -->
+
+                <div class="tab-pane fade"
+                     id="in-progress"
+                     role="tabpanel">
+
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold mb-1">
+                            Teaching In Progress
+                        </h6>
+
+                        <small class="text-muted">
+                            Students whose teaching has already started.
+                        </small>
+                    </div>
+
+
+                    <!-- In Progress Table -->
+                    <div class="table-responsive">
+
+                        <table class="table table-hover">
+
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Grade</th>
+                                    <th>Subject</th>
+                                    <th>Fee</th>
+                                    <th>Started Date</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for student in started_students %}
+
+                                    <tr>
+
+                                        <td>
+                                            <div class="font-weight-bold">
+                                                {{ student.student.user.get_full_name }}
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ student.student.user.email }}
+                                            </small>
+                                        </td>
+
+                                        <td>
+                                            {{ student.tutor_teaching.grade_subject.grade.name }}
+                                        </td>
+
+                                        <td>
+                                            {{ student.tutor_teaching.grade_subject.subject.name }}
+                                        </td>
+
+                                        <td>
+                                            Rs. {{ student.tutor_teaching.fee }}
+                                            <small class="text-muted">
+                                                / {{ student.tutor_teaching.get_fee_type_display }}
+                                            </small>
+                                        </td>
+
+                                        <td>
+                                            {{ student.teaching_started_at|date:"M d, Y" }}
+                                        </td>
+
+                                        <td class="text-center">
+
+                                            <a href="{% url 'student_detail' student.id %}"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            <span class="badge badge-success ml-1">
+                                                In Progress
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% empty %}
+
+                                    <tr>
+                                        <td colspan="6"
+                                            class="text-center py-5">
+
+                                            <i class="bi bi-book text-muted"
+                                               style="font-size: 35px;"></i>
+
+                                            <h6 class="font-weight-bold mt-3">
+                                                No Teaching Started Yet
+                                            </h6>
+
+                                            <p class="text-muted mb-0">
+                                                Students will appear here after you start teaching.
+                                            </p>
+
+                                        </td>
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+                                    </div>
+                                </div>
+                            </div> 
+                            <!--first row ends-->
+                                                                                  
+                        </div>
+                    </div>
+                    <!-- Page-body end -->
+                </div>
+                <div id="styleSelector"> </div>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}

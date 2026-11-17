@@ -17,9 +17,11 @@ urlpatterns = [
     path('teaching/rejected-requests', views.rejected_student_request, name='rejected_request'),   
     path('teaching/completed_sessions', views.completed_sessions, name='completed_sessions'),     
     path('student-request/<int:request_id>/respond/', views.respond_student_request, name='respond_student_request'),
+
     path('teaching/my-stdents', views.my_students, name='my_students'),  
     path('teaching/my-stdents', views.my_students, name='my_students'),          
-    path('teaching/<int:id>/student_detail', views.student_detail, name='student_detail'),
+    path('teaching/<int:req_id>/student_details', views.student_details, name='student_details'),
+    path('teaching/<int:start_request_id>/start/', views.start_teaching, name='start_teaching'),
 
     # manage teaching fees
     path('fees-management/', views.teaching_fees, name='teaching_fees'),

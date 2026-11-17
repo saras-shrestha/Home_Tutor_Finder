@@ -1,0 +1,123 @@
+{% load static %}<div class="mb-3">
+    <h6 class="font-weight-bold mb-1">
+        Teaching In Progress
+    </h6>
+
+    <small class="text-muted">
+        Students whose teaching has already started.
+    </small>
+</div>
+
+<!-- In Progress Table -->
+<div class="table-responsive">
+
+    <table class="table table-hover">
+
+        <thead class="thead-light">
+            <tr>
+                <th>S.N.</th>
+                <th>Student</th>
+                <th>Grade</th>
+                <th>Subject</th>
+                <th>Fee</th>
+                <th>Started Date</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for student in started_students %}
+
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+                    <td>
+                        <div class="d-flex align-items-center">
+                            {% if student.student.profile_picture %}
+                                <img src="{{ student.student.profile_picture.url }}"
+                                    class="rounded-circle"
+                                    width="85"
+                                    height="85"
+                                    style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default-profile.png' %}"
+                                    class="rounded-circle"
+                                    width="85"
+                                    height="85"
+                                    style="object-fit: cover;">
+                            {% endif %}
+                            <div class="font-weight-bold ml-2">
+                                {{ student.student.full_name }}
+                                <p>
+                                    <small class="text-muted">
+                                        {{ student.student.user.email }}
+                                    </small>
+                                </p>
+                            </div>
+                                                                                        
+                        </div>
+                    </td>
+
+                    <td>
+                        {{ student.tutor_teaching.grade_subject.grade.name }}
+                    </td>
+
+                    <td>
+                        {{ student.tutor_teaching.grade_subject.subject.name }}
+                    </td>
+
+                    <td>
+                        Rs. {{ student.tutor_teaching.fee }}
+                        <small class="text-muted">
+                            / {{ student.tutor_teaching.get_fee_type_display }}
+                        </small>
+                    </td>
+
+                    <td>
+                        {{ student.teaching_started_at|date:"M d, Y" }}
+                    </td>
+
+                    <td class="text-center">
+
+                        <a href="{% url 'student_detail' student.id %}"
+                        class="btn btn-sm btn-outline-primary"
+                        title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        <span class="badge badge-success ml-1">
+                            In Progress
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="6"
+                        class="text-center py-5">
+
+                        <i class="bi bi-book text-muted"
+                        style="font-size: 35px;"></i>
+
+                        <h6 class="font-weight-bold mt-3">
+                            No Teaching Started Yet
+                        </h6>
+
+                        <p class="text-muted mb-0">
+                            Students will appear here after you start teaching.
+                        </p>
+
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>

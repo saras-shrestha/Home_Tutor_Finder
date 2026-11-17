@@ -108,19 +108,29 @@
                                                                         <tr>
                                                                             <td>{{forloop.counter}}</td>
                                                                             <td class="ps-4">
-                                                                                <div class="d-flex align-items-center gap-2">
-                                                                                    <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center"
-                                                                                        style="width:40px;height:40px;">
-                                                                                        <i class="bi bi-person-fill"></i>
+                                                                                <div class="d-flex align-items-center">
+                                                                                    {% if student.student.profile_picture %}
+                                                                                        <img src="{{ student.student.profile_picture.url }}"
+                                                                                            class="rounded-circle"
+                                                                                            width="85"
+                                                                                            height="85"
+                                                                                            style="object-fit: cover;">
+                                                                                    {% else %}
+                                                                                        <img src="{% static 'images/default-profile.png' %}"
+                                                                                            class="rounded-circle"
+                                                                                            width="85"
+                                                                                            height="85"
+                                                                                            style="object-fit: cover;">
+                                                                                    {% endif %}
+                                                                                    <div class="font-weight-bold ml-2">
+                                                                                        {{ student.student.full_name }}
+                                                                                        <p>
+                                                                                            <small class="text-muted">
+                                                                                                {{ student.student.user.email }}
+                                                                                            </small>
+                                                                                        </p>
                                                                                     </div>
-                                                                                    <div>
-                                                                                        <div class="fw-semibold">
-                                                                                            {{ student.student.full_name }}
-                                                                                        </div>
-                                                                                        <small class="text-muted">
-                                                                                            {{ student.student.user.email }}
-                                                                                        </small>
-                                                                                    </div>
+                                                                                                                                                
                                                                                 </div>
                                                                             </td>
 
@@ -140,10 +150,9 @@
                                                                             </td>
 
                                                                             <td class="text-center">
-                                                                                <a href="{% url 'student_detail' student.id %}"
+                                                                                <a href="{% url 'student_details' student.id %}"
                                                                                 class="btn btn-sm btn-outline-primary">
-                                                                                    <i class="bi bi-eye me-1"></i>
-                                                                                    View Details
+                                                                                    <i class="bi bi-eye-fill me-1"></i>
                                                                                 </a>
                                                                             </td>
                                                                         </tr>

@@ -9,7 +9,8 @@ from .forms import TutorAvailabilityForm
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-
+from django.template.loader import render_to_string
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 
@@ -516,12 +517,81 @@ def respond_student_request(request, request_id):
 #     )
 
 
+# @login_required
+# def accepted_student_request(request):
+
+#     tutor = request.user.tutor_profile
+
+#     # Accepted requests - teaching not started
+#     accepted_students = TutorRequest.objects.filter(
+#         tutor_teaching__tutor=tutor,
+#         status='accepted'
+#     ).select_related(
+#         'student',
+#         'student__user',
+#         'tutor_teaching',
+#         'tutor_teaching__grade_subject',
+#         'tutor_teaching__grade_subject__grade',
+#         'tutor_teaching__grade_subject__subject'
+#     ).order_by('-responded_at')
+
+#     # Students whose teaching has started
+#     started_students = TutorRequest.objects.filter(
+#         tutor_teaching__tutor=tutor,
+#         status='in_progress'
+#     ).select_related(
+#         'student',
+#         'student__user',
+#         'tutor_teaching',
+#         'tutor_teaching__grade_subject',
+#         'tutor_teaching__grade_subject__grade',
+#         'tutor_teaching__grade_subject__subject'
+#     ).order_by('-teaching_started_at')
+
+#     # Search by student name
+#     search = request.GET.get('search', '').strip()
+
+#     if search:
+#         name_filter = (
+#             Q(student__user__first_name__icontains=search) |
+#             Q(student__user__last_name__icontains=search) |
+#             Q(student__user__username__icontains=search)
+#         )
+
+#         accepted_students = accepted_students.filter(name_filter)
+#         started_students = started_students.filter(name_filter)
+
+#     # Filter by grade
+#     grade_id = request.GET.get('grade')
+
+#     if grade_id:
+#         accepted_students = accepted_students.filter(
+#             tutor_teaching__grade_subject__grade_id=grade_id
+#         )
+
+#         started_students = started_students.filter(
+#             tutor_teaching__grade_subject__grade_id=grade_id
+#         )
+
+#     context = {
+#         'accepted_students': accepted_students,
+#         'started_students': started_students,
+#         'grades': Grade.objects.all(),
+#     }
+
+#     return render(
+#             request,
+#             'tutors/teaching_management/accepted-request.html',
+#             context
+#         )
+
+
 @login_required
 def accepted_student_request(request):
 
     tutor = request.user.tutor_profile
 
-    # Accepted requests - teaching not started
+    # Not Started students
     accepted_students = TutorRequest.objects.filter(
         tutor_teaching__tutor=tutor,
         status='accepted'
@@ -534,7 +604,7 @@ def accepted_student_request(request):
         'tutor_teaching__grade_subject__subject'
     ).order_by('-responded_at')
 
-    # Students whose teaching has started
+    # In Progress students
     started_students = TutorRequest.objects.filter(
         tutor_teaching__tutor=tutor,
         status='in_progress'
@@ -547,7 +617,7 @@ def accepted_student_request(request):
         'tutor_teaching__grade_subject__subject'
     ).order_by('-teaching_started_at')
 
-    # Search by student name
+    # Search
     search = request.GET.get('search', '').strip()
 
     if search:
@@ -560,7 +630,7 @@ def accepted_student_request(request):
         accepted_students = accepted_students.filter(name_filter)
         started_students = started_students.filter(name_filter)
 
-    # Filter by grade
+    # Grade filter
     grade_id = request.GET.get('grade')
 
     if grade_id:
@@ -572,18 +642,53 @@ def accepted_student_request(request):
             tutor_teaching__grade_subject__grade_id=grade_id
         )
 
+    # Context
     context = {
         'accepted_students': accepted_students,
         'started_students': started_students,
         'grades': Grade.objects.all(),
     }
 
-    return render(
-            request,
-            'tutors/teaching_management/accepted-request.html',
-            context
-        )
+    # AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 
+        tab = request.GET.get('tab')
+
+        if tab == 'not_started':
+
+            html = render_to_string(
+                'tutors/teaching_management/_not_started_table.html',
+                context,
+                request=request
+            )
+
+        elif tab == 'in_progress':
+
+            html = render_to_string(
+                'tutors/teaching_management/_in_progress_table.html',
+                context,
+                request=request
+            )
+
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid tab requested.'
+            }, status=400)
+
+        return JsonResponse({
+            'success': True,
+            'html': html,
+            'not_started_count': accepted_students.count(),
+            'in_progress_count': started_students.count()
+        })
+
+    # Normal page request
+    return render(
+        request,
+        'tutors/teaching_management/accepted-request.html',
+        context
+    )
 
 @login_required
 def rejected_student_request(request):
@@ -709,5 +814,53 @@ def completed_sessions(request):
         'tutors/teaching_management/completed_sessions.html',
         context
     )
-def student_detail(request, id):
-    pass
+
+@login_required
+def student_details(request, req_id):
+    
+
+    student_request = get_object_or_404(
+        TutorRequest.objects.select_related(
+            'student',
+            'student__user',
+            'tutor_teaching',
+            'tutor_teaching__grade_subject',
+            'tutor_teaching__grade_subject__grade',
+            'tutor_teaching__grade_subject__subject'
+        ),
+        id=req_id,
+        tutor_teaching__tutor=request.user.tutor_profile,
+        status='in_progress'
+    )
+
+    context = {
+        'student_request': student_request,
+    }
+
+    return render(
+        request,
+        'tutors/teaching_management/student-details.html',
+        context
+    )
+
+@login_required
+@require_POST
+def start_teaching(request, start_request_id):
+
+    tutor = request.user.tutor_profile
+
+    student_request = get_object_or_404(
+        TutorRequest,
+        id=start_request_id,
+        tutor_teaching__tutor=tutor,
+        status='accepted'
+    )
+
+    student_request.status = 'in_progress'
+    student_request.teaching_started_at = timezone.now()
+    student_request.save()
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Teaching started successfully!'
+    })

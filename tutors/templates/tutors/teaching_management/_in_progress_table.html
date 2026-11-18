@@ -30,9 +30,9 @@
             {% for student in started_students %}
 
                 <tr>
-                    <td>{{forloop.counter}}</td>
+                    <td class="align-middle">{{forloop.counter}}</td>
 
-                    <td>
+                    <td class="align-middle">
                         <div class="d-flex align-items-center">
                             {% if student.student.profile_picture %}
                                 <img src="{{ student.student.profile_picture.url }}"
@@ -41,7 +41,7 @@
                                     height="85"
                                     style="object-fit: cover;">
                             {% else %}
-                                <img src="{% static 'images/default-profile.png' %}"
+                                <img src="{% static 'assets/images/profile/profile.png' %}"
                                     class="rounded-circle"
                                     width="85"
                                     height="85"
@@ -59,36 +59,32 @@
                         </div>
                     </td>
 
-                    <td>
+                    <td class="align-middle">
                         {{ student.tutor_teaching.grade_subject.grade.name }}
                     </td>
 
-                    <td>
+                    <td class="align-middle">
                         {{ student.tutor_teaching.grade_subject.subject.name }}
                     </td>
 
-                    <td>
+                    <td class="align-middle">
                         Rs. {{ student.tutor_teaching.fee }}
                         <small class="text-muted">
                             / {{ student.tutor_teaching.get_fee_type_display }}
                         </small>
                     </td>
 
-                    <td>
+                    <td class="align-middle">
                         {{ student.teaching_started_at|date:"M d, Y" }}
                     </td>
 
-                    <td class="text-center">
+                    <td class="text-center align-middle">
 
-                        <a href="{% url 'student_detail' student.id %}"
+                        <a href="{% url 'in_progress_details' student.id %}"
                         class="btn btn-sm btn-outline-primary"
                         title="View Details">
-                            <i class="bi bi-eye"></i>
+                            <i class="bi bi-eye-fill"></i>
                         </a>
-
-                        <span class="badge badge-success ml-1">
-                            In Progress
-                        </span>
 
                     </td>
 

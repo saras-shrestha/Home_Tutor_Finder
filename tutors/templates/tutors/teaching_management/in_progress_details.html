@@ -1,0 +1,181 @@
+{% extends 'tutors/tutor-base.html' %}
+    {% load static %}
+    {% block content %}
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <!-- Main-body start -->
+
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <!-- Page-body start -->
+                    <div class="page-body">
+                        <div class="row">
+
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h5>Student Details</h5>
+                                        <p class="text-muted mb-0">
+                                            View student information and request details.
+                                        </p>
+                                    </div>
+
+                                    <div class="card-block">                                      
+                                        <div class="container-fluid">                                          
+                                            <div class="card shadow-sm">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                                        <h5>Student Information</h5>
+
+                                                        <a href="{% url 'my_students' %}"
+                                                                class="btn btn-outline-secondary">
+                                                            <i class="fas fa-arrow-left"></i> Back
+                                                        </a>
+                                                    </div>                                                    
+
+                                                    <hr>                                                  
+
+                                                    <div class="profile-card">
+                                                        <div class="mb-3">
+                                                            <h6 class="fw-bold">Personal Information</h6>                                                           
+                                                        </div>
+                                                        <hr>
+                                                        <div class="row g-0">
+                                                            <div class="col-sm-3 d-flex flex-column justify-content-between align-items-center mb-4">
+                                                                <div class="">
+                                                                    {% if student_request.student.profile_picture %}
+                                                                        <img id="profilePreview" src="{{ student_request.student.profile_picture.url }}" alt="Profile Picture" class="profile-img">
+                                                                    {% else %}
+                                                                        <img id="profilePreview" src="{% static 'assets/images/profile/profile.png' %}" alt="Profile Picture" class="profile-img">
+                                                                    {% endif %}
+                                                                </div>
+                                                                <p class="fw-bold">
+                                                                    <strong>Name:</strong>
+                                                                    {{ student_request.student.full_name }}
+                                                                </p>
+                                                            </div>
+                                                                <div class="col-sm-9">  
+                                                                    <p>
+                                                                        <strong>Email:</strong>
+                                                                        {{ student_request.student.user.email }}
+                                                                    </p>
+                                                                    <p>
+                                                                        <strong>Phone number:</strong>
+                                                                        {{ student_request.student.phone }}
+                                                                    </p>
+                                                                    <p>
+                                                                        <strong>Gender:</strong>
+                                                                        {{ student_request.student.get_gender_display }}
+                                                                    </p>
+                                                                    <p>
+                                                                        <strong>Address:</strong>
+                                                                        {{ student_request.student.location.address }}
+                                                                    </p>
+                                                                    <p>
+                                                                        <strong>Address:</strong>
+                                                                        {{ student_request.student.location.address }}
+                                                                    </p>
+                                                                </div>
+                                                         
+                                                            
+                                                        </div>
+                                                    </div>
+
+                                                    
+                                                    <div class="profile-card">
+
+                                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                                                <h6 class="fw-bold mb-0">Request Information</h6>
+                                                                {% if student_request.status == "in_progress" %}
+                                                                    <span class="badge bg-success">In Progress</span>
+                                                                {% elif student_request.verification_status == "rejected" %}
+                                                                    <span class="badge bg-danger">Rejected</span>
+                                                                {% elif student_request.verification_status == "accepted" %}
+                                                                    <span class="badge bg-success">Accepted</span>
+                                                                {% elif student_request.verification_status == "cancelled" %}
+                                                                    <span class="badge bg-danger">Cancelled</span>
+                                                                {% elif student_request.verification_status == "completed" %}
+                                                                    <span class="badge bg-danger">Completed</span>
+                                                                {% else %}
+                                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                                {% endif %}
+                                                            </div>
+
+                                                        <hr>
+
+                                                        <p>
+                                                            <strong>Grade:</strong>
+                                                            {{ student_request.tutor_teaching.grade_subject.grade.name }}
+                                                        </p>
+
+                                                        <p>
+                                                            <strong>Subject:</strong>
+                                                            {{ student_request.tutor_teaching.grade_subject.subject.name }}
+                                                        </p>
+
+                                                        <p>
+                                                            <strong>Fee:</strong>
+                                                            {{ student_request.tutor_teaching.fee }}
+                                                        </p>
+
+                                                        <p>
+                                                            <strong>Message:</strong>
+                                                            {{ student_request.message }}
+                                                        </p>
+
+                                                        <p>
+                                                            <strong>Request Date:</strong>
+                                                            {{ student_request.created_at|date:"M d, Y" }}
+                                                        </p>
+
+                                                        <p>
+                                                            <strong>Accepted Date:</strong>
+                                                            {{ student_request.responded_at|date:"M d, Y" }}
+                                                        </p>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+
+                                        </div>  
+
+                                    </div>
+
+                                    </div>
+
+                                </div>
+                            </div> 
+
+                        </div>
+                    </div>
+                    <!-- Page-body end -->
+                </div>
+                <!--Style Selector-->
+                <div id="styleSelector"> </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        function tutorRejection(){
+            event.preventDefault(); 
+            document.getElementById('tutor-reject').classList.remove('d-none')
+        }
+        function cancelReject(){            
+            document.getElementById('tutor-reject').classList.add('d-none')
+        }
+        function validateReject() {
+            const reason = document.getElementById("rejection_reason").value.trim();
+
+            if (!reason) {
+                alert("Please enter a reason before rejecting this tutor.");
+                document.getElementById("rejection_reason").focus();
+                return false;
+            }
+
+            return confirm("Are you sure you want to reject this tutor?");
+        }
+    </script>
+{% endblock content %}

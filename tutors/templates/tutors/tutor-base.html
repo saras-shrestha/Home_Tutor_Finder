@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="{% static 'assets/students/css/profile-completion.css' %}">
     <!--Profile Update-->
     <link rel="stylesheet" href="{% static 'assets/students/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
     <!--Profile Progress Bar-->
     <link rel="stylesheet" href="{% static 'assets/tutors/css/styles.css' %}">
     <!--Tutor Availability-->
@@ -306,6 +307,10 @@
     <!-- Scripts for choose profile button-->
     <script src="{% static 'assets/js/profile/profile.js' %}"></script>
 
+    <!--Extra JS-->
+    {% block extra_js %}
+    {% endblock %}
+    
     <!--Script for location-->
     {% block location_js %}    
     {% endblock %}
@@ -313,6 +318,11 @@
     <!--Script for grade and subject-->
     {% block grade_subject %}    
     {% endblock %}
+
+     <!--Script for location map-->
+    {% block location_map %}
+    {% endblock %}
+
 
 </body>
 

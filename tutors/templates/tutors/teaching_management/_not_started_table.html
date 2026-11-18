@@ -65,17 +65,14 @@
                 <th>Fee</th>
                 <th>Accepted Date</th>
                 <th class="text-center">Action</th>
-                                                                        </tr>
+            </tr>
         </thead>
 
         <tbody>
-
             {% for student in accepted_students %}
-
                 <tr>
-                    <td>{{forloop.counter}}</td>
-
-                    <td>
+                    <td class="align-middle">{{forloop.counter}}</td>
+                    <td class="align-middle">
                         <div class="d-flex align-items-center">
                             {% if student.student.profile_picture %}
                                 <img src="{{ student.student.profile_picture.url }}"
@@ -84,7 +81,7 @@
                                     height="85"
                                     style="object-fit: cover;">
                             {% else %}
-                                <img src="{% static 'images/default-profile.png' %}"
+                                <img src="{% static 'assets/images/profile/profile.png' %}"
                                     class="rounded-circle"
                                     width="85"
                                     height="85"
@@ -103,31 +100,31 @@
                                                                                     
                     </td>
 
-                    <td>
+                    <td class="align-middle">
                         {{ student.tutor_teaching.grade_subject.grade.name }}
                     </td>
 
-                    <td>
+                    <td class="align-middle">
                         {{ student.tutor_teaching.grade_subject.subject.name }}
                     </td>
 
-                    <td>
+                    <td class="align-middle">
                         Rs. {{ student.tutor_teaching.fee }}
                         <small class="text-muted">
                             / {{ student.tutor_teaching.get_fee_type_display }}
                         </small>
                     </td>
 
-                    <td>
+                    <td class="align-middle">
                         {{ student.responded_at|date:"M d, Y" }}
                     </td>
 
-                    <td class="text-center">
+                    <td class="text-center align-middle">
 
-                        <a href="{% url 'student_detail' student.id %}"
+                        <a href="{% url 'student_details' student.id %}"
                         class="btn btn-sm btn-outline-primary"
                         title="View Details">
-                            <i class="bi bi-eye"></i>
+                            <i class="bi bi-eye-fill"></i>
                         </a>
 
                         <form method="POST" action="{% url 'start_teaching' student.id %}" class="d-inline start-teaching-form">
@@ -136,7 +133,7 @@
                             <button type="submit"
                                     class="btn btn-sm btn-success">
                                 <i class="bi bi-play-fill mr-1"></i>
-                                    tart
+                                    Start
                             </button>
                         </form>
 
@@ -148,7 +145,7 @@
 
                 <tr>
                     <td colspan="6"
-                        class="text-center py-5">
+                        class="text-center align-middle py-5">
 
                         <i class="bi bi-people text-muted"
                         style="font-size: 35px;"></i>

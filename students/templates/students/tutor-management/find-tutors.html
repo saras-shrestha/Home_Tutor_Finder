@@ -1,10 +1,13 @@
 {% extends 'students/student-base.html' %}
 {% load static %}
 
-{% block content %}
 
+{% block location_css %}
 <link rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+{% endblock location_css %}
+
+{% block content %}
 
 <style>
 
@@ -684,23 +687,23 @@
 
     });
 
-function sendRequest(button){
-    const tutorCard = button.closest('.tutor-card');
+    function sendRequest(button){
+        const tutorCard = button.closest('.tutor-card');
 
-    const requestBox = tutorCard.querySelector('.send-request');
+        const requestBox = tutorCard.querySelector('.send-request');
 
-    requestBox.classList.remove('d-none');
-}
+        requestBox.classList.remove('d-none');
+    }
 
-function cancelAndClear(button) {
-    const tutorCard = button.closest('.tutor-card');
+    function cancelAndClear(button) {
+        const tutorCard = button.closest('.tutor-card');
 
-    const requestBox = tutorCard.querySelector('.send-request');
+        const requestBox = tutorCard.querySelector('.send-request');
 
-    requestBox.querySelector('form').reset();
+        requestBox.querySelector('form').reset();
 
-    requestBox.classList.add('d-none');
-}
+        requestBox.classList.add('d-none');
+    }
 
 </script>
 

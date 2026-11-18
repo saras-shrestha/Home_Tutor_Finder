@@ -96,9 +96,7 @@
                                                                         <th>S.N.</th>
                                                                         <th class="ps-4">Student</th>
                                                                         <th>Grade</th>
-                                                                        <th>Subject</th>
-                                                                        <th>Fee</th>
-                                                                        <th>Accepted Date</th>
+                                                                        <th>Subjects</th>
                                                                         <th class="text-center">Action</th>
                                                                     </tr>
                                                                 </thead>
@@ -106,27 +104,27 @@
                                                                 <tbody>
                                                                     {% for student in students %}
                                                                         <tr>
-                                                                            <td>{{forloop.counter}}</td>
-                                                                            <td class="ps-4">
+                                                                            <td class="align-middle">{{forloop.counter}}</td>
+                                                                            <td class="align-middle">
                                                                                 <div class="d-flex align-items-center">
-                                                                                    {% if student.student.profile_picture %}
-                                                                                        <img src="{{ student.student.profile_picture.url }}"
+                                                                                    {% if student.profile_picture %}
+                                                                                        <img src="{{ student.profile_picture.url }}"
                                                                                             class="rounded-circle"
                                                                                             width="85"
                                                                                             height="85"
                                                                                             style="object-fit: cover;">
                                                                                     {% else %}
-                                                                                        <img src="{% static 'images/default-profile.png' %}"
+                                                                                        <img src="{% static 'assets/images/profile/profile.png' %}"
                                                                                             class="rounded-circle"
                                                                                             width="85"
                                                                                             height="85"
                                                                                             style="object-fit: cover;">
                                                                                     {% endif %}
                                                                                     <div class="font-weight-bold ml-2">
-                                                                                        {{ student.student.full_name }}
+                                                                                        {{ student.full_name }}
                                                                                         <p>
                                                                                             <small class="text-muted">
-                                                                                                {{ student.student.user.email }}
+                                                                                                {{ student.user.email }}
                                                                                             </small>
                                                                                         </p>
                                                                                     </div>
@@ -134,22 +132,22 @@
                                                                                 </div>
                                                                             </td>
 
-                                                                            <td>{{ student.tutor_teaching.grade_subject.grade.name }}</td>
+                                                                            <td class="align-middle">{{ student.grade.name }}</td>
 
-                                                                            <td>{{ student.tutor_teaching.grade_subject.subject.name }}</td>
+                                                                            <td class="align-middle">
+                                                                                        {% for req in student.active_tutor_requests %}
+                                                                                            <span class="badge badge-info mr-1">
+                                                                                                {{ req.tutor_teaching.grade_subject.subject.name }}
+                                                                                            </span>
 
-                                                                            <td>
-                                                                                Rs. {{ student.tutor_teaching.fee }}
-                                                                                <small class="text-muted">
-                                                                                    / {{ student.tutor_teaching.get_fee_type_display }}
-                                                                                </small>
+                                                                                        {% empty %}
+                                                                                            <span class="text-muted">No active subjects</span>
+                                                                                        {% endfor %}
                                                                             </td>
 
-                                                                            <td>
-                                                                                {{ student.responded_at|date:"M d, Y" }}
-                                                                            </td>
+                                                                           
 
-                                                                            <td class="text-center">
+                                                                            <td class="text-center align-middle">
                                                                                 <a href="{% url 'student_details' student.id %}"
                                                                                 class="btn btn-sm btn-outline-primary">
                                                                                     <i class="bi bi-eye-fill me-1"></i>
@@ -176,142 +174,6 @@
 
                                         </div>
 
-
-                                        <div class="container-fluid">   
-
-                                            <!-- Request Cards -->
-                                            {% for req in accepted_requests %}
-
-                                            <div class="card border-0 shadow-sm rounded-4 mb-3">
-                                                <div class="card-body">
-
-                                                    <div class="row align-items-center g-2">
-
-                                                        <!-- Student Profile -->
-                                                        <div class="col-md-2 text-center border-end">
-                                                            {% if req.student.profile_picture %}
-                                                                <img src="{{ req.student.profile_picture.url }}"
-                                                                    class="rounded-circle"
-                                                                    width="85"
-                                                                    height="85"
-                                                                    style="object-fit: cover;">
-                                                            {% else %}
-                                                                <img src="{% static 'images/default-profile.png' %}"
-                                                                    class="rounded-circle"
-                                                                    width="85"
-                                                                    height="85"
-                                                                    style="object-fit: cover;">
-                                                            {% endif %}
-                                                        </div>
-
-                                                        <!-- Student Information -->
-                                                        <div class="col-md-10">
-
-                                                            <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">
-                                                                <div>
-                                                                    <h5 class="fw-bold">
-                                                                        {{ req.student.full_name }}
-                                                                    </h5>
-                                                                    <small class="text-muted">
-                                                                        {{ req.created_at|date:"M d, Y" }}
-                                                                    </small>
-                                                                </div>
-
-                                                                <span class="badge bg-success">
-                                                                    {{ req.get_status_display }}
-                                                                </span>
-                                                            </div>
-
-                                                            <!-- Grade, Subject and Fee -->
-                                                            <div class="row g-3 mb-1">
-
-                                                                <div class="col-sm-4">
-                                                                    <small class="text-muted">Grade</small>
-                                                                    <div class="fw-semibold">
-                                                                        {{ req.tutor_teaching.grade_subject.grade.name }}
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-sm-4">
-                                                                    <small class="text-muted">Subject</small>
-                                                                    <div class="fw-semibold">
-                                                                        {{ req.tutor_teaching.grade_subject.subject.name }}
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-sm-4">
-                                                                    <small class="text-muted">Fee</small>
-                                                                    <div class="fw-semibold">
-                                                                        Rs. {{ req.tutor_teaching.fee }}
-                                                                        / {{ req.tutor_teaching.get_fee_type_display }}
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-
-                                                            <!-- Message -->
-                                                            <div class="rounded-3 p-2 mb-2"
-                                                                style="background: #f0f4ff;">
-                                                                <small class="fw-bold text-primary">
-                                                                    <i class="bi bi-chat-dots me-1"></i>
-                                                                    Message
-                                                                </small>
-                                                                <p class="mb-0 mt-1">
-                                                                    {{ req.message|default:"No message provided." }}
-                                                                </p>
-                                                            </div>
-                                          
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {% empty %}
-
-                                            <div class="text-center py-5">
-                                                <i class="bi bi-inbox fs-1 text-muted"></i>
-                                                <h5 class="mt-3">No Accepted Requests</h5>
-                                                <p class="text-muted">
-                                                    You don't have accepted any student requests.
-                                                </p>
-                                            </div>
-
-                                            {% endfor %}
-
-                                            <!-- Pagination -->
-                                            {% if accepted_requests.has_other_pages %}
-                                            <nav class="mt-4">
-                                                <ul class="pagination justify-content-center">
-
-                                                    {% if accepted_requests.has_previous %}
-                                                    <li class="page-item">
-                                                        <a class="page-link"
-                                                        href="?page={{ accepted_requests.previous_page_number }}">
-                                                            Previous
-                                                        </a>
-                                                    </li>
-                                                    {% endif %}
-
-                                                    <li class="page-item active">
-                                                        <span class="page-link">
-                                                            {{ accepted_requests.number }}
-                                                        </span>
-                                                    </li>
-
-                                                    {% if accepted_requests.has_next %}
-                                                    <li class="page-item">
-                                                        <a class="page-link"
-                                                        href="?page={{ accepted_requests.next_page_number }}">
-                                                            Next
-                                                        </a>
-                                                    </li>
-                                                    {% endif %}
-
-                                                </ul>
-                                            </nav>
-                                            {% endif %}
-
-                                        </div>
 
                                     </div>
                                 </div>

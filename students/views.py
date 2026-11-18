@@ -76,6 +76,7 @@ def student_profile(request):
             address = request.POST.get("address")
             latitude = request.POST.get("latitude")
             longitude = request.POST.get("longitude")
+            
 
             # Basic validation
             if not region_id or not district_id or not city_id:

@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from core.models import Grade, Subject, GradeSubject, Location, Region
+from students.models import StudentProfile
 from .models import Qualification, TutorTeaching, TutorAvailability, TutorRequest
 from django.http import JsonResponse
 from django.utils import timezone 
 from .forms import TutorAvailabilityForm 
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Prefetch, OuterRef, Subquery, F
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
@@ -722,27 +723,39 @@ def my_students(request):
 
     tutor = request.user.tutor_profile
 
-    # Get accepted requests belonging to this tutor
-    students = TutorRequest.objects.filter(
+    # Active requests belonging to this tutor
+    active_requests = TutorRequest.objects.filter(
         tutor_teaching__tutor=tutor,
         status='in_progress'
     ).select_related(
-        'student',
-        'student__user',
         'tutor_teaching',
         'tutor_teaching__grade_subject',
         'tutor_teaching__grade_subject__grade',
         'tutor_teaching__grade_subject__subject'
-    ).order_by('-teaching_started_at')
+    )
+
+    # Get each student only once
+    students = StudentProfile.objects.filter(
+        tutor_requests__in=active_requests
+    ).select_related(
+        'user',
+        'grade',
+        'location'
+    ).prefetch_related(
+        Prefetch(
+            'tutor_requests',
+            queryset=active_requests,
+            to_attr='active_tutor_requests'
+        )
+    ).distinct()
 
     # Search by student name
     search = request.GET.get('search', '').strip()
 
     if search:
         students = students.filter(
-            Q(student__user__first_name__icontains=search) |
-            Q(student__user__last_name__icontains=search) |
-            Q(student__user__username__icontains=search)
+            Q(full_name__icontains=search) |
+            Q(user__username__icontains=search)
         )
 
     # Filter by grade
@@ -750,15 +763,20 @@ def my_students(request):
 
     if grade_id:
         students = students.filter(
-            tutor_teaching__grade_subject__grade_id=grade_id
-        )
+            tutor_requests__in=active_requests,
+            tutor_requests__tutor_teaching__grade_subject__grade_id=grade_id
+        ).distinct()
 
     context = {
         'students': students,
         'grades': Grade.objects.all(),
     }
-    return render(request, 'tutors/teaching_management/my-students.html', context)
-    
+
+    return render(
+        request,
+        'tutors/teaching_management/my-students.html',
+        context
+    )
 
 @login_required
 def completed_sessions(request):
@@ -816,9 +834,7 @@ def completed_sessions(request):
     )
 
 @login_required
-def student_details(request, req_id):
-    
-
+def in_progress_details(request, req_id):
     student_request = get_object_or_404(
         TutorRequest.objects.select_related(
             'student',
@@ -835,6 +851,48 @@ def student_details(request, req_id):
 
     context = {
         'student_request': student_request,
+    }
+
+    return render(
+        request,
+        'tutors/teaching_management/student-details.html',
+        context
+    )
+
+@login_required
+def student_details(request, student_id):
+
+    tutor = request.user.tutor_profile
+
+    student = get_object_or_404(
+        StudentProfile.objects.filter(
+            id=student_id,
+            tutor_requests__tutor_teaching__tutor=tutor,
+            tutor_requests__status='in_progress'
+        ).distinct().select_related(
+            'user',
+            'grade',
+            'location'
+        ).prefetch_related(
+            Prefetch(
+                'tutor_requests',
+                queryset=TutorRequest.objects.filter(
+                    tutor_teaching__tutor=tutor,
+                    status='in_progress'
+                ).select_related(
+                    'tutor_teaching',
+                    'tutor_teaching__grade_subject',
+                    'tutor_teaching__grade_subject__grade',
+                    'tutor_teaching__grade_subject__subject'
+                ),
+                to_attr='active_tutor_requests'
+            )
+        )
+    )
+
+    context = {
+        'student': student,
+        'active_requests': student.active_tutor_requests,
     }
 
     return render(

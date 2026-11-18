@@ -193,17 +193,20 @@
         </div>
     </div>
 
+{% endblock content %}
+
+<!--Extra JS-->
+{% block extra_js %}
+
 <script>
     $(document).on('submit', '.start-teaching-form', function(e) {
-        console.log("AJAX handler triggered");
 
         e.preventDefault();
-        e.stopPropagation();
 
         let form = $(this);
 
-        if (!confirm('Are you sure you want to start teaching this student?')) {
-            return false;
+        if (!confirm('Are you sure you want to start teaching?')) {
+            return;
         }
 
         $.ajax({
@@ -216,78 +219,63 @@
 
                 if (response.success) {
 
-                    $('#successMessage')
-                        .text(response.message)
-                        .removeClass('d-none');
+                    // Reload both tables and counts
+                    $.ajax({
+                        url: "{% url 'accepted_request' %}",
+                        type: "GET",
+                        data: {tab: 'in_progress'},
+                        dataType: "json",
 
-                    $('#in-progress-tab').tab('show');
+                        success: function(data) {
 
-                } else {
-                    alert(response.message);
+                            if (data.success) {
+
+                                $('#inProgressContent').html(data.html);
+
+                                $('#notStartedCount').text(data.not_started_count);
+                                $('#inProgressCount').text(data.in_progress_count);
+
+                                $('#notStartedBadge').text(data.not_started_count);
+                                $('#inProgressBadge').text(data.in_progress_count);
+
+                                // Switch to In Progress tab
+                                $('#in-progress-tab').tab('show');
+
+                                // Show success message
+                                $('#successMessage')
+                                    .text(response.message)
+                                    .removeClass('d-none');
+
+                            }
+                        },
+
+                        error: function(xhr) {
+                            console.log("Table reload error:", xhr.responseText);
+                        }
+                    });
+
+                    // Reload Not Started table
+                    $.ajax({
+                        url: "{% url 'accepted_request' %}",
+                        type: "GET",
+                        data: {tab: 'not_started'},
+                        dataType: "json",
+
+                        success: function(data) {
+                            if (data.success) {
+                                $('#notStartedContent').html(data.html);
+                            }
+                        }
+                    });
+
                 }
             },
 
-            error: function(xhr) {
-                console.log(xhr.status);
-                console.log(xhr.responseText);
-                alert('Unable to start teaching.');
-            }
+            error: function(xhr) {  }
         });
 
-        return false;
-    });
-</script>
-
-<script>
-    $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-
-        let tabId = $(e.target).attr('href');
-
-        let tab = '';
-        let target = '';
-
-        if (tabId === '#not-started') {
-            tab = 'not_started';
-            target = '#notStartedContent';
-        }
-        else if (tabId === '#in-progress') {
-            tab = 'in_progress';
-            target = '#inProgressContent';
-        }
-        else {
-            return;
-        }
-
-        $.ajax({
-            url: "{% url 'accepted_request' %}",
-            type: "GET",
-            data: {
-                tab: tab
-            },
-            dataType: "json",
-
-            success: function (response) {
-
-                console.log("AJAX response:", response);
-
-                if (response.success) {
-                    $(target).html(response.html);
-
-                    $('#notStartedCount').text(response.not_started_count);
-                    $('#inProgressCount').text(response.in_progress_count);
-
-                    $('#notStartedBadge').text(response.not_started_count);
-                    $('#inProgressBadge').text(response.in_progress_count);
-                }
-            },
-
-            error: function (xhr) {
-                console.log("AJAX error:", xhr.status);
-                console.log("Response:", xhr.responseText);
-            }
-        });
     });
 
 </script>
 
-{% endblock content %}
+{% endblock %}

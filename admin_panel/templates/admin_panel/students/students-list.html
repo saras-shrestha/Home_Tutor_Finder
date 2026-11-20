@@ -1,5 +1,8 @@
 {% extends 'admin_panel/admin-base.html' %}
     {% block content %}
+    {% load static %}
+    
+
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
             <!-- Main-body start -->
@@ -11,75 +14,167 @@
                     <div class="page-body">
                         <div class="row">
                             <!--first row-->                            
-                            <!-- task, page, download counter  starts -->
-                               <div class="col-12">
+                            <!-- Student Pending requests starts -->
+                            <div class="col-12">
                                 <div class="card table-card">
-                                    <div class="card-header">
-                                        <h5>Students List</h5>
-                                    </div>
-                                    <div class="card-block">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>
-                                                            S.N.
-                                                        </th>
-                                                        <th>Student</th>
-                                                        <th>Grade</th>
-                                                        <th></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for student in students %}
-                                                    <tr>
-                                                        <td>{{forloop.counter}}</td>
-                                                        <td>                                                            
-                                                            <div class="d-inline-block align-middle">
-                                                                {% comment %} {{ student.profile_picture.url }} {% endcomment %}
-                                                                <img src="{{ student.profile_picture.url }}" alt="user image"
-                                                                    class="img-radius img-40 align-top m-r-15">
-                                                                <div class="d-inline-block">
-                                                                    <h6>{{ student.full_name }}</h6>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            {{ student.grade }}
-                                                        </td>
-                                                        <td class="text-right">
-                                                             <a href="#" class="btn btn-sm btn-primary">
-                                                                Review
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    {% empty %}
-                                                        <p>No tutors found.</p>
-                                                    {% endfor %}
-                                                   
-                                                </tbody>
-                                            </table>
-
-                                            <div class="text-center m-r-20">
-                                                <span>
-                                                    Pages:
-                                                    {% if students.has_previous %}
-                                                        <a href="?page={{ students.previous_page_number }}">Previous</a>
-                                                    {% endif %}
-                                                    {% for num in students.paginator.page_range %}
-                                                        <a href="?page={{ num }}">{{ num }}</a>
-                                                    {% endfor %}
-                                                    {% if students.has_next %}
-                                                        <a href="?page={{ students.next_page_number }}">Next</a>
-                                                    {% endif %}                                                    
-                                                </span>
-                                            </div>
+                                                                          
+                                    <!-- Page Heading -->
+                                    <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                                        <div>
+                                            <h5>Sudents List</h5>
                                         </div>
+
+                                        <span class="badge bg-primary rounded-pill px-3 py-2">
+                                            {{ students.count }} Students
+                                        </span>
+                                    </div>
+                                        
+                                    <div class="card-block">
+                                        <div class="container-fluid">
+                                            <!-- Search and Filter -->
+                                            <div class="card border-0 shadow-sm mb-4">
+                                                <div class="card-body">
+                                                    <form method="GET" class="row g-3 align-items-end">
+
+                                                        <div class="col-md-5 form-group">
+                                                            <label class="form-label fw-semibold">
+                                                                Search Student
+                                                            </label>
+                                                            <input type="text"
+                                                                name="search"
+                                                                class="form-control"
+                                                                placeholder="Enter student name..."
+                                                                value="{{ request.GET.search }}">
+                                                        </div>
+
+                                                        <div class="col-md-3 form-group">
+                                                            <label class="form-label fw-semibold">Grade</label>
+                                                            <select name="grade" class="form-select">
+                                                                <option value="">All Grades</option>
+                                                                {% for grade in grades %}
+                                                                    <option value="{{ grade.id }}"
+                                                                        {% if request.GET.grade == grade.id|stringformat:"s" %}selected{% endif %}>
+                                                                        {{ grade.name }}
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="m-auto">
+                                                            <button type="submit" class="btn btn-primary py-1">
+                                                                <i class="bi bi-search fs-6"></i> Search
+                                                            </button>
+                                                            <button type="reset" class="btn btn-outline-secondary py-2">
+                                                                Reset
+                                                            </button>
+                                                        </div>
+
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <!-- Students Table -->
+                                            <div class="card border-0 shadow-sm">
+                                                <div class="card-header bg-white py-3">
+                                                    <h6 class="fw-bold mb-0">All Students</h6>
+                                                </div>
+
+                                                <div class="card-body p-0">
+                                                    {% if students %}
+                                                        <div class="table-responsive">
+                                                            <table class="table align-middle table-hover mb-0">
+
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th>S.N.</th>
+                                                                        <th class="ps-4">Student</th>
+                                                                        <th>School/College</th>
+                                                                        <th>Grade</th>   
+                                                                        <th class="text-center">Action</th>
+                                                                    </tr>
+                                                                </thead>
+
+                                                                <tbody>
+                                                                    {% for student in students %}
+                                                                        <tr>
+                                                                            <td class="align-middle">{{forloop.counter}}</td>
+                                                                            <td class="align-middle">
+                                                                                <div class="d-flex align-items-center">
+                                                                                    {% if student.profile_picture %}
+                                                                                        <img src="{{ student.profile_picture.url }}"
+                                                                                            class="rounded-circle"
+                                                                                            width="85"
+                                                                                            height="85"
+                                                                                            style="object-fit: cover;">
+                                                                                    {% else %}
+                                                                                        <img src="{% static 'assets/images/profile/profile.png' %}"
+                                                                                            class="rounded-circle"
+                                                                                            width="85"
+                                                                                            height="85"
+                                                                                            style="object-fit: cover;">
+                                                                                    {% endif %}
+                                                                                    <div class="font-weight-bold ml-2">
+                                                                                        {{ student.full_name }}
+                                                                                        <p>
+                                                                                            <small class="text-muted">
+                                                                                                {{ student.user.email }}
+                                                                                            </small>
+                                                                                        </p>
+                                                                                    </div>
+                                                                                                                                                
+                                                                                </div>
+                                                                            </td>
+                                                                            <td class="align-middle">
+                                                                                {{ student.school_college }}
+                                                                            </td>
+
+                                                                            <td class="align-middle">{{ student.grade.name }}</td>
+                                                                            
+                                                                            <td class="text-center align-middle">
+                                                                                <a href="{% url 'student_info' student.id %}"
+                                                                                class="btn btn-sm btn-outline-primary">
+                                                                                    <i class="bi bi-eye-fill mr-1"></i>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </tbody>
+
+                                                            </table>
+
+                                                            <div class="text-center m-r-20">
+                                                                <span>
+                                                                    Pages:
+                                                                    {% if students.has_previous %}
+                                                                        <a href="?page={{ students.previous_page_number }}">Previous</a>
+                                                                    {% endif %}
+                                                                    {% for num in students.paginator.page_range %}
+                                                                        <a href="?page={{ num }}">{{ num }}</a>
+                                                                    {% endfor %}
+                                                                    {% if students.has_next %}
+                                                                        <a href="?page={{ students.next_page_number }}">Next</a>
+                                                                    {% endif %}                                                    
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                    {% else %}
+                                                        <div class="text-center py-5">
+                                                            <i class="bi bi-people display-4 text-muted"></i>
+                                                            <h6 class="fw-bold mt-3">No Students Found</h6>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
                                     </div>
                                 </div>
-                            </div>
-                            <!-- task, page, download counter  end -->
-                            <!--first row ends-->                                        
+                            </div> 
+                            <!--first row ends-->
+                                                                                  
                         </div>
                     </div>
                     <!-- Page-body end -->

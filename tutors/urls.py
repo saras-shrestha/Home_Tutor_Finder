@@ -22,6 +22,8 @@ urlpatterns = [
     path('teaching/<int:student_id>/student_details', views.student_details, name='student_details'),
     path('teaching/<int:req_id>/in_progress_details', views.in_progress_details, name='in_progress_details'),
     path('teaching/<int:start_request_id>/start/', views.start_teaching, name='start_teaching'),
+    path('teaching/<int:complete_request_id>/complete/', views.complete_teaching, name='complete_teaching'),
+
 
     # manage teaching fees
     path('fees-management/', views.teaching_fees, name='teaching_fees'),

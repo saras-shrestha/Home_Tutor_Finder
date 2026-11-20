@@ -1,5 +1,8 @@
 {% extends 'admin_panel/admin-base.html' %}
     {% block content %}
+    {% load static %}
+    
+
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
             <!-- Main-body start -->
@@ -11,190 +14,224 @@
                     <div class="page-body">
                         <div class="row">
                             <!--first row-->                            
-                            <!--  Tutor Pending approvals starts -->
+                            <!-- Student Pending requests starts -->
                             <div class="col-12">
                                 <div class="card table-card">
                                     <div class="card-header">
-                                        <h5>Tutor Requests</h5>
-                                        <p class="text-muted mb-0 small">
-                                            Manage and monitor student-tutor requests.
-                                        </p>
+                                        <h5>Student-Tutor Requests</h5>
                                     </div>
-                                    <div class="card-block pt-4">
-                                        <div class="container-fluid mt-9">
+                                    <div class="card-block">
 
-                                            <!-- Search and Filter -->
-                                            <div class="card">
-                                                <div class="card-body">
 
-                                                    <form method="GET" class="form row g-3">
+                                        <div class="container-fluid py-4">
 
-                                                        <div class="form-group col-md-6">
-                                                            <input
-                                                                type="text"
-                                                                name="search"
-                                                                class="form-control"
-                                                                placeholder="Search student or tutor..."
-                                                                value="{{ search }}"
-                                                            >
-                                                        </div>
+                                            <!-- Summary Cards -->
+                                            <div class="row mb-4">
 
-                                                        <div class="form-group col-md-3">
-                                                            <select name="status" class="form-select">
+                                                <div class="col-md-3 mb-3 mb-md-0">
+                                                    <div class="card border-0 shadow-sm h-100">
+                                                        <div class="card-body d-flex align-items-center">
 
-                                                                <option value="">All Requests</option>
-
-                                                                <option value="pending"
-                                                                    {% if selected_status == 'pending' %}selected{% endif %}>
-                                                                    Pending
-                                                                </option>
-
-                                                                <option value="accepted"
-                                                                    {% if selected_status == 'accepted' %}selected{% endif %}>
-                                                                    Accepted
-                                                                </option>
-
-                                                                <option value="rejected"
-                                                                    {% if selected_status == 'rejected' %}selected{% endif %}>
-                                                                    Rejected
-                                                                </option>
-
-                                                                <option value="cancelled"
-                                                                    {% if selected_status == 'cancelled' %}selected{% endif %}>
-                                                                    Cancelled
-                                                                </option>
-
-                                                                <option value="completed"
-                                                                    {% if selected_status == 'completed' %}selected{% endif %}>
-                                                                    Completed
-                                                                </option>
-
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="form-group col-md-3">
-                                                            <div>
-                                                                <button type="submit" class="btn btn-primary">
-                                                                    Search
-                                                                </button>                                                                
+                                                            <div class="rounded bg-primary p-3 mr-3 text-white">
+                                                                <i class="bi bi-hourglass-split"
+                                                                style="font-size: 22px;"></i>
                                                             </div>
+
+                                                            <div>
+                                                                <h3 class="font-weight-bold mb-0" id="notStartedCount">
+                                                                    {{ accepted_students.count }}
+                                                                </h3>
+                                                                <small class="text-muted">
+                                                                    Pendig- Not Accepted
+                                                                </small>
+                                                            </div>
+
                                                         </div>
+                                                    </div>
+                                                </div>
+       
+                                                <div class="col-md-3 mb-3 mb-md-0">
+                                                    <div class="card border-0 shadow-sm h-100">
+                                                        <div class="card-body d-flex align-items-center">
 
-                                                    </form>
+                                                            <div class="rounded bg-primary p-3 mr-3 text-white">                                                                
+                                                                <i class="bi bi-clipboard" style="font-size: 22px;"></i>
+                                                            </div>
 
+                                                            <div>
+                                                                <h3 class="font-weight-bold mb-0" id="notStartedCount">
+                                                                    {{ accepted_students.count }}
+                                                                </h3>
+                                                                <small class="text-muted">
+                                                                    Accepted - Not Started
+                                                                </small>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="card border-0 shadow-sm h-100">
+                                                        <div class="card-body d-flex align-items-center">
+
+                                                            <div class="rounded bg-success p-3 mr-3 text-white">
+                                                                <i class="bi bi-play-circle"
+                                                                style="font-size: 22px;"></i>
+                                                            </div>
+
+                                                            <div>
+                                                                <h3 class="font-weight-bold mb-0" id="inProgressCount">
+                                                                    {{ started_students.count }}
+                                                                </h3>
+                                                                <small class="text-muted">
+                                                                    Teaching In Progress
+                                                                </small>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-3">
+                                                    <div class="card border-0 shadow-sm h-100">
+                                                        <div class="card-body d-flex align-items-center">
+
+                                                            <div class="rounded bg-success p-3 mr-3 text-white">                                                                
+                                                                <i class="bi bi-check-circle" style="font-size: 22px;"></i>
+                                                            </div>
+
+                                                            <div>
+                                                                <h3 class="font-weight-bold mb-0" id="inProgressCount">
+                                                                    {{ started_students.count }}
+                                                                </h3>
+                                                                <small class="text-muted">
+                                                                    Completed
+                                                                </small>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
 
-                                            <!-- Requests Table -->
-                                            <div class="card mt-3">
+                                            <!-- Main Content -->
+                                            <div class="card border-0 shadow-sm">
 
-                                                <div class="card-header">
-                                                    <h5 class="mb-0">All Tutor Requests</h5>
+                                                <div class="card-header bg-white pt-3 pb-0">
+
+                                                    <h6 class="font-weight-bold mb-3">
+                                                        Students Request
+                                                    </h6>
+                                                    <!-- Success Message -->
+                                                    <div id="successMessage"
+                                                        class="alert alert-success alert-dismissible fade show d-none"
+                                                        role="alert">
+                                                    </div>
+
+                                                    <!-- Tabs -->
+                                                    <ul class="nav nav-tabs" id="acceptedTabs" role="tablist">
+
+                                                        <li class="nav-item">
+                                                            <a class="nav-link active"
+                                                            id="not-started-tab"
+                                                            data-toggle="tab"
+                                                            href="#not-started"
+                                                            role="tab">
+
+                                                                <i class="bi bi-hourglass-split mr-1"></i>
+                                                                Pending
+
+                                                                <span class="badge badge-primary ml-1" id="notStartedBadge">
+                                                                    {{ accepted_students.count }}
+                                                                </span>
+                                                            </a>
+                                                        </li>                                                       
+
+                                                        <li class="nav-item">
+                                                            <a class="nav-link active"
+                                                            id="not-started-tab"
+                                                            data-toggle="tab"
+                                                            href="#not-started"
+                                                            role="tab">
+
+                                                                <i class="bi bi-clipboard"></i>
+                                                                Not Started
+
+                                                                <span class="badge badge-primary ml-1" id="notStartedBadge">
+                                                                    {{ accepted_students.count }}
+                                                                </span>
+                                                            </a>
+                                                        </li>
+
+                                                        <li class="nav-item">
+                                                            <a class="nav-link"
+                                                            id="in-progress-tab"
+                                                            data-toggle="tab"
+                                                            href="#in-progress"
+                                                            role="tab">
+
+                                                                <i class="bi bi-play-circle mr-1"></i>
+                                                                In Progress
+
+                                                                <span class="badge badge-success ml-1" id="inProgressBadge">
+                                                                    {{ started_students.count }}
+                                                                </span>
+                                                            </a>
+                                                        </li>
+
+                                                        <li class="nav-item">
+                                                            <a class="nav-link"
+                                                            id="in-progress-tab"
+                                                            data-toggle="tab"
+                                                            href="#in-progress"
+                                                            role="tab">
+
+                                                                <i class="bi bi-check-circle"></i>
+                                                                Completed
+
+                                                                <span class="badge badge-success ml-1" id="inProgressBadge">
+                                                                    {{ started_students.count }}
+                                                                </span>
+                                                            </a>
+                                                        </li>
+
+
+                                                    </ul>
+
                                                 </div>
+
 
                                                 <div class="card-body">
 
-                                                    <div class="table-responsive">
+                                                    <!-- Tab Content -->
+                                                    <div class="tab-content" id="acceptedTabsContent">
 
-                                                        <table class="table table-hover align-middle">
+                                                        <!-- NOT STARTED TAB -->
+                                                        <div class="tab-pane fade show active"
+                                                            id="not-started"
+                                                            role="tabpanel">
 
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Student</th>
-                                                                    <th>Tutor</th>
-                                                                    <th>Grade</th>
-                                                                    <th>Subject</th>
-                                                                    <th>Requested Date</th>
-                                                                    <th>Status</th>
-                                                                    <th>Action</th>
-                                                                </tr>
-                                                            </thead>
+                                                            <div id="notStartedContent">
+                                                                {% include 'tutors/teaching_management/_not_started_table.html' %}
+                                                            </div>
 
-                                                            <tbody>
+                                                        </div>
 
-                                                                {% for req in tutor_requests %}
 
-                                                                <tr>
+                                                        <!-- IN PROGRESS TAB -->
+                                                        <div class="tab-pane fade"
+                                                            id="in-progress"
+                                                            role="tabpanel">
 
-                                                                    <td>
-                                                                        {{ req.student.full_name }}
-                                                                    </td>
+                                                            <div id="inProgressContent">
 
-                                                                    <td>
-                                                                        {{ req.tutor_teaching.tutor.full_name }}
-                                                                    </td>
+                                                                {% include 'tutors/teaching_management/_in_progress_table.html' %}
 
-                                                                    <td>
-                                                                        {{ req.tutor_teaching.grade_subject.grade.name }}
-                                                                    </td>
+                                                            </div>
 
-                                                                    <td>
-                                                                        {{ req.tutor_teaching.grade_subject.subject.name }}
-                                                                    </td>
-
-                                                                    <td>
-                                                                        {{ req.created_at|date:"M d, Y" }}
-                                                                    </td>
-
-                                                                    <td>
-
-                                                                        {% if req.status == 'pending' %}
-                                                                            <span class="badge bg-warning text-dark">
-                                                                                Pending
-                                                                            </span>
-
-                                                                        {% elif req.status == 'accepted' %}
-                                                                            <span class="badge bg-success">
-                                                                                Accepted
-                                                                            </span>
-
-                                                                        {% elif req.status == 'rejected' %}
-                                                                            <span class="badge bg-danger">
-                                                                                Rejected
-                                                                            </span>
-
-                                                                        {% elif req.status == 'cancelled' %}
-                                                                            <span class="badge bg-secondary">
-                                                                                Cancelled
-                                                                            </span>
-
-                                                                        {% elif req.status == 'completed' %}
-                                                                            <span class="badge bg-info">
-                                                                                Completed
-                                                                            </span>
-                                                                        {% endif %}
-
-                                                                    </td>
-
-                                                                    <td>
-                                                                        <a href=""
-                                                                        class="btn btn-sm btn-primary">
-                                                                            <i class="feather icon-eye"></i>
-                                                                            View
-                                                                        </a>
-                                                                    </td>
-
-                                                                </tr>
-
-                                                                {% empty %}
-
-                                                                <tr>
-                                                                    <td colspan="7" class="text-center py-4">
-                                                                        <i class="feather icon-inbox"
-                                                                        style="font-size: 35px; color: #aaa;"></i>
-
-                                                                        <p class="text-muted mt-2 mb-0">
-                                                                            No tutor requests found.
-                                                                        </p>
-                                                                    </td>
-                                                                </tr>
-
-                                                                {% endfor %}
-
-                                                            </tbody>
-
-                                                        </table>
+                                                        </div>
 
                                                     </div>
 
@@ -202,7 +239,6 @@
                                             </div>
 
                                         </div>
-
                                     </div>
                                 </div>
                             </div> 
@@ -216,4 +252,90 @@
             </div>
         </div>
     </div>
-    {% endblock content %}
+
+{% endblock content %}
+
+<!--Extra JS-->
+{% block extra_js %}
+
+<script>
+    $(document).on('submit', '.start-teaching-form', function(e) {
+
+        e.preventDefault();
+
+        let form = $(this);
+
+        if (!confirm('Are you sure you want to start teaching?')) {
+            return;
+        }
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+
+            success: function(response) {
+
+                if (response.success) {
+
+                    // Reload both tables and counts
+                    $.ajax({
+                        url: "{% url 'accepted_request' %}",
+                        type: "GET",
+                        data: {tab: 'in_progress'},
+                        dataType: "json",
+
+                        success: function(data) {
+
+                            if (data.success) {
+
+                                $('#inProgressContent').html(data.html);
+
+                                $('#notStartedCount').text(data.not_started_count);
+                                $('#inProgressCount').text(data.in_progress_count);
+
+                                $('#notStartedBadge').text(data.not_started_count);
+                                $('#inProgressBadge').text(data.in_progress_count);
+
+                                // Switch to In Progress tab
+                                $('#in-progress-tab').tab('show');
+
+                                // Show success message
+                                $('#successMessage')
+                                    .text(response.message)
+                                    .removeClass('d-none');
+
+                            }
+                        },
+
+                        error: function(xhr) {
+                            console.log("Table reload error:", xhr.responseText);
+                        }
+                    });
+
+                    // Reload Not Started table
+                    $.ajax({
+                        url: "{% url 'accepted_request' %}",
+                        type: "GET",
+                        data: {tab: 'not_started'},
+                        dataType: "json",
+
+                        success: function(data) {
+                            if (data.success) {
+                                $('#notStartedContent').html(data.html);
+                            }
+                        }
+                    });
+
+                }
+            },
+
+            error: function(xhr) {  }
+        });
+
+    });
+
+</script>
+
+{% endblock %}

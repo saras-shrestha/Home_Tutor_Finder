@@ -1,0 +1,101 @@
+{% load static %}
+<div class="table-responsive" id="completed-results">
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>S.N.</th>
+                <th>Student</th>
+                <th>Grade</th>
+                <th>Subject</th>
+                <th>Fee</th>
+                <th>Started Date</th>
+                <th>Completed Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for item in completed_requests %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        {% if item.student.profile_picture %}
+                            <img src="{{ item.student.profile_picture.url }}"
+                                class="student-avatar">
+                        {% else %}
+                            <img src="{% static 'images/default-profile.png' %}"
+                                class="student-avatar">
+                        {% endif %}
+
+                        <strong>
+                            {{ item.student.full_name }}
+                        </strong>
+                    </div>
+                </td>
+
+                <td>
+                    {{ item.tutor_teaching.grade_subject.grade.name }}
+                </td>
+
+                <td>
+                    {{ item.tutor_teaching.grade_subject.subject.name }}
+                </td>
+
+                <td>
+                    Rs. {{ item.tutor_teaching.fee }}
+                    <small class="text-muted">
+                        /{{ item.tutor_teaching.fee_type }}
+                    </small>
+                </td>
+
+                <td>
+                    {{ item.teaching_started_at|date:"M d, Y" }}
+                </td>
+
+                <td>
+                    {{ item.teaching_completed_at|date:"M d, Y" }}
+                </td>
+
+                <td>
+                    <span class="completed-badge">
+                        <i class="bi bi-check-circle mr-1" style="font-size: 14px;"></i>Completed
+                    </span>
+                </td>
+            </tr>
+
+            {% empty %}
+            <tr>
+                <td colspan="7">
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <h5>No Completed Sessions Yet</h5>
+                        <p class="mb-0">
+                            Your completed teaching sessions will appear here.
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    <div class="text-center m-r-20">                                                    
+        <span>
+            Pages:
+            {% if completed_requests.has_previous %}
+                <a href="?page={{ completed_requests.previous_page_number }}" class="ajax-page">Previous</a>
+            {% endif %}
+            {% for num in completed_requests.paginator.page_range %}
+                <a href="?page={{ num }}" class="ajax-page">{{ num }}</a>
+            {% endfor %}
+            {% if completed_requests.has_next %}
+                <a href="?page={{ completed_requests.next_page_number }}" class="ajax-page">Next</a>
+            {% endif %}                                                    
+        </span>
+    </div>
+
+</div>

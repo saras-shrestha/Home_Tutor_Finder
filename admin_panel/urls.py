@@ -3,7 +3,6 @@ from django.urls import path
 from admin_panel import views
 from django.contrib.auth import views as auth_views
 
-
 urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
 
@@ -16,6 +15,7 @@ urlpatterns = [
 
     # students    
     path('students-list/', views.students_list, name='students_list'),
+    path('student/<int:student_id>/info', views.student_info, name='student_info'),
 
     # student-tutor
     path('student-tutor-requests/', views.student_tutor_requests, name='student_tutor_requests'),

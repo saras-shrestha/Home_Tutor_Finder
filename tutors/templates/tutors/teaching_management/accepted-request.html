@@ -2,7 +2,6 @@
     {% block content %}
     {% load static %}
     
-
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
             <!-- Main-body start -->
@@ -20,29 +19,15 @@
                                     <div class="card-header">
                                         <h5>Accepted Requests</h5>
                                         <p class="text-muted mb-0 small">
-                                            Students you have accepted for teaching
+                                            Manage your accepted student requests and teaching progress.
                                         </p>
                                     </div>
                                     <div class="card-block">
-
-
                                         <div class="container-fluid py-4">
-
-                                            <!-- Page Header -->
-                                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                                <div>
-                                                    <h4 class="font-weight-bold mb-1">Accepted Requests</h4>
-                                                    <p class="text-muted mb-0">
-                                                        Manage your accepted student requests and teaching progress.
-                                                    </p>
-                                                </div>
-                                            </div>
-
-
                                             <!-- Summary Cards -->
                                             <div class="row mb-4">
 
-                                                <div class="col-md-6 mb-3 mb-md-0">
+                                                <div class="col-md-4 mb-3 mb-md-0">
                                                     <div class="card border-0 shadow-sm h-100">
                                                         <div class="card-body d-flex align-items-center">
 
@@ -53,7 +38,7 @@
 
                                                             <div>
                                                                 <h3 class="font-weight-bold mb-0" id="notStartedCount">
-                                                                    {{ accepted_students.count }}
+                                                                    {{not_started_count}}
                                                                 </h3>
                                                                 <small class="text-muted">
                                                                     Accepted - Not Started
@@ -64,7 +49,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="card border-0 shadow-sm h-100">
                                                         <div class="card-body d-flex align-items-center">
 
@@ -75,10 +60,31 @@
 
                                                             <div>
                                                                 <h3 class="font-weight-bold mb-0" id="inProgressCount">
-                                                                    {{ started_students.count }}
+                                                                    {{in_progress_count}}
                                                                 </h3>
                                                                 <small class="text-muted">
                                                                     Teaching In Progress
+                                                                </small>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="card border-0 shadow-sm h-100">
+                                                        <div class="card-body d-flex align-items-center">
+
+                                                            <div class="rounded bg-success p-3 mr-3 text-white">                                                                
+                                                                <i class="bi bi-check-circle" style="font-size: 22px;"></i>
+                                                            </div>
+
+                                                            <div>
+                                                                <h3 class="font-weight-bold mb-0" id="inProgressCount">
+                                                                    {{completed_count}}
+                                                                </h3>
+                                                                <small class="text-muted">
+                                                                    Completed
                                                                 </small>
                                                             </div>
 
@@ -102,6 +108,9 @@
                                                         class="alert alert-success alert-dismissible fade show d-none"
                                                         role="alert">
                                                     </div>
+                                                    <div id="completeSuccessMessage"
+                                                        class="alert alert-success d-none">
+                                                    </div>
 
                                                     <!-- Tabs -->
                                                     <ul class="nav nav-tabs" id="acceptedTabs" role="tablist">
@@ -117,7 +126,7 @@
                                                                 Not Started
 
                                                                 <span class="badge badge-primary ml-1" id="notStartedBadge">
-                                                                    {{ accepted_students.count }}
+                                                                    {{ search_not_started_count }}
                                                                 </span>
                                                             </a>
                                                         </li>
@@ -133,7 +142,7 @@
                                                                 In Progress
 
                                                                 <span class="badge badge-success ml-1" id="inProgressBadge">
-                                                                    {{ started_students.count }}
+                                                                    {{ search_in_progress_count }}
                                                                 </span>
                                                             </a>
                                                         </li>
@@ -235,8 +244,8 @@
                                 $('#notStartedCount').text(data.not_started_count);
                                 $('#inProgressCount').text(data.in_progress_count);
 
-                                $('#notStartedBadge').text(data.not_started_count);
-                                $('#inProgressBadge').text(data.in_progress_count);
+                                $('#notStartedBadge').text(data.search_not_started_count);
+                                $('#inProgressBadge').text(data.search_in_progress_count);
 
                                 // Switch to In Progress tab
                                 $('#in-progress-tab').tab('show');
@@ -277,5 +286,188 @@
     });
 
 </script>
+
+<script>
+    $(document).on('submit', '.complete-teaching-form', function(e) {
+
+        e.preventDefault();
+
+        let form = $(this);
+        let button = form.find('button');
+
+        if (!confirm('Are you sure you have completed teaching this student in this subject?')) {
+            return;
+        }
+
+        button.prop('disabled', true);
+        button.text('Processing...');
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+
+            success: function(response) {
+
+                if (response.success) {
+
+                    // Remove completed student row
+                    form.closest('tr').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    // Show success message
+                    $('#completeSuccessMessage')
+                        .removeClass('d-none')
+                        .text(response.message);
+
+                    // Update counts and refresh completed count
+                    refreshTeachingCounts();
+                }
+            },
+
+            error: function(xhr) {
+
+                button.prop('disabled', false);
+                button.html('<i class="fas fa-check-circle"></i> Complete Teaching');
+
+                let message = 'Unable to complete teaching. Please try again.';
+
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
+            }
+        });
+    });
+</script>
+
+
+<script>
+$(document).ready(function () {
+
+    function loadTeachingTable(tab, page = 1, form = null) {
+
+        let target = tab === 'not_started'
+            ? '#notStartedContent'
+            : '#inProgressContent';
+
+        let data = form ? form.serializeArray() : [];
+
+        // Add pagination and tab parameters
+        data.push({name: 'page', value: page});
+        data.push({name: 'tab', value: tab});
+
+        $.ajax({
+            url: "{% url 'accepted_request' %}",
+            type: "GET",
+            data: data,
+            dataType: "json",
+
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            beforeSend: function () {
+                $(target).css('opacity', '0.5');
+            },
+
+            success: function (response) {
+
+                if (response.success) {
+
+                    // Replace selected table
+                    $(target).html(response.html);
+
+                    // Update counts
+                    $('#notStartedCount').text(
+                        response.not_started_count
+                    );
+
+                    $('#inProgressCount').text(
+                        response.in_progress_count
+                    );
+
+                    $('#notStartedBadge').text(
+                        response.search_not_started_count
+                    );
+
+                    $('#inProgressBadge').text(
+                        response.search_in_progress_count
+                    );
+
+                } else {
+                    alert(response.message);
+                }
+            },
+
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                alert('Unable to load students.');
+            },
+
+            complete: function () {
+                $(target).css('opacity', '1');
+            }
+        });
+    }
+
+
+    // AJAX Search
+    $(document).on('submit', '.teaching-search-form', function (e) {
+
+        e.preventDefault();
+
+        let form = $(this);
+        let tab = form.data('tab');
+
+        loadTeachingTable(tab, 1, form);
+
+    });
+
+
+    // AJAX Reset
+    $(document).on('click', '.teaching-search-form button[type="reset"]', function (e) {
+
+        e.preventDefault();
+
+        let form = $(this).closest('form');
+
+        form.find('input[name="search"]').val('');
+        form.find('select[name="grade"]').val('');
+
+        let tab = form.data('tab');
+
+        loadTeachingTable(tab, 1, form);
+
+    });
+
+
+    // AJAX Pagination
+    $(document).on('click', '.ajax-page', function (e) {
+
+        e.preventDefault();
+
+        let link = $(this);
+
+        let target = link.closest('#notStartedContent, #inProgressContent');
+
+        let tab = target.attr('id') === 'notStartedContent'
+            ? 'not_started'
+            : 'in_progress';
+
+        let page = new URL(link.attr('href'), window.location.href)
+            .searchParams.get('page');
+
+        let form = target.find('.teaching-search-form');
+
+        loadTeachingTable(tab, page, form.length ? form : null);
+
+    });
+
+});
+</script>
+
 
 {% endblock %}

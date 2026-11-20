@@ -304,6 +304,10 @@ class TutorRequest(models.Model):
         null=True,
         blank=True
     )
+    teaching_completed_at = models.DateTimeField(
+            null=True,
+            blank=True
+    )
 
     def __str__(self):
         return f"{self.student} - {self.tutor_teaching.tutor}"

@@ -1,0 +1,117 @@
+{% extends 'admin_panel/admin-base.html' %}
+    {% load static %}
+    {% block content %}
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <!-- Main-body start -->
+
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <!-- Page-body start -->
+                    <div class="page-body">
+                        <div class="row">
+
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h5>Student Details</h5>
+                                        <p class="text-muted mb-0">
+                                            View student information and request details.
+                                        </p>
+                                    </div>
+
+                                    <div class="card-block">                                      
+                                        <div class="container-fluid">                                          
+                                            <div class="card shadow-sm">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                                        <h5>Student Information</h5>
+
+                                                        <a href="{% url 'students_list' %}"
+                                                                class="btn btn-outline-secondary">
+                                                            <i class="fas fa-arrow-left"></i> Back
+                                                        </a>
+                                                    </div>                                                    
+
+                                                    <hr>                                                  
+
+                                                    <div class="profile-card">
+                                                        <div class="mb-3">
+                                                            <h6 class="fw-bold">Personal Information</h6>                                                           
+                                                        </div>
+                                                        <hr>
+                                                        <div class="row g-0">
+                                                            <div class="col-sm-3 d-flex flex-column justify-content-between align-items-center mb-4">
+                                                                <div class="">
+                                                                    {% if student.profile_picture %}
+                                                                        <img id="profilePreview" src="{{ student.profile_picture.url }}" alt="Profile Picture" class="profile-img">
+                                                                    {% else %}
+                                                                        <img id="profilePreview" src="{% static 'assets/images/profile/profile.png' %}" alt="Profile Picture" class="profile-img">
+                                                                    {% endif %}
+                                                                </div>
+                                                                <p class="fw-bold">
+                                                                    <strong>Name:</strong>
+                                                                    {{ student.full_name }}
+                                                                </p>
+                                                                
+                                                            </div>
+                                                            <div class="col-sm-4">  
+                                                                <p>
+                                                                    <strong>Email:</strong>
+                                                                    {{ student.user.email }}
+                                                                </p>
+                                                                <p>
+                                                                    <strong>Phone number:</strong>
+                                                                    {{ student.phone }}
+                                                                </p>                                                                
+                                                                <p>
+                                                                    <strong>Address:</strong>
+                                                                    {{ student.location.address }}
+                                                                </p>
+                                                                <p>
+                                                                    <strong>Gender:</strong>
+                                                                    {{ student.get_gender_display }}
+                                                                </p>
+                                                                <p>
+                                                                    <strong>Date of Birth:</strong>
+                                                                    {{ student.date_of_birth }}
+                                                                </p>
+                                                            </div> 
+                                                            <div class="col-sm-5">
+                                                                <p>
+                                                                    <strong>Grade:</strong>
+                                                                    {{ student.grade }}
+                                                                </p>
+                                                                <p>
+                                                                    <strong>School/College:</strong>
+                                                                    {{ student.school_college }}
+                                                                </p>
+
+                                                            </div>                                                       
+                                                            
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>  
+
+                                    </div>
+
+                                    </div>
+
+                                </div>
+                            </div> 
+
+                        </div>
+                    </div>
+                    <!-- Page-body end -->
+                </div>
+                <!--Style Selector-->
+                <div id="styleSelector"> </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

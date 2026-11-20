@@ -166,24 +166,4 @@
             </div>
         </div>
     </div>
-    <script>
-        function tutorRejection(){
-            event.preventDefault(); 
-            document.getElementById('tutor-reject').classList.remove('d-none')
-        }
-        function cancelReject(){            
-            document.getElementById('tutor-reject').classList.add('d-none')
-        }
-        function validateReject() {
-            const reason = document.getElementById("rejection_reason").value.trim();
-
-            if (!reason) {
-                alert("Please enter a reason before rejecting this tutor.");
-                document.getElementById("rejection_reason").focus();
-                return false;
-            }
-
-            return confirm("Are you sure you want to reject this tutor?");
-        }
-    </script>
 {% endblock content %}

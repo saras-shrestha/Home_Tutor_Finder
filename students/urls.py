@@ -5,7 +5,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-
 urlpatterns = [
     path('student-dashboard/', views.student_dashboard, name='student_dashboard'),
     path('student-profile/', views.student_profile, name='student_profile'),

@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.db import transaction
 from django.http import JsonResponse
+from django.db.models import Q
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -70,19 +71,53 @@ def admin_logout(request):
     logout(request)
     return redirect('admin_login')
 
-
 @admin_required
 def students_list(request):
     students = StudentProfile.objects.all()
+
+    # Search by student name
+    search = request.GET.get('search', '').strip()
+    
+    if search:
+        students = students.filter(
+            Q(full_name__icontains=search) |
+            Q(user__username__icontains=search)
+        )
+    
+    # Filter by grade
+    grade_id = request.GET.get('grade')
+    
+    if grade_id:
+        students = students.filter(
+            grade=grade_id
+        )
+
     paginator = Paginator(students, 5)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     context={
             "students":page_obj,
+            'grades': Grade.objects.all(),
         }
     return render(
         request,
         'admin_panel/students/students-list.html',
+        context
+    )
+
+def student_info(request, student_id):
+
+    student = StudentProfile.objects.get(
+            id=student_id          
+        )
+
+    context = {
+        'student': student,
+    }
+
+    return render(
+        request,
+        'admin_panel/students/student-info.html',
         context
     )
 

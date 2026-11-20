@@ -181,6 +181,20 @@
                                             {% endif %}
 
                                         </div>
+                                        <div class="text-center m-r-20">                                                    
+                                            <span>
+                                                Pages:
+                                                {% if pending_requests.has_previous %}
+                                                    <a href="?page={{ pending_requests.previous_page_number }}" class="ajax-page">Previous</a>
+                                                {% endif %}
+                                                {% for num in pending_requests.paginator.page_range %}
+                                                    <a href="?page={{ num }}" class="ajax-page">{{ num }}</a>
+                                                {% endfor %}
+                                                {% if pending_requests.has_next %}
+                                                    <a href="?page={{ pending_requests.next_page_number }}" class="ajax-page">Next</a>
+                                                {% endif %}                                                    
+                                            </span>
+                                        </div>
 
                                     </div>
                                 </div>

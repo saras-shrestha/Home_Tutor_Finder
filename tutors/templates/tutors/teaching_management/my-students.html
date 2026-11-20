@@ -70,10 +70,10 @@
                                                             <button type="submit" class="btn btn-primary py-1">
                                                                 <i class="bi bi-search fs-6"></i> Search
                                                             </button>
-                                                            <button
-                                                            class="btn btn-outline-secondary py-2">
-                                                                Reset
-                                                        </button>
+                                                            <button type="reset"
+                                                                class="btn btn-outline-secondary py-2">
+                                                                    Reset
+                                                            </button>
                                                         </div>
 
                                                     </form>
@@ -158,6 +158,20 @@
                                                                 </tbody>
 
                                                             </table>
+                                                             <div class="text-center m-r-20">
+                                                                <span>
+                                                                    Pages:
+                                                                    {% if students.has_previous %}
+                                                                        <a href="?page={{ students.previous_page_number }}">Previous</a>
+                                                                    {% endif %}
+                                                                    {% for num in students.paginator.page_range %}
+                                                                        <a href="?page={{ num }}">{{ num }}</a>
+                                                                    {% endfor %}
+                                                                    {% if students.has_next %}
+                                                                        <a href="?page={{ students.next_page_number }}">Next</a>
+                                                                    {% endif %}                                                    
+                                                                </span>
+                                                            </div>
                                                         </div>
 
                                                     {% else %}

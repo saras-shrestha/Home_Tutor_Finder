@@ -1,0 +1,324 @@
+{% extends 'tutors/tutor-base.html' %}
+{% load static %}
+{% block content %}    
+    <style>
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .summary-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 22px;
+        border: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .summary-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: #e8f5e9;
+        color: #198754;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .summary-card h3 {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .summary-card p {
+        margin: 3px 0 0;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .content-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 22px;
+    }
+
+    .table thead th {
+        background: #f8f9fa;
+        color: #555;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    .student-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 9px;
+    }
+
+    .completed-badge {
+        background: #e8f5e9;
+        color: #198754;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 55px 15px;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 45px;
+        color: #adb5bd;
+        margin-bottom: 15px;
+    }
+</style>
+
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <!-- Main-body start -->
+
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <!-- Page-body start -->
+
+                    <div class="page-body">
+                        <div class="row">
+                            <!--first row-->                            
+                            <!-- Student Pending requests starts -->
+                            <div class="col-12">
+                                <div class="card table-card">
+                                                                          
+                                    <!-- Page Heading -->
+                                    <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                                        <div>
+                                            <h5>Completed Sessions</h5>
+                                            <p class="text-muted mb-0">
+                                                View the teaching sessions you have successfully completed.
+                                            </p>
+                                        </div>
+
+                                        <span class="badge bg-primary rounded-pill px-3 py-2">
+                                            {{ students.count }} Students
+                                        </span>
+                                    </div>
+                                        
+                                    <div class="card-block">
+
+
+                                       <div class="container-fluid">   
+
+                                        <!-- Summary -->
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="summary-card">
+                                                    <div class="summary-icon">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </div>
+
+                                                    <div>
+                                                        <h3>{{ total_completed }}</h3>
+                                                        <p>Total Completed Sessions</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Completed Sessions Table -->
+                                        <div class="content-card">
+
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div>
+                                                    <h5 class="font-weight-bold mb-1">Session History</h5>
+                                                    <small class="text-muted">
+                                                        Your previously completed teaching sessions
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Search and Filter -->
+                                            <form method="GET" class="row mb-4 completed-search-form" id="completedSearchForm">
+
+                                                <div class="col-md-5 mb-2">
+                                                    <input type="text"
+                                                        name="search"
+                                                        class="form-control"
+                                                        placeholder="Search student name..."
+                                                        value="{{ request.GET.search }}">
+                                                </div>
+
+                                                <div class="col-md-4 mb-2">
+                                                    <select name="grade" class="form-control">
+                                                        <option value="">All Grades</option>
+                                                        {% for grade in grades %}
+                                                            <option value="{{ grade.id }}"
+                                                                {% if request.GET.grade == grade.id|stringformat:"s" %}
+                                                                    selected
+                                                                {% endif %}>
+                                                                {{ grade.name }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-3 mb-2">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-search" style="font-size:18px"></i> Search
+                                                    </button>
+
+                                                    <button type="reset" id="resetCompletedSearch"
+                                                        class="btn btn-light border">
+                                                            Reset
+                                                    </button>
+                                                </div>
+
+                                            </form>
+
+                                            <!-- Table -->
+                                            <div id="completedResults">
+                                                {% include 'tutors/teaching_management/partials/completed-session-results.html' %}
+                                            </div>
+                                            
+                                        </div>
+
+                                    </div>
+
+
+                                    </div>
+                                </div>
+                            </div> 
+                            <!--first row ends-->
+                                                                                  
+                        </div>
+                    </div>
+                    <!-- Page-body end -->
+                </div>
+                <div id="styleSelector"> </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function () {
+
+    $('#completedSearchForm').on('submit', function (e) {
+
+        e.preventDefault();
+
+        $.ajax({
+            url: "{% url 'completed_sessions' %}",
+            type: "GET",
+
+            data: $(this).serialize(),
+
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            success: function (response) {
+
+                let newResults = $(response).find('#completedResults').html();
+                $('#completedResults').html(response);
+
+            },
+
+            error: function (xhr) {
+
+                console.log("AJAX ERROR");
+                console.log(xhr.status);
+                console.log(xhr.responseText);
+
+            }
+        });
+
+    });
+
+});
+</script>
+
+<script>
+//pagination
+$(document).ready(function () {
+
+    function loadCompletedSessions(page = 1) {
+
+        let search = $('#searchStudent').val();
+        let grade = $('#filterGrade').val();
+
+        $.ajax({
+            url: "{% url 'completed_sessions' %}",
+            type: "GET",
+
+            data: {
+                search: search,
+                grade: grade,
+                page: page
+            },
+
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            beforeSend: function () {
+                $('#completedResults').css('opacity', '0.5');
+            },
+
+            success: function (response) {
+                $('#completedResults').html(response);
+            },
+
+            error: function () {
+                alert("Unable to load completed sessions.");
+            },
+
+            complete: function () {
+                $('#completedResults').css('opacity', '1');
+            }
+        });
+    }
+
+
+    // Search form submission
+    $('#completedSearchForm').on('submit', function (e) {
+        e.preventDefault();
+        loadCompletedSessions(1);
+    });
+
+
+    // Grade filter
+    $('#filterGrade').on('change', function () {
+        loadCompletedSessions(1);
+    });
+
+
+    // Pagination
+    $(document).on('click', '.ajax-page', function (e) {
+        e.preventDefault();
+
+        let page = $(this).attr('href').split('page=')[1];
+
+        loadCompletedSessions(page);
+    });
+
+});
+</script>
+{% endblock extra_js%}

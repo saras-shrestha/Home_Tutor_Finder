@@ -161,6 +161,20 @@
                                             {% endif %}
 
                                         </div>
+                                        <div class="text-center m-r-20">                                                    
+                                            <span>
+                                                Pages:
+                                                {% if rejected_requests.has_previous %}
+                                                    <a href="?page={{ rejected_requests.previous_page_number }}" class="ajax-page">Previous</a>
+                                                {% endif %}
+                                                {% for num in rejected_requests.paginator.page_range %}
+                                                    <a href="?page={{ num }}" class="ajax-page">{{ num }}</a>
+                                                {% endfor %}
+                                                {% if rejected_requests.has_next %}
+                                                    <a href="?page={{ rejected_requests.next_page_number }}" class="ajax-page">Next</a>
+                                                {% endif %}                                                    
+                                            </span>
+                                        </div>
 
                                     </div>
                                 </div>

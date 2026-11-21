@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-
-from tutors.models import TutorAvailability, TutorTeaching, TutorRequest
+from django.core.paginator import Paginator
+from tutors.models import TutorAvailability, TutorTeaching, TutorRequest, TutorProfile
 from .models import StudentProfile
 from django.urls import reverse
 from core.models import GradeSubject, Region, District, City, Location, Grade
@@ -16,6 +16,8 @@ from django.db.models import Avg, Count
 import math
 from datetime import time
 from django.views.decorators.http import require_POST
+from django.db import IntegrityError
+from django.db.models import Q
 
 # Create your views here.
 
@@ -409,24 +411,22 @@ def find_tutors(request):
 
             tutors = tutors.distinct()
 
-    # Page context
 
+    grade_subjects= GradeSubject.objects.select_related(
+        'grade',
+        'subject'
+    ).order_by('grade__id', 'subject__name')
+
+    my_subjects=grade_subjects.filter(grade_id=request.user.student_profile.grade.id)
+    # Page context
     context = {
         'grades': Grade.objects.all().order_by('id'),
-
-        'grade_subjects': GradeSubject.objects.select_related(
-            'grade',
-            'subject'
-        ).order_by('grade__id', 'subject__name'),
-
+        'grade_subjects': grade_subjects,
+        'my_subjects': my_subjects,
         'availability_days': TutorAvailability.DAYS,
-
         'student_location': student_location,
-
         'tutors': tutors,
-
         'searched': bool(request.GET.get('search')),
-
         'selected_grade': request.GET.get('grade', ''),
         'selected_subject': request.GET.get('subject', ''),
         'selected_budget': request.GET.get('budget', ''),
@@ -630,50 +630,196 @@ def send_tutor_request(request):
     existing_request = TutorRequest.objects.filter(
         student=student,
         tutor_teaching=tutor_teaching,
-        status='pending'
+        status__in=['pending', 'accepted','in_progress']
     ).exists()
 
     if existing_request:
         messages.warning(
             request,
-            "You have already sent a pending request to this tutor."
+            "You already have an active request or ongoing class with this tutor."
         )
         return redirect("tutor_requests")
 
-    TutorRequest.objects.create(
-        student=student,
-        tutor_teaching=tutor_teaching,
-        message=message
-    )
-
-    messages.success(request, "Tutor request sent successfully!")
+    try:
+        TutorRequest.objects.create(
+            student=student,
+            tutor_teaching=tutor_teaching,
+            message=message
+        )
+        messages.success(request, "Tutor request sent successfully!")
+    except IntegrityError:
+        # Protects against rapid double-clicks on the submit button
+        messages.warning(
+            request,
+            "You already have an active request with this tutor."
+        )
 
     return redirect("tutor_requests")
 
 
 
+# @login_required
+# def tutor_requests(request):
+
+#     if request.user.role != "student":
+#         return redirect("home-page")
+
+#     student = request.user.student_profile
+
+#     tutor_requests = TutorRequest.objects.filter(
+#         student=student
+#     ).select_related(
+#         'tutor_teaching',
+#         'tutor_teaching__tutor',
+#         'tutor_teaching__grade_subject',
+#         'tutor_teaching__grade_subject__grade',
+#         'tutor_teaching__grade_subject__subject'
+#     ).order_by('-created_at')
+
+#     return render(
+#         request,
+#         'students/tutor-management/tutor-requests.html',
+#         {
+#             'tutor_requests': tutor_requests
+#         }
+#     )
 @login_required
 def tutor_requests(request):
-
     if request.user.role != "student":
         return redirect("home-page")
 
     student = request.user.student_profile
-
-    tutor_requests = TutorRequest.objects.filter(
-        student=student
-    ).select_related(
+    base_related = (
         'tutor_teaching',
         'tutor_teaching__tutor',
         'tutor_teaching__grade_subject',
         'tutor_teaching__grade_subject__grade',
-        'tutor_teaching__grade_subject__subject'
-    ).order_by('-created_at')
+        'tutor_teaching__grade_subject__subject',
+    )
 
+    # 1. Querysets
+    pending_requests = TutorRequest.objects.filter(
+        student=student,
+        status='pending'
+    ).select_related(*base_related).order_by('-created_at')
+
+    accepted_requests = TutorRequest.objects.filter(
+        student=student,
+        status='accepted'
+    ).select_related(*base_related).order_by('-responded_at')
+
+    started_requests = TutorRequest.objects.filter(
+        student=student,
+        status='in_progress'
+    ).select_related(*base_related).order_by('-teaching_started_at')
+
+    completed_requests = TutorRequest.objects.filter(
+        student=student,
+        status='completed'
+    ).select_related(*base_related).order_by('-teaching_completed_at')
+
+    # 2. Summary counts (before search)
+    pending_count = pending_requests.count()
+    not_started_count = accepted_requests.count()
+    in_progress_count = started_requests.count()
+    completed_count = completed_requests.count()
+
+    # 3. Search filters
+    subject_search = request.GET.get('subject_search', '').strip()
+    tutor_search = request.GET.get('tutor_search', '').strip()
+
+    # if subject_search:
+    #     student_filter = Q(student__full_name__icontains=student_search)
+    #     pending_requests = pending_requests.filter(student_filter)
+    #     accepted_requests = accepted_requests.filter(student_filter)
+    #     started_requests = started_requests.filter(student_filter)
+    #     completed_requests = completed_requests.filter(student_filter)
+
+    if tutor_search:
+        tutor_filter = Q(tutor_teaching__tutor__full_name__icontains=tutor_search)
+        pending_requests = pending_requests.filter(tutor_filter)
+        accepted_requests = accepted_requests.filter(tutor_filter)
+        started_requests = started_requests.filter(tutor_filter)
+        completed_requests = completed_requests.filter(tutor_filter)
+
+    # 4. Search badge counts (after search, before pagination)
+    search_pending_count = pending_requests.count()
+    search_not_started_count = accepted_requests.count()
+    search_in_progress_count = started_requests.count()
+    search_completed_count = completed_requests.count()
+
+    # 5. Pagination
+    pending_paginator = Paginator(pending_requests, 5)
+    accepted_paginator = Paginator(accepted_requests, 5)
+    started_paginator = Paginator(started_requests, 5)
+    completed_paginator = Paginator(completed_requests, 5)  
+
+    tab = request.GET.get('tab', 'pending')
+    page_number = request.GET.get('page', 1)
+
+    page_obj_pending = pending_paginator.get_page(page_number if tab == 'pending' else 1)
+    page_obj_accepted = accepted_paginator.get_page(page_number if tab == 'not_started' else 1)
+    page_obj_started = started_paginator.get_page(page_number if tab == 'in_progress' else 1)
+    page_obj_completed = completed_paginator.get_page(page_number if tab == 'completed' else 1)
+
+    context = {
+        'pending_requests': page_obj_pending,
+        'accepted_requests': page_obj_accepted,
+        'started_requests': page_obj_started,
+        'completed_requests': page_obj_completed,
+
+        'pending_count': pending_count,
+        'not_started_count': not_started_count,
+        'in_progress_count': in_progress_count,
+        'completed_count': completed_count,
+
+        'search_pending_count': search_pending_count,
+        'search_not_started_count': search_not_started_count,
+        'search_in_progress_count': search_in_progress_count,
+        'search_completed_count': search_completed_count,
+    }
+
+    # 6. AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        tab_templates = {
+            'pending': 'students/tutor-management/tutor-requests-partials/_pending_table.html',
+            'not_started': 'students/tutor-management/tutor-requests-partials/_not_started_table.html',
+            'in_progress': 'students/tutor-management/tutor-requests-partials/_in_progress_table.html',
+            'completed': 'students/tutor-management/tutor-requests-partials/_completed_table.html',
+        }
+
+        template = tab_templates.get(tab)
+        if not template:
+            return JsonResponse({'success': False, 'message': 'Invalid tab requested.'}, status=400)
+
+        html = render_to_string(template, context, request=request)
+
+        return JsonResponse({
+            'success': True,
+            'html': html,
+            'pending_count': pending_count,
+            'not_started_count': not_started_count,
+            'in_progress_count': in_progress_count,
+            'completed_count': completed_count,
+            'search_pending_count': search_pending_count,
+            'search_not_started_count': search_not_started_count,
+            'search_in_progress_count': search_in_progress_count,
+            'search_completed_count': search_completed_count,
+        })
+
+    # Normal page request
+    return render(request, 'students/tutor-management/tutor-requests.html', context)
+
+def my_tutors(request):
+    tutors = TutorProfile.objects.filter(verification_status=1).all()
+    paginator = Paginator(tutors, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context={
+            "tutors":page_obj,
+        }
     return render(
         request,
-        'students/tutor-management/tutor-requests.html',
-        {
-            'tutor_requests': tutor_requests
-        }
+        'students/my-learnings/my-tutors.html',
+        context
     )

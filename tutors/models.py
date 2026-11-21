@@ -309,5 +309,14 @@ class TutorRequest(models.Model):
             blank=True
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['student', 'tutor_teaching'],
+                condition=models.Q(status__in=['pending', 'accepted', 'in_progress']),
+                name='unique_active_tutor_request'
+            )
+        ]
+        
     def __str__(self):
-        return f"{self.student} - {self.tutor_teaching.tutor}"
+            return f"{self.student} - {self.tutor_teaching.tutor}"

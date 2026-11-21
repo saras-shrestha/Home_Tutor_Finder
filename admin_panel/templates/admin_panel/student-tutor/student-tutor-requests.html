@@ -1,8 +1,8 @@
 {% extends 'admin_panel/admin-base.html' %}
-    {% block content %}
-    {% load static %}
-    
 
+{% load static %}
+{% block content %}
+    
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
             <!-- Main-body start -->
@@ -21,10 +21,7 @@
                                         <h5>Student-Tutor Requests</h5>
                                     </div>
                                     <div class="card-block">
-
-
                                         <div class="container-fluid py-4">
-
                                             <!-- Summary Cards -->
                                             <div class="row mb-4">
 
@@ -38,8 +35,8 @@
                                                             </div>
 
                                                             <div>
-                                                                <h3 class="font-weight-bold mb-0" id="notStartedCount">
-                                                                    {{ accepted_students.count }}
+                                                                <h3 class="font-weight-bold mb-0" id="pendingCount">
+                                                                    {{pending_count}}
                                                                 </h3>
                                                                 <small class="text-muted">
                                                                     Pendig- Not Accepted
@@ -49,21 +46,21 @@
                                                         </div>
                                                     </div>
                                                 </div>
-       
+
                                                 <div class="col-md-3 mb-3 mb-md-0">
                                                     <div class="card border-0 shadow-sm h-100">
                                                         <div class="card-body d-flex align-items-center">
 
-                                                            <div class="rounded bg-primary p-3 mr-3 text-white">                                                                
+                                                            <div class="rounded bg-primary p-3 mr-3 text-white">
                                                                 <i class="bi bi-clipboard" style="font-size: 22px;"></i>
                                                             </div>
 
                                                             <div>
                                                                 <h3 class="font-weight-bold mb-0" id="notStartedCount">
-                                                                    {{ accepted_students.count }}
+                                                                    {{not_started_count}}
                                                                 </h3>
                                                                 <small class="text-muted">
-                                                                    Accepted - Not Started
+                                                                    Accepted - Not Started Teaching
                                                                 </small>
                                                             </div>
 
@@ -82,17 +79,17 @@
 
                                                             <div>
                                                                 <h3 class="font-weight-bold mb-0" id="inProgressCount">
-                                                                    {{ started_students.count }}
+                                                                    {{in_progress_count}}
                                                                 </h3>
                                                                 <small class="text-muted">
-                                                                    Teaching In Progress
+                                                                    Started Teaching - In Progress
                                                                 </small>
                                                             </div>
 
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="col-md-3">
                                                     <div class="card border-0 shadow-sm h-100">
                                                         <div class="card-body d-flex align-items-center">
@@ -102,8 +99,8 @@
                                                             </div>
 
                                                             <div>
-                                                                <h3 class="font-weight-bold mb-0" id="inProgressCount">
-                                                                    {{ started_students.count }}
+                                                                <h3 class="font-weight-bold mb-0" id="completedCount">
+                                                                    {{completed_count}}
                                                                 </h3>
                                                                 <small class="text-muted">
                                                                     Completed
@@ -113,6 +110,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
 
 
@@ -122,45 +120,47 @@
                                                 <div class="card-header bg-white pt-3 pb-0">
 
                                                     <h6 class="font-weight-bold mb-3">
-                                                        Students Request
+                                                        Student Teaching Management
                                                     </h6>
                                                     <!-- Success Message -->
                                                     <div id="successMessage"
                                                         class="alert alert-success alert-dismissible fade show d-none"
                                                         role="alert">
                                                     </div>
+                                                    <div id="completeSuccessMessage"
+                                                        class="alert alert-success d-none">
+                                                    </div>
 
                                                     <!-- Tabs -->
                                                     <ul class="nav nav-tabs" id="acceptedTabs" role="tablist">
-
+                                                        
                                                         <li class="nav-item">
                                                             <a class="nav-link active"
-                                                            id="not-started-tab"
+                                                            id="pending-tab"
                                                             data-toggle="tab"
-                                                            href="#not-started"
+                                                            href="#pending"
                                                             role="tab">
 
                                                                 <i class="bi bi-hourglass-split mr-1"></i>
-                                                                Pending
-
-                                                                <span class="badge badge-primary ml-1" id="notStartedBadge">
-                                                                    {{ accepted_students.count }}
+                                                                Not Accepted
+                                                                <span class="badge badge-primary ml-1" id="pendingBadge">
+                                                                    {{ search_pending_count }}
                                                                 </span>
                                                             </a>
-                                                        </li>                                                       
+                                                        </li>   
 
                                                         <li class="nav-item">
-                                                            <a class="nav-link active"
+                                                            <a class="nav-link"
                                                             id="not-started-tab"
                                                             data-toggle="tab"
                                                             href="#not-started"
                                                             role="tab">
 
-                                                                <i class="bi bi-clipboard"></i>
+                                                                <i class="bi bi-clipboard mr-1"></i>
                                                                 Not Started
 
                                                                 <span class="badge badge-primary ml-1" id="notStartedBadge">
-                                                                    {{ accepted_students.count }}
+                                                                    {{ search_not_started_count }}
                                                                 </span>
                                                             </a>
                                                         </li>
@@ -176,27 +176,26 @@
                                                                 In Progress
 
                                                                 <span class="badge badge-success ml-1" id="inProgressBadge">
-                                                                    {{ started_students.count }}
+                                                                    {{ search_in_progress_count }}
                                                                 </span>
                                                             </a>
                                                         </li>
 
                                                         <li class="nav-item">
                                                             <a class="nav-link"
-                                                            id="in-progress-tab"
+                                                            id="completed-tab"
                                                             data-toggle="tab"
-                                                            href="#in-progress"
+                                                            href="#completed"
                                                             role="tab">
 
                                                                 <i class="bi bi-check-circle"></i>
                                                                 Completed
 
-                                                                <span class="badge badge-success ml-1" id="inProgressBadge">
-                                                                    {{ started_students.count }}
+                                                                <span class="badge badge-success ml-1" id="completedBadge">
+                                                                    {{ search_completed_count }}
                                                                 </span>
                                                             </a>
                                                         </li>
-
 
                                                     </ul>
 
@@ -208,17 +207,27 @@
                                                     <!-- Tab Content -->
                                                     <div class="tab-content" id="acceptedTabsContent">
 
-                                                        <!-- NOT STARTED TAB -->
+                                                        <!-- PENDING TAB -->
                                                         <div class="tab-pane fade show active"
-                                                            id="not-started"
+                                                            id="pending"
                                                             role="tabpanel">
 
-                                                            <div id="notStartedContent">
-                                                                {% include 'tutors/teaching_management/_not_started_table.html' %}
+                                                            <div id="pendingContent">
+                                                                {% include 'admin_panel/student-tutor/_pending_table.html' %}
                                                             </div>
 
                                                         </div>
 
+                                                        <!-- NOT STARTED TAB -->
+                                                        <div class="tab-pane fade"
+                                                            id="not-started"
+                                                            role="tabpanel">
+
+                                                            <div id="notStartedContent">
+                                                                {% include 'admin_panel/student-tutor/_not_started_table.html' %}
+                                                            </div>
+
+                                                        </div>
 
                                                         <!-- IN PROGRESS TAB -->
                                                         <div class="tab-pane fade"
@@ -227,11 +236,24 @@
 
                                                             <div id="inProgressContent">
 
-                                                                {% include 'tutors/teaching_management/_in_progress_table.html' %}
+                                                                {% include 'admin_panel/student-tutor/_in_progress_table.html' %}
 
                                                             </div>
 
+                                                        </div>  
+
+                                                        <!-- COMPLETED TAB -->
+                                                        <div class="tab-pane fade"
+                                                            id="completed"
+                                                            role="tabpanel">
+
+                                                            <div id="completedContent">
+
+                                                                {% include 'admin_panel/student-tutor/_completed_table.html' %}
+
+                                                            </div>
                                                         </div>
+                                                        
 
                                                     </div>
 
@@ -259,83 +281,148 @@
 {% block extra_js %}
 
 <script>
-    $(document).on('submit', '.start-teaching-form', function(e) {
+$(document).ready(function () {
+    const tabTargets = {
+        'pending': '#pendingContent',
+        'not_started': '#notStartedContent',
+        'in_progress': '#inProgressContent',
+        'completed': '#completedContent'
+    };
 
-        e.preventDefault();
+    const targetTabs = {
+        'pendingContent': 'pending',
+        'notStartedContent': 'not_started',
+        'inProgressContent': 'in_progress',
+        'completedContent': 'completed'
+    };
 
-        let form = $(this);
+    function loadTeachingTable(tab, page = 1, form = null) {
 
-        if (!confirm('Are you sure you want to start teaching?')) {
-            return;
-        }
+        let target = tabTargets[tab];
+        if (!target) return;
+
+        let data = form ? form.serializeArray() : [];
+
+        // Add pagination and tab parameters
+        data.push({name: 'page', value: page});
+        data.push({name: 'tab', value: tab});
 
         $.ajax({
-            url: form.attr('action'),
-            type: 'POST',
-            data: form.serialize(),
-            dataType: 'json',
+            url: "{% url 'student_tutor_requests' %}",
+            type: "GET",
+            data: data,
+            dataType: "json",
 
-            success: function(response) {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            beforeSend: function () {
+                $(target).css('opacity', '0.5');
+            },
+
+            success: function (response) {
 
                 if (response.success) {
 
-                    // Reload both tables and counts
-                    $.ajax({
-                        url: "{% url 'accepted_request' %}",
-                        type: "GET",
-                        data: {tab: 'in_progress'},
-                        dataType: "json",
+                    // Replace selected table
+                    $(target).html(response.html);
 
-                        success: function(data) {
+                    // Update counts
+                    $('#pendingCount').text(
+                        response.pending_count
+                    );
+                    $('#notStartedCount').text(
+                        response.not_started_count
+                    );
 
-                            if (data.success) {
+                    $('#inProgressCount').text(
+                        response.in_progress_count
+                    );
+                    $('#completedCount').text(
+                        response.completed_count
+                    );
 
-                                $('#inProgressContent').html(data.html);
+                    //Update search badges
+                    $('#pendingBadge').text(
+                        response.search_pending_count
+                    );
+                    $('#notStartedBadge').text(
+                        response.search_not_started_count
+                    );
+                    $('#inProgressBadge').text(
+                        response.search_in_progress_count
+                    );
+                    $('#completedBadge').text(
+                        response.search_completed_count
+                    );
 
-                                $('#notStartedCount').text(data.not_started_count);
-                                $('#inProgressCount').text(data.in_progress_count);
-
-                                $('#notStartedBadge').text(data.not_started_count);
-                                $('#inProgressBadge').text(data.in_progress_count);
-
-                                // Switch to In Progress tab
-                                $('#in-progress-tab').tab('show');
-
-                                // Show success message
-                                $('#successMessage')
-                                    .text(response.message)
-                                    .removeClass('d-none');
-
-                            }
-                        },
-
-                        error: function(xhr) {
-                            console.log("Table reload error:", xhr.responseText);
-                        }
-                    });
-
-                    // Reload Not Started table
-                    $.ajax({
-                        url: "{% url 'accepted_request' %}",
-                        type: "GET",
-                        data: {tab: 'not_started'},
-                        dataType: "json",
-
-                        success: function(data) {
-                            if (data.success) {
-                                $('#notStartedContent').html(data.html);
-                            }
-                        }
-                    });
-
+                } else {
+                    alert(response.message);
                 }
             },
 
-            error: function(xhr) {  }
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                alert('Unable to load students.');
+            },
+
+            complete: function () {
+                $(target).css('opacity', '1');
+            }
         });
+    }
+
+    // AJAX Search
+    $(document).on('submit', '.teaching-search-form', function (e) {
+        
+        e.preventDefault();
+
+        let form = $(this);
+        let tab = form.data('tab');
+
+        loadTeachingTable(tab, 1, form);
 
     });
 
-</script>
 
+    // AJAX Reset
+    $(document).on('click', '.teaching-search-form button[type="reset"]', function (e) {
+
+        e.preventDefault();
+
+        let form = $(this).closest('form');
+
+        form.find('input[name="tutor_search"]').val('');
+        form.find('input[name="student_search"]').val('');
+
+        let tab = form.data('tab');
+
+        loadTeachingTable(tab, 1, form);
+
+    });
+
+
+    // AJAX Pagination
+    $(document).on('click', '.ajax-page', function (e) {
+
+        e.preventDefault();
+
+        let link = $(this);
+
+        let target = link.closest('#pendingContent, #notStartedContent, #inProgressContent, #completedContent');
+
+        let tab = targetTabs[target.attr('id')];
+
+        let page = new URL(link.attr('href'), window.location.href)
+            .searchParams.get('page');
+
+        let form = target.find('.teaching-search-form');
+
+        loadTeachingTable(tab, page, form.length ? form : null);
+
+    });
+
+});
+</script>
 {% endblock %}

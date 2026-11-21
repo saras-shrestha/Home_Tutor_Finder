@@ -1,0 +1,171 @@
+{% load static %}
+<div class="mb-3">
+    <h6 class="font-weight-bold mb-1">
+        Teaching Completed
+    </h6>
+
+    <small class="text-muted">
+        Students request whose teaching has already completed.
+    </small>
+</div>
+
+
+<hr>
+
+<!-- Completed Table -->
+<div class="table-responsive">
+
+    <!-- Request list -->
+    <div>
+
+        {% for req in completed_requests %}
+
+        <div class="request-card" data-status="{{ req.status }}">
+
+            <!-- Tutor information -->
+            <div class="d-flex justify-content-between align-items-start flex-wrap">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    {% if req.tutor_teaching.tutor.profile_picture %}
+                        <img
+                            src="{{ req.tutor_teaching.tutor.profile_picture.url }}"
+                            class="tutor-avatar mr-3"
+                            alt="Tutor profile">
+                    {% else %}
+                        <div class="tutor-avatar bg-light d-flex align-items-center justify-content-center mr-3">
+                            <i class="fas fa-user text-secondary"></i>
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        <h6 class="font-weight-bold mb-1">
+                            {{ req.tutor_teaching.tutor.full_name }}
+                        </h6>
+
+                        <small class="text-muted">
+                            Grade {{ req.tutor_teaching.grade_subject.grade }}
+                            &nbsp;·&nbsp;
+                            {{ req.tutor_teaching.grade_subject.subject }}
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <!-- Status -->
+                <span class="status-badge status-{{ req.status }}">
+                    {{ req.get_status_display }}
+                </span>
+
+            </div>
+
+
+            <!-- Fee and date -->
+            <div class="d-flex flex-wrap justify-content-between mb-3">
+
+                <div>
+                    <small class="text-muted">Teaching fee</small>
+                    <p class="font-weight-bold mb-0">
+                        NPR {{ req.tutor_teaching.fee }}
+                        / {{ req.tutor_teaching.get_fee_type_display }}
+                    </p>
+                </div>
+
+                <div>
+                    <small class="text-muted">Request sent</small>
+                    <p class="mb-0">
+                        {{ req.created_at|date:"M d, Y · h:i A" }}
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- Student message -->
+            <div class="request-message mb-3">
+
+                <small class="text-muted d-block mb-1">
+                    Your message
+                </small>
+
+                {% if req.message %}
+                    {{ req.message|linebreaksbr }}
+                {% else %}
+                    <span class="text-muted">No message provided.</span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-end">
+
+                {% if req.status == 'pending' %}
+
+                    <button type="button"
+                            class="btn btn-outline-danger btn-sm">
+                        Cancel Request
+                    </button>
+
+                {% elif req.status == 'accepted' %}
+
+                    <span class="text-success small font-weight-bold">
+                        <i class="fas fa-check-circle"></i>
+                        Your request has been accepted.
+                    </span>
+
+                {% elif req.status == 'rejected' %}
+
+                    <span class="text-danger small">
+                         Your request was rejected.
+                    </span>
+
+                {% elif req.status == 'completed' %}
+
+                    <span class="text-primary small">
+                        This tutoring request is completed.
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="empty-state">
+            <i class="fas fa-paper-plane fa-3x text-muted mb-3"></i>
+
+            <h5>No requests found</h5>
+
+            <p class="text-muted">
+                Your tutor requests will appear here after your tutor complete teaching you.
+            </p>
+
+            <a href="{% url 'find_tutors' %}"
+            class="btn btn-primary btn-sm">
+                Find Tutors
+            </a>
+        </div>
+
+        {% endfor %}
+
+    </div>
+    <div class="text-center m-r-20">                                                    
+        <span>
+            Pages:
+            {% if completed_requests.has_previous %}
+                <a href="?page={{ completed_requests.previous_page_number }}" class="ajax-page">Previous</a>
+            {% endif %}
+            {% for num in completed_requests.paginator.page_range %}
+                <a href="?page={{ num }}" class="ajax-page">{{ num }}</a>
+            {% endfor %}
+            {% if completed_requests.has_next %}
+                <a href="?page={{ completed_requests.next_page_number }}" class="ajax-page">Next</a>
+            {% endif %}                                                    
+        </span>
+    </div>
+
+</div>

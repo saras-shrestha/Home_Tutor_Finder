@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.http import JsonResponse
 from django.db.models import Q
+from django.template.loader import render_to_string
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -199,34 +200,121 @@ def tutor_info(request, id):
 
 @admin_required
 def student_tutor_requests(request):
-    tutor_requests = TutorRequest.objects.select_related(
-        'student',
+
+    base_related = (
+        'student__user',
         'tutor_teaching__tutor',
         'tutor_teaching__grade_subject__grade',
-        'tutor_teaching__grade_subject__subject'
-    ).order_by('-created_at')
+        'tutor_teaching__grade_subject__subject',
+    )
 
-    # Search
-    search = request.GET.get('search', '').strip()
+    # 1. Querysets
+    pending_requests = TutorRequest.objects.filter(
+        status='pending'
+    ).select_related(*base_related).order_by('-created_at')
 
-    if search:
-        tutor_requests = tutor_requests.filter(
-            student__full_name__icontains=search
-        ) | tutor_requests.filter(
-            tutor_teaching__tutor__full_name__icontains=search
-        )
+    accepted_requests = TutorRequest.objects.filter(
+        status='accepted'
+    ).select_related(*base_related).order_by('-responded_at')
 
-    # Filter by status
-    status = request.GET.get('status', '')
+    started_requests = TutorRequest.objects.filter(
+        status='in_progress'
+    ).select_related(*base_related).order_by('-teaching_started_at')
 
-    if status:
-        tutor_requests = tutor_requests.filter(status=status)
+    completed_requests = TutorRequest.objects.filter(
+        status='completed'
+    ).select_related(*base_related).order_by('-teaching_completed_at')
+
+    # 2. Summary counts (before search)
+    pending_count = pending_requests.count()
+    not_started_count = accepted_requests.count()
+    in_progress_count = started_requests.count()
+    completed_count = completed_requests.count()
+
+    # 3. Search filters
+    student_search = request.GET.get('student_search', '').strip()
+    tutor_search = request.GET.get('tutor_search', '').strip()
+
+    if student_search:
+        student_filter = Q(student__full_name__icontains=student_search)
+        pending_requests = pending_requests.filter(student_filter)
+        accepted_requests = accepted_requests.filter(student_filter)
+        started_requests = started_requests.filter(student_filter)
+        completed_requests = completed_requests.filter(student_filter)
+
+    if tutor_search:
+        tutor_filter = Q(tutor_teaching__tutor__full_name__icontains=tutor_search)
+        pending_requests = pending_requests.filter(tutor_filter)
+        accepted_requests = accepted_requests.filter(tutor_filter)
+        started_requests = started_requests.filter(tutor_filter)
+        completed_requests = completed_requests.filter(tutor_filter)
+
+    # 4. Search badge counts (after search, before pagination)
+    search_pending_count = pending_requests.count()
+    search_not_started_count = accepted_requests.count()
+    search_in_progress_count = started_requests.count()
+    search_completed_count = completed_requests.count()
+
+    # 5. Pagination
+    pending_paginator = Paginator(pending_requests, 5)
+    accepted_paginator = Paginator(accepted_requests, 5)
+    started_paginator = Paginator(started_requests, 5)
+    completed_paginator = Paginator(completed_requests, 5)  
+
+    tab = request.GET.get('tab', 'pending')
+    page_number = request.GET.get('page', 1)
+
+    page_obj_pending = pending_paginator.get_page(page_number if tab == 'pending' else 1)
+    page_obj_accepted = accepted_paginator.get_page(page_number if tab == 'not_started' else 1)
+    page_obj_started = started_paginator.get_page(page_number if tab == 'in_progress' else 1)
+    page_obj_completed = completed_paginator.get_page(page_number if tab == 'completed' else 1)
 
     context = {
-        'tutor_requests': tutor_requests,
-        'search': search,
-        'selected_status': status,
+        'pending_requests': page_obj_pending,
+        'accepted_requests': page_obj_accepted,
+        'started_requests': page_obj_started,
+        'completed_requests': page_obj_completed,
+
+        'pending_count': pending_count,
+        'not_started_count': not_started_count,
+        'in_progress_count': in_progress_count,
+        'completed_count': completed_count,
+
+        'search_pending_count': search_pending_count,
+        'search_not_started_count': search_not_started_count,
+        'search_in_progress_count': search_in_progress_count,
+        'search_completed_count': search_completed_count,
     }
+
+    # 6. AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        tab_templates = {
+            'pending': 'admin_panel/student-tutor/_pending_table.html',
+            'not_started': 'admin_panel/student-tutor/_not_started_table.html',
+            'in_progress': 'admin_panel/student-tutor/_in_progress_table.html',
+            'completed': 'admin_panel/student-tutor/_completed_table.html',
+        }
+
+        template = tab_templates.get(tab)
+        if not template:
+            return JsonResponse({'success': False, 'message': 'Invalid tab requested.'}, status=400)
+
+        html = render_to_string(template, context, request=request)
+
+        return JsonResponse({
+            'success': True,
+            'html': html,
+            'pending_count': pending_count,
+            'not_started_count': not_started_count,
+            'in_progress_count': in_progress_count,
+            'completed_count': completed_count,
+            'search_pending_count': search_pending_count,
+            'search_not_started_count': search_not_started_count,
+            'search_in_progress_count': search_in_progress_count,
+            'search_completed_count': search_completed_count,
+        })
+
+    # Normal page request
     return render(request, 'admin_panel/student-tutor/student-tutor-requests.html', context)
 
 # locations

@@ -546,8 +546,7 @@ def accepted_student_request(request):
 
     if search:
         name_filter = (
-            Q(student__full_name__icontains=search) |
-            Q(student__user__username__icontains=search)
+            Q(student__full_name__icontains=search)
         )
 
         accepted_students = accepted_students.filter(name_filter)
@@ -604,9 +603,7 @@ def accepted_student_request(request):
 
         'search_not_started_count': search_not_started_count,
         'search_in_progress_count': search_in_progress_count,
-        'search_completed_count': search_completed_count,
-
-        
+        'search_completed_count': search_completed_count,        
     }
 
     # AJAX request

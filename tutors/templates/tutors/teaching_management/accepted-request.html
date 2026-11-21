@@ -1,7 +1,7 @@
 {% extends 'tutors/tutor-base.html' %}
-    {% block content %}
-    {% load static %}
-    
+
+{% load static %}
+{% block content %}
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
             <!-- Main-body start -->
@@ -32,8 +32,7 @@
                                                         <div class="card-body d-flex align-items-center">
 
                                                             <div class="rounded bg-primary p-3 mr-3 text-white">
-                                                                <i class="bi bi-hourglass-split"
-                                                                style="font-size: 22px;"></i>
+                                                                <i class="bi bi-clipboard" style="font-size: 22px;"></i>
                                                             </div>
 
                                                             <div>
@@ -41,7 +40,7 @@
                                                                     {{not_started_count}}
                                                                 </h3>
                                                                 <small class="text-muted">
-                                                                    Accepted - Not Started
+                                                                    Accepted - Not Started Teaching
                                                                 </small>
                                                             </div>
 
@@ -63,7 +62,7 @@
                                                                     {{in_progress_count}}
                                                                 </h3>
                                                                 <small class="text-muted">
-                                                                    Teaching In Progress
+                                                                    Started Teaching - In Progress
                                                                 </small>
                                                             </div>
 

@@ -20,6 +20,9 @@ urlpatterns = [
     # map
     path('address-autocomplete/', views.address_autocomplete, name='address_autocomplete'),
     path('save-location/', views.save_location, name='save_location'),
+
+    # my_learnings
+    path('my-tutors/', views.my_tutors, name='my_tutors'),
 ]
 
 if settings.DEBUG:

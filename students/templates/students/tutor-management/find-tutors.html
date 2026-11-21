@@ -336,12 +336,18 @@
                                                                     Grade
                                                                 </label>
                                                                 <select name="grade" class="form-select" id="gradeSelect">
-                                                                    <option value="">All grades</option>
-                                                                    {% for grade in grades %}
+                                                                    {% if request.user.student_profile.grade %}
+                                                                        <option value="{{ request.user.student_profile.grade.id }}"  selected>
+                                                                            {{ request.user.student_profile.grade}}
+                                                                        </option>
+                                                                    {% else %}
+                                                                        <option value="" selected disabled>All grades</option>
+                                                                        {% for grade in grades %} 
                                                                         <option value="{{ grade.id }}">
                                                                             {{ grade }}
                                                                         </option>
                                                                     {% endfor %}
+                                                                    {% endif %}
                                                                 </select>
                                                             </div>
                                                             <!-- Subject -->
@@ -349,10 +355,20 @@
                                                                 <label class="form-label fw-semibold" for="subjectSelect">
                                                                     Subject
                                                                 </label>
-                                                                <select name="subject" class="form-select" id="subjectSelect">
+                                                                {% if request.user.student_profile.grade %}
+                                                                <select name="subject">
                                                                     <option value="" selected disabled>Select Grade First</option>
-                                                                       
+                                                                    {% for subject in my_subjects %} 
+                                                                        <option value="{{ subject.subject.id }}">
+                                                                            {{ subject.subject.name }}
+                                                                        </option> 
+                                                                    {% endfor %}                                                                     
                                                                 </select>
+                                                                {% else %}
+                                                                <select name="subject" class="form-select" id="subjectSelect">
+                                                                    <option value="" selected disabled>Select Grade First</option>                                                                       
+                                                                </select>
+                                                                {% endif%}
                                                             </div>
                                                         </div>
 

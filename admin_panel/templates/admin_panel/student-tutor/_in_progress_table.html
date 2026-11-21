@@ -1,0 +1,193 @@
+{% load static %}
+<div class="mb-3">
+    <h6 class="font-weight-bold mb-1">
+        Teaching In Progress
+    </h6>
+
+    <small class="text-muted">
+        Students whose teaching has already started.
+    </small>
+</div>
+
+<!-- Search and Filter -->
+<form method="GET" class="row mb-3 teaching-search-form" id="inProgressSearchForm" data-tab="in_progress">
+
+    <div class="col-md-3 mb-2 mb-md-0">
+        <input type="text"
+            name="student_search"
+            class="form-control"
+            placeholder="Search student name..."
+            value="{{ request.GET.search }}">
+    </div>
+    <div class="col-md-3 mb-2 mb-md-0">
+        <input type="text"
+            name="tutor_search"
+            class="form-control"
+            placeholder="Search student name..."
+            value="{{ request.GET.search }}">
+    </div>
+
+    <div class="col-md-3">
+        <button type="submit"
+                class="btn btn-primary py-2">
+            <i class="bi bi-search mr-1" style="font-size:17px"></i>
+            Search
+        </button>
+
+        <button type="reset" id="resetAcceptedSearch"
+            class="btn btn-outline-secondary py-2">
+                Reset
+        </button>
+    </div>
+
+</form>
+<hr>
+
+<!-- In Progress Table -->
+<div class="table-responsive">
+
+    <table class="table table-hover">
+
+        <thead class="thead-light">
+            <tr>
+                <th>S.N.</th>
+                <th>Student</th>
+                <th>Tutor</th>
+                <th>Grade</th>
+                <th>Subject</th>
+                <th>Fee</th>
+                <th>Started Date</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in started_requests %}
+                <tr>
+                    <td class="align-middle">{{forloop.counter}}</td>
+
+                    <td class="align-middle">
+                        <div class="d-flex align-items-center">
+                            {% if student.student.profile_picture %}
+                                <img src="{{ student.student.profile_picture.url }}"
+                                    class="rounded-circle"
+                                    width="85"
+                                    height="85"
+                                    style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'assets/images/profile/profile.png' %}"
+                                    class="rounded-circle"
+                                    width="85"
+                                    height="85"
+                                    style="object-fit: cover;">
+                            {% endif %}
+                            <div class="font-weight-bold ml-2">
+                                {{ student.student.full_name }}
+                                <p>
+                                    <small class="text-muted">
+                                        {{ student.student.user.email }}
+                                    </small>
+                                </p>
+                            </div>
+                                                                                        
+                        </div>
+                    </td>
+
+                    <td class="align-middle">
+                        <div class="d-flex align-items-center">
+                            {% if student.tutor_teaching.tutor.profile_picture %}
+                                <img src="{{ student.tutor_teaching.tutor.profile_picture.url }}"
+                                    class="rounded-circle"
+                                    width="85"
+                                    height="85"
+                                    style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'assets/images/profile/profile.png' %}"
+                                    class="rounded-circle"
+                                    width="85"
+                                    height="85"
+                                    style="object-fit: cover;">
+                            {% endif %}
+                            <div class="font-weight-bold ml-2">
+                                {{ student.tutor_teaching.tutor.full_name }}
+                                <p>
+                                    <small class="text-muted">
+                                        {{ student.tutor_teaching.tutor.user.email }}
+                                    </small>
+                                </p>
+                            </div>
+                                                                                        
+                        </div>
+                    </td>
+
+                    <td class="align-middle">
+                        {{ student.tutor_teaching.grade_subject.grade.name }}
+                    </td>
+
+                    <td class="align-middle">
+                        {{ student.tutor_teaching.grade_subject.subject.name }}
+                    </td>
+
+                    <td class="align-middle">
+                        Rs. {{ student.tutor_teaching.fee }}
+                        <small class="text-muted">
+                            / {{ student.tutor_teaching.get_fee_type_display }}
+                        </small>
+                    </td>
+
+                    <td class="align-middle">
+                        {{ student.teaching_started_at|date:"M d, Y" }}
+                    </td>
+
+                    <td class="text-center align-middle">
+                        <div class="d-flex justify-content-center align-item-center">
+                            <a href="{% url 'in_progress_details' student.id %}"
+                            class="btn btn-sm btn-outline-primary"
+                            title="View Details">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="6"
+                        class="text-center py-5">
+
+                        <i class="bi bi-book text-muted"
+                        style="font-size: 35px;"></i>
+
+                        <h6 class="font-weight-bold mt-3">
+                            No Teaching Started Yet
+                        </h6>
+
+                        <p class="text-muted mb-0">
+                            Students will appear here after you start teaching.
+                        </p>
+
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <div class="text-center m-r-20">                                                    
+        <span>
+            Pages:
+            {% if started_requests.has_previous %}
+                <a href="?page={{ started_requests.previous_page_number }}" class="ajax-page">Previous</a>
+            {% endif %}
+            {% for num in started_requests.paginator.page_range %}
+                <a href="?page={{ num }}" class="ajax-page">{{ num }}</a>
+            {% endfor %}
+            {% if started_requests.has_next %}
+                <a href="?page={{ started_requests.next_page_number }}" class="ajax-page">Next</a>
+            {% endif %}                                                    
+        </span>
+    </div>
+
+</div>

@@ -89,6 +89,13 @@
             font-size: 14px;
             color: #495057;
         }
+        .review-message {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            color: #495057;
+        }
 
         .empty-state {
             text-align: center;
@@ -96,6 +103,34 @@
             background: #fff;
             border: 1px dashed #dee2e6;
             border-radius: 12px;
+        }
+
+       // Tutor rating
+       .star-rating {
+            display: inline-flex;
+            gap: 6px;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            font-size: 2rem;
+            color: #d1d5db;
+            cursor: pointer;
+        }
+
+        /* 1. Turn all stars gold when hovered or when any star is checked */
+        .star-rating:has(input:checked) label,
+        .star-rating:hover label {
+            color: #f59e0b;
+        }
+
+        /* 2. Turn stars AFTER the checked star's own label (+ label) back to gray */
+        .star-rating input:checked + label ~ label,
+        .star-rating label:hover ~ label {
+            color: #d1d5db;
         }
     </style>
     
@@ -212,6 +247,13 @@
 
                                             <!-- Main Content -->
                                             <div class="card border-0 shadow-sm mb-0">
+                                                {% if messages %}
+                                                    {% for message in messages %}
+                                                        <div class="alert alert-{{ message.tags }}">
+                                                            {{ message }}
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
 
                                                 <div class="card-header bg-white pt-3 pb-0">
 
@@ -370,11 +412,27 @@
             </div>
         </div>
     </div>
+    <script>
+        function reviewRequest(button){
+            const requestCard = button.closest('.request-card')
+            const requestBox = requestCard.querySelector('.review-request');
+            requestBox.classList.remove('d-none');
+            //event.preventDefault(); 
+            //document.getElementById('review-request').classList.remove('d-none')
+        }
+        function cancelReview(button){            
+            const requestCard = button.closest('.request-card')
+            const requestBox = requestCard.querySelector('.review-request');
+            requestBox.querySelector('form').reset();
+            requestBox.classList.add('d-none');
+        }
+</script>
 
 {% endblock content %}
 
 <!--Extra JS-->
 {% block extra_js %}
+  
 
 <script>
 $(document).ready(function () {
@@ -404,7 +462,7 @@ $(document).ready(function () {
         data.push({name: 'tab', value: tab});
 
         $.ajax({
-            url: "{% url 'student_tutor_requests' %}",
+            url: "{% url 'tutor_requests' %}",
             type: "GET",
             data: data,
             dataType: "json",
@@ -458,9 +516,12 @@ $(document).ready(function () {
                 }
             },
 
-            error: function (xhr) {
-                console.log(xhr.responseText);
-                alert('Unable to load students.');
+            error: function (xhr, status, error) {
+                console.log("AJAX Status:", status);
+                console.log("AJAX Error:", error);
+                console.log("HTTP Status:", xhr.status);
+                console.log("Response:", xhr.responseText);
+                alert('Unable to load students. Check the browser console.');
             },
 
             complete: function () {
@@ -508,10 +569,23 @@ $(document).ready(function () {
 
         let target = link.closest('#pendingContent, #notStartedContent, #inProgressContent, #completedContent');
 
+        if (!target.length) {
+            console.error("Pagination target not found.");
+            return;
+        }
         let tab = targetTabs[target.attr('id')];
+        if (!tab) {
+            console.error("Invalid pagination tab.");
+            return;
+        }
 
         let page = new URL(link.attr('href'), window.location.href)
             .searchParams.get('page');
+        
+        if (!page) {
+            console.error("Page number not found.");
+            return;
+        }
 
         let form = target.find('.teaching-search-form');
 

@@ -152,6 +152,8 @@
         {% endfor %}
 
     </div>
+    <!-- Pagination -->
+    {% if accepted_requests.paginator.num_pages > 1 %}
     <div class="text-center m-r-20">                                                    
         <span>
             Pages:
@@ -166,5 +168,6 @@
             {% endif %}                                                    
         </span>
     </div>
+    {% endif %}
 
 </div>

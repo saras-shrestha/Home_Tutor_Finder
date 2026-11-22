@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from tutors.models import TutorAvailability, TutorTeaching, TutorRequest, TutorProfile
+from tutors.models import TutorAvailability, TutorTeaching, TutorRequest, TutorReview, TutorProfile
 from .models import StudentProfile
 from django.urls import reverse
 from core.models import GradeSubject, Region, District, City, Location, Grade
@@ -696,7 +696,50 @@ def tutor_requests(request):
         'tutor_teaching__grade_subject__grade',
         'tutor_teaching__grade_subject__subject',
     )
+    if request.method == "POST":
+        student = request.user.student_profile
+        tutor_request_id = request.POST.get('completed_request_id')
+        comment = request.POST.get('review_msg', '').strip()
+        tutor_rating = request.POST.get('rating')
+        if not tutor_request_id:
+            messages.error(request, "Please select a valid tutor request.")
+            return redirect("tutor_requests")
+        # Validate rating is between 1 and 5
+        try:
+            rating = Decimal(tutor_rating)
+            if not (Decimal('1') <= rating <= Decimal('5')):
+                raise ValueError
+        except (TypeError, InvalidOperation, ValueError):
+            messages.error(request, "Please select a star rating between 1 and 5.")
+            return redirect("tutor_requests")
 
+        qs = TutorRequest.objects.select_related('tutor_teaching')
+        tutor_request = get_object_or_404(
+            qs,
+            id=tutor_request_id,
+            student=student,
+            status='completed'
+        )
+        review, created = TutorReview.objects.get_or_create(
+            student=student,
+            tutor_teaching=tutor_request.tutor_teaching,
+            defaults={
+                'comment': comment,
+                'rating': rating,
+            },
+            
+        )
+
+        if created:
+            # Database was updated with a new review
+            messages.success(request, "Your review has been submitted!")
+        else:
+            # Nothing was saved because a review already existed
+            messages.warning(request, "You have already reviewed this class.")
+
+        return redirect("tutor_requests")
+
+    
     # 1. Querysets
     pending_requests = TutorRequest.objects.filter(
         student=student,
@@ -749,10 +792,10 @@ def tutor_requests(request):
     search_completed_count = completed_requests.count()
 
     # 5. Pagination
-    pending_paginator = Paginator(pending_requests, 5)
-    accepted_paginator = Paginator(accepted_requests, 5)
-    started_paginator = Paginator(started_requests, 5)
-    completed_paginator = Paginator(completed_requests, 5)  
+    pending_paginator = Paginator(pending_requests, 3)
+    accepted_paginator = Paginator(accepted_requests, 3)
+    started_paginator = Paginator(started_requests, 3)
+    completed_paginator = Paginator(completed_requests, 3)  
 
     tab = request.GET.get('tab', 'pending')
     page_number = request.GET.get('page', 1)
@@ -761,6 +804,16 @@ def tutor_requests(request):
     page_obj_accepted = accepted_paginator.get_page(page_number if tab == 'not_started' else 1)
     page_obj_started = started_paginator.get_page(page_number if tab == 'in_progress' else 1)
     page_obj_completed = completed_paginator.get_page(page_number if tab == 'completed' else 1)
+
+    # 6. Attach existing reviews to the 5 completed requests on the current page
+    teaching_ids = [req.tutor_teaching_id for req in page_obj_completed]
+    reviews_map = {
+        r.tutor_teaching_id: r
+        for r in TutorReview.objects.filter(student=student, tutor_teaching_id__in=teaching_ids)
+    }
+    for req in page_obj_completed:
+        req.review = reviews_map.get(req.tutor_teaching_id)
+
 
     context = {
         'pending_requests': page_obj_pending,

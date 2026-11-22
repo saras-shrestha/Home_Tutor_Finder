@@ -84,15 +84,16 @@
 
             <!-- Student message -->
             <div class="request-message mb-3">
-
-                <small class="text-muted d-block mb-1">
-                    Your message
-                </small>
-
+                
+                <div class="mb-2 col-12 w-100">
+                    <h6 class="font-weight-bold mb-1 text-muted">Your Message</h4>
+                </div>
                 {% if req.message %}
-                    {{ req.message|linebreaksbr }}
+                <div class="col-12 mb-3 w-100">                           
+                    <textarea class="form-control" rows="2" disabled>{{ req.message|linebreaksbr }}</textarea>
+                </div>
                 {% else %}
-                    <span class="text-muted">No message provided.</span>
+                    <span class="text-muted">--No message provided--</span>
                 {% endif %}
 
             </div>
@@ -122,12 +123,103 @@
                     </span>
 
                 {% elif req.status == 'completed' %}
-
-                    <span class="text-primary small">
-                        This tutoring request is completed.
-                    </span>
+                    {% if not req.review %}                    
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="reviewRequest(this)">
+                        Review Tutor
+                    </button>
+                    {% endif %}
 
                 {% endif %}
+
+            </div>
+            <div class="review-message">
+                {% if req.review %}
+                    <div class="row m-0">
+                        <div class="mb-2 col-12 w-100">
+                            <h6 class="font-weight-bold mb-1 text-muted">Your Review</h4>
+                        </div>
+                        <div class="col-12 mb-3 w-100">                           
+                            <textarea class="form-control" rows="2" disabled>{{ req.review.comment }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label for="rating" class="form-label m-0">
+                                Rating
+                            </label>
+                            <div class="d-flex align-items-center gap-1 mt-0">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= req.review.rating %}
+                                        <span style="color: #f59e0b; font-size: 1.1rem;">★</span>
+                                    {% else %}
+                                        <span style="color: #d1d5db; font-size: 1.1rem;">★</span>
+                                    {% endif %}
+                                {% endfor %}
+                            <small class="text-muted ms-1">({{ req.review.rating }})</small>
+                    </div>
+                        </div>
+                    </div>
+                    {% endif %}
+            </div>
+            <div class="mt-3 d-none review-request">
+                <hr/>
+                <div class="mb-2">
+                    <h4 class="font-weight-bold mb-1">Review Tutor</h4>
+                    <p class="text-muted mb-0">
+                        Class completed! How was your session? Share a quick review to help other students
+                    </p>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="completed_request_id" value="{{ req.id }}">
+
+                    <div class="mb-3">
+                        <label for="review_msg" class="form-label">
+                            Write Your Review Here
+                        </label>
+
+                            <textarea
+                                name="review_msg"
+                                id="review_msg"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Review the tutor......"
+                            ></textarea>
+
+                    </div>
+                    
+
+                    <div class="star-rating">
+                        <input type="radio" id="star1-{{ req.id }}" name="rating" value="1" required>
+                        <label for="star1-{{ req.id }}">★</label>
+
+                        <input type="radio" id="star2-{{ req.id }}" name="rating" value="2">
+                        <label for="star2-{{ req.id }}">★</label>
+
+                        <input type="radio" id="star3-{{ req.id }}" name="rating" value="3">
+                        <label for="star3-{{ req.id }}">★</label>
+
+                        <input type="radio" id="star4-{{ req.id }}" name="rating" value="4">
+                        <label for="star4-{{ req.id }}">★</label>
+
+                        <input type="radio" id="star5-{{ req.id }}" name="rating" value="5">
+                        <label for="star5-{{ req.id }}">★</label>
+                    </div>
+
+
+                    <div class="d-flex justify-content-center align-items-center">
+                                                                        
+                        <button type="submit"
+                                name="review"
+                                value="review"
+                                class="btn btn-primary px-4 mr-1">
+                            Submit
+                        </button>
+
+                        <a class="btn btn-outline-secondary px-4 ml-1" onclick="cancelReview(this)">
+                            Cancel
+                        </a>
+                    </div>
+
+                </form>
 
             </div>
 
@@ -153,6 +245,8 @@
         {% endfor %}
 
     </div>
+    <!-- Pagination -->
+    {% if completed_requests.paginator.num_pages > 1 %}
     <div class="text-center m-r-20">                                                    
         <span>
             Pages:
@@ -167,5 +261,6 @@
             {% endif %}                                                    
         </span>
     </div>
+    {% endif %}
 
 </div>

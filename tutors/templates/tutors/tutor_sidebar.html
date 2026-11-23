@@ -17,28 +17,29 @@
         <ul class="pcoded-item pcoded-left-item">
             <li class="pcoded-hasmenu">
                 <a href="javascript:void(0)" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="ti-layout-grid2-alt"></i></span>
+                    <span class="pcoded-micon"><i class="bi bi-file-earmark-text"></i></span>
                     <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Student Requests</span>
                     <span class="pcoded-mcaret"></span>
                 </a>
                 <ul class="pcoded-submenu">
                     <li class=" ">
-                        <a href="{% url 'pending_request' %}" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                        <a href="{% if request.user.is_authenticated and request.user.tutor_profile.profile_completed %}{% url 'pending_request' %}{% else %}{% url 'tutor_dashboard' %}{% endif %}"
+                         class="waves-effect waves-dark">
+                            <span><i class="bi bi-hourglass-split mr-1"></i></span>
                             <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Pending Requests</span>
                             <span class="pcoded-mcaret"></span>
                         </a>
                     </li>
                     <li class=" ">
-                        <a href="{% url 'accepted_request' %}" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                            <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Accepted Requests</span>
+                        <a href="{% if request.user.is_authenticated and request.user.tutor_profile.profile_completed %}{% url 'accepted_request' %}{% else %}{% url 'tutor_dashboard' %}{% endif %}" class="waves-effect waves-dark">
+                            <span><i class="bi bi-clipboard mr-1"></i></span>
+                            <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs"></i>Accepted Requests</span>
                             <span class="pcoded-mcaret"></span>
                         </a>
                     </li>
                     <li class=" ">
-                        <a href="{% url 'rejected_request' %}" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                        <a href="{% if request.user.is_authenticated and request.user.tutor_profile.profile_completed %}{% url 'rejected_request' %}{% else %}{% url 'tutor_dashboard' %}{% endif %}" class="waves-effect waves-dark">
+                            <span><i class="bi bi-x-circle mr-1"></i></span>
                             <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Rejected Requests</span>
                             <span class="pcoded-mcaret"></span>
                         </a>
@@ -47,15 +48,15 @@
             </li>
             
             <li>
-                <a href="{% url 'my_students' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-person-check"></i></span>
+                <a href="{% if request.user.is_authenticated and request.user.tutor_profile.profile_completed %}{% url 'my_students' %}{% else %}{% url 'tutor_dashboard' %}{% endif %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-people mr-1"></i></span>
                     <span class="pcoded-mtext" data-i18n="nav.form-components.main">My Students</span>
                     <span class="pcoded-mcaret"></span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'completed_sessions' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-link-45deg"></i></span>
+                <a href="{% if request.user.is_authenticated and request.user.tutor_profile.profile_completed %}{% url 'completed_sessions' %}{% else %}{% url 'tutor_dashboard' %}{% endif %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-check-circle"></i></span>
                     <span class="pcoded-mtext" data-i18n="nav.form-components.main">Completed Sessions</span>
                     <span class="pcoded-mcaret"></span>
                 </a>
@@ -63,53 +64,33 @@
         </ul>
 
         <div class="pcoded-navigation-label" data-i18n="nav.category.forms">Teaching Profile</div>
-        <ul class="pcoded-item pcoded-left-item">
+        <ul class="pcoded-item pcoded-left-item">  
             <li>
                 <a href="chart.html" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-book"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Subjects & Grades</span>
+                    <span class="pcoded-micon"><i class="bi bi-calendar"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Teaching Schedule</span>
                     <span class="pcoded-mcaret"></span>
                 </a>
-            </li>
-            <li>
-                <a href="{% url 'tutor_availability' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-mortarboard"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Teaching Fees</span>
-                    <span class="pcoded-mcaret"></span>
-                </a>
-            </li>            
+            </li>             
         </ul> 
 
         <div class="pcoded-navigation-label" data-i18n="nav.category.forms">Fee Management</div>
         <ul class="pcoded-item pcoded-left-item">
             <li>
                 <a href="{% url 'teaching_fees' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-book"></i></span>
+                    <span class="pcoded-micon"><i class="bi bi-wallet"></i></span>
                     <span class="pcoded-mtext" data-i18n="nav.form-components.main">Set My Fees</span>
                     <span class="pcoded-mcaret"></span>
                 </a>
-            </li>
-            <li>
-                <a href="{% url 'tutor_availability' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-mortarboard"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Teaching Fees</span>
-                    <span class="pcoded-mcaret"></span>
-                </a>
-            </li>            
+            </li>           
         </ul> 
         
         <div class="pcoded-navigation-label" data-i18n="nav.category.forms">My Availability</div>
         <ul class="pcoded-item pcoded-left-item">
+            
             <li>
-                <a href="chart.html" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-book"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Teaching Schedule</span>
-                    <span class="pcoded-mcaret"></span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'tutor_availability' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-mortarboard"></i></span>
+                <a href="{% url 'availability_list' %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-clock"></i> </span>
                     <span class="pcoded-mtext" data-i18n="nav.form-components.main">Available Time Slots</span>
                     <span class="pcoded-mcaret"></span>
                 </a>
@@ -120,26 +101,14 @@
         <div class="pcoded-navigation-label" data-i18n="nav.category.forms">Account & Profile</div>
         <ul class="pcoded-item pcoded-left-item">
             <li>
-                <a href="chart.html" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-book"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Personal Information</span>
+                <a href="{% url 'my_tutor_profile' %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-person"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">My Profile</span>
                     <span class="pcoded-mcaret"></span>
                 </a>
             </li>
-            <li>
-                <a href="{% url 'grades_list' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-mortarboard"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Qualifications & Experience</span>
-                    <span class="pcoded-mcaret"></span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'manage_location' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-mortarboard"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Location & Address</span>
-                    <span class="pcoded-mcaret"></span>
-                </a>
-            </li>            
+           
+                     
         </ul> 
 
         <div class="pcoded-navigation-label" data-i18n="nav.category.forms">

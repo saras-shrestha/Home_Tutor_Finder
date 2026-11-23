@@ -727,15 +727,10 @@
                                                 </label>
                                                 <div class="certificate-picture-area">                                          
                                                     <div class="certificate-picture">
-                                                        {% if tutor.certificate %}
-                                                            <img id="certificatePreview"
-                                                                src="{{ tutor.certificate.url }}"
-                                                                alt="Profile Picture">
-                                                        {% else %}
                                                         <img id="certificatePreview"
-                                                            src="{% static 'assets/images/profile/profile.png' %}"
-                                                            alt="Profile Picture">
-                                                        {% endif %}
+                                                                        src="{% if tutor.certificate %}{{ tutor.certificate.url }}{% else %}{% static 'assets/images/profile/profile.png' %}{% endif %}"
+                                                                        data-default="{% static 'assets/images/profile/profile.png' %}"
+                                                                        alt="Certificate">
                                                     </div>
 
                                                     <div class="certificate-info">

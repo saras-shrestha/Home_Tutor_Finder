@@ -108,7 +108,6 @@ class Qualification(models.Model):
     def __str__(self):
         return f"{self.degree_name}"
 
-
 class TutorTeaching(models.Model):
 
     tutor = models.ForeignKey(
@@ -157,7 +156,15 @@ class TutorTeaching(models.Model):
     def __str__(self):
         return f"{self.tutor} - {self.grade_subject} - NPR {self.fee}"
 
+
+
+from django.db import models
+from django.db.models import Q, F
+from django.core.exceptions import ValidationError
+
+
 class TutorAvailability(models.Model):
+
     DAYS = [
         ('sunday', 'Sunday'),
         ('monday', 'Monday'),
@@ -168,8 +175,8 @@ class TutorAvailability(models.Model):
         ('saturday', 'Saturday'),
     ]
 
-    tutor = models.ForeignKey(
-        TutorProfile,
+    tutor_teaching = models.ForeignKey(
+        TutorTeaching,
         on_delete=models.CASCADE,
         related_name='availabilities'
     )
@@ -178,23 +185,35 @@ class TutorAvailability(models.Model):
         max_length=10,
         choices=DAYS
     )
+
     start_time = models.TimeField()
     end_time = models.TimeField()
+
     is_active = models.BooleanField(default=True)
 
     def clean(self):
         super().clean()
 
+        # Validate time
         if self.start_time and self.end_time:
+
             if self.start_time >= self.end_time:
                 raise ValidationError({
                     'end_time': 'End time must be after start time.'
                 })
 
-        if self.tutor_id and self.day and self.start_time and self.end_time:
+        # Check overlapping availability
+        if (
+            self.tutor_teaching_id
+            and self.day
+            and self.start_time
+            and self.end_time
+        ):
+
             overlapping = TutorAvailability.objects.filter(
-                tutor_id=self.tutor_id,
+                tutor_teaching__tutor_id=self.tutor_teaching.tutor_id,
                 day=self.day,
+                is_active=True,
                 start_time__lt=self.end_time,
                 end_time__gt=self.start_time,
             )
@@ -204,11 +223,12 @@ class TutorAvailability(models.Model):
 
             if overlapping.exists():
                 raise ValidationError(
-                    'This time overlaps with an existing slot.'
+                    'This time slot overlaps with an existing availability.'
                 )
 
     class Meta:
         ordering = ['day', 'start_time']
+
         constraints = [
             models.CheckConstraint(
                 condition=Q(end_time__gt=F('start_time')),
@@ -218,10 +238,12 @@ class TutorAvailability(models.Model):
 
     def __str__(self):
         return (
-            f"{self.tutor.full_name} - "
+            f"{self.tutor_teaching.tutor.full_name} - "
             f"{self.get_day_display()} "
             f"{self.start_time} - {self.end_time}"
         )
+
+
 
 class TutorReview(models.Model):
 

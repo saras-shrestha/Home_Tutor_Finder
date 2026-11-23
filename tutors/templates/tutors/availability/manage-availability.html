@@ -1,0 +1,488 @@
+{% extends "tutors/tutor-base.html" %}
+
+{% block content %}
+
+<style>
+.manage-page {
+    padding: 25px;
+}
+
+.profile-box {
+    background: white;
+    border: 1px solid #edf0f4;
+    border-radius: 12px;
+    padding: 22px;
+}
+
+.schedule-card {
+    border: 1px solid #edf0f4;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: white;
+}
+
+.time-display {
+    background: #f4f7ff;
+    color: #4169e1;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+}
+
+.form-card {
+    border: 1px solid #edf0f4;
+    border-radius: 12px;
+    background: white;
+}
+
+.form-control {
+    height: 43px;
+    border-radius: 7px;
+}
+
+.btn-primary {
+    background: #4169e1;
+    border-color: #4169e1;
+}
+
+.slot-actions form {
+    display: inline-block;
+}
+
+</style>
+
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">
+                    <div class="row">
+                            <!--First row starts-->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>My Availability</h5>
+                                        <p class="text-muted mb-0">
+                                            Manage your teaching schedule and available time slots.
+                                        </p>
+                                    </div>
+
+                                    <!--Availability part starts -->
+    
+
+                                    <div class="container-fluid manage-page">
+
+    <!-- Back -->
+    <div class="mb-3">
+
+        <a href="{% url 'availability_list' %}"
+           class="text-decoration-none">
+
+            <i class="fas fa-arrow-left mr-1"></i>
+            Back to Availability
+
+        </a>
+
+    </div>
+
+
+    <!-- Teaching Profile -->
+    <div class="profile-box shadow-sm mb-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-8">
+
+                <small class="text-muted text-uppercase">
+                    Selected Teaching Profile
+                </small>
+
+                <h4 class="font-weight-bold mt-1 mb-1">
+                    {{ teaching.grade_subject }}
+                </h4>
+
+                <span class="text-muted">
+                    NPR {{ teaching.fee }}
+                    / {{ teaching.get_fee_type_display }}
+                </span>
+
+            </div>
+
+            <div class="col-md-4 text-md-right mt-3 mt-md-0">
+
+                <span class="badge badge-primary p-2">
+                    <i class="fas fa-calendar-alt mr-1"></i>
+                    Weekly Schedule
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row">
+
+        <!-- LEFT: Existing Schedule -->
+        <div class="col-lg-7 mb-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white py-3">
+
+                    <h5 class="font-weight-bold mb-0">
+                        <i class="fas fa-calendar-week text-primary mr-2"></i>
+                        Manage Weekly Availability
+                    </h5>
+
+                    <small class="text-muted">
+                        View and update your available teaching hours.
+                    </small>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    {% for slot in availabilities %}
+
+                    <div class="schedule-card">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+
+                                <h6 class="font-weight-bold mb-2">
+                                    {{ slot.get_day_display }}
+                                </h6>
+
+                                <span class="time-display">
+
+                                    <i class="far fa-clock mr-1"></i>
+
+                                    {{ slot.start_time|time:"h:i A" }}
+                                    -
+                                    {{ slot.end_time|time:"h:i A" }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="text-right">
+
+                                {% if slot.is_active %}
+
+                                    <span class="badge badge-success">
+                                        Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge badge-secondary">
+                                        Inactive
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <hr class="my-3">
+
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div class="slot-actions">
+
+                                <a href="{% url 'edit_availability' teaching.id slot.id %}"
+                                   class="btn btn-sm btn-outline-primary">
+
+                                    <i class="fas fa-edit mr-1"></i>
+                                    Edit
+
+                                </a>
+
+
+                                <form method="POST"
+                                      action="{% url 'toggle_availability' teaching.id slot.id %}">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-warning">
+
+                                        {% if slot.is_active %}
+                                            Deactivate
+                                        {% else %}
+                                            Activate
+                                        {% endif %}
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+
+                            <form method="POST"
+                                  action="{% url 'delete_availability' teaching.id slot.id %}"
+                                  onsubmit="return confirm('Delete this availability slot?');">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger">
+
+                                    <i class="fas fa-trash"></i>
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                    {% empty %}
+
+                        <div class="text-center py-5">
+
+                            <i class="far fa-calendar-times fa-3x text-muted mb-3"></i>
+
+                            <h6 class="font-weight-bold">
+                                No Schedule Yet
+                            </h6>
+
+                            <p class="text-muted small">
+                                Start by adding your available teaching days.
+                            </p>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT: Add New Availability -->
+        <div class="col-lg-5 mb-4">
+
+            <div class="form-card shadow-sm">
+
+                <div class="card-header bg-white py-3">
+
+                    <h5 class="font-weight-bold mb-1">
+                        <i class="fas fa-plus-circle text-primary mr-2"></i>
+                        Set Availability
+                    </h5>
+
+                    <small class="text-muted">
+                        Add a new available day and time.
+                    </small>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <div id="availability_error"
+                                class="text-danger small mb-2">
+                            </div>
+
+                            <label class="font-weight-bold">
+                                Day of the Week
+                            </label>
+
+                            {{ form.day }}
+
+                            {% for error in form.day.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label class="font-weight-bold">
+                                Start Time
+                            </label>
+
+                            {{ form.start_time }}
+
+                            {% for error in form.start_time.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label class="font-weight-bold">
+                                End Time
+                            </label>
+
+                            {{ form.end_time }}
+
+                            {% for error in form.end_time.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="alert alert-light border small">
+
+                            <i class="fas fa-info-circle text-primary mr-1"></i>
+
+                            You can add multiple time slots for the same day,
+                            as long as their times do not overlap.
+
+                        </div>
+
+                        
+                        <button type="submit"
+                                class="btn btn-primary btn-block py-2">
+
+                            <i class="fas fa-save mr-1"></i>
+                            Save Availability
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- Help -->
+            <div class="mt-3 p-3 rounded"
+                 style="background:#f4f7ff;">
+
+                <h6 class="font-weight-bold text-primary">
+                    <i class="fas fa-lightbulb mr-1"></i>
+                    Helpful Tip
+                </h6>
+
+                <p class="small text-muted mb-0">
+                    Keep your availability updated so students can
+                    see the days and hours when you are available
+                    to teach this particular subject.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+                                    <!--Availability part ends -->
+                                </div>
+                            </div>
+                            <!--First row ends-->                           
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block "extra_js" %}
+<script>
+$(document).ready(function() {
+
+    $('#availabilityForm').on('submit', function(e) {
+
+        e.preventDefault();
+
+        $('.text-danger').text('');
+
+        $.ajax({
+            url: "{% url 'add_availability' %}",
+            type: "POST",
+            data: $(this).serialize(),
+
+            success: function(response) {
+
+                alert(response.message);
+
+                $('#availabilityForm')[0].reset();
+
+                loadAvailability();
+            },
+
+            error: function(xhr) {
+
+                let response = xhr.responseJSON;
+
+                // Clear previous errors
+                $('.text-danger').text('');
+
+                if (response && response.errors) {
+
+                    $.each(response.errors, function(field, messages) {
+
+                        let errorText = messages
+                            .map(error => error.message)
+                            .join(', ');
+
+                        if (field === '__all__') {
+
+                            $('#availability_error').text(errorText);
+
+                        } else {
+
+                            $('#' + field + '_error').text(errorText);
+
+                        }
+
+                    });
+
+                } else {
+                    $('#availability_error').text(
+                        'Something went wrong. Please try again.'
+                    );
+                }
+            }
+        });
+
+    });
+
+});
+</script>
+{% endblock "extra_js" %}

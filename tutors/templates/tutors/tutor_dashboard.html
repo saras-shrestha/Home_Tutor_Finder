@@ -1,4 +1,4 @@
-{% extends 'tutors/tutor-base.html' %}
+ {% extends 'tutors/tutor-base.html' %}
 
 {% block content %}
 <div class="pcoded-content">
@@ -13,8 +13,17 @@
                     <div class="row">
                         <!--First row starts-->
                         {% if profile_incomplete and profile.verification_status == 0  %}
+                     
+                        
+
                         <!--DIV for PROFILE COMPLETION STARTS -->
                         <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                               <div>
+                                    <i class="ti-info-alt mr-2" style="font-size: 1.2rem;"></i>
+                                    <strong>Action Required:</strong> Please complete your profile to unlock all features.
+                                </div>
+                            </div>
                             <div class="card">
                                 <div class="card-block">
 

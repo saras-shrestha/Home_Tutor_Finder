@@ -7,9 +7,40 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('tutor-dashboard/', views.tutor_dashboard, name='tutor_dashboard'),
     path('tutor-profile/', views.tutor_profile, name='tutor_profile'),
-    path('availability/', views.tutor_availability, name='tutor_availability'),
-    path('availability/<int:pk>/edit/', views.edit_availability, name='edit_availability'),
-    path('availability/<int:pk>/delete/', views.delete_availability, name='delete_availability'),
+    # # availability
+    # path('availability/', views.tutor_availability, name='tutor_availability'),
+    # path('availability/<int:pk>/edit/', views.edit_availability, name='edit_availability'),
+    # path('availability/<int:pk>/delete/', views.delete_availability, name='delete_availability'),
+
+    path(
+        'availability/',
+        views.availability_list,
+        name='availability_list'
+    ),
+    
+    path(
+        'availability/<int:teaching_id>/',
+        views.manage_availability,
+        name='manage_availability'
+    ),
+
+    path(
+        'availability/<int:teaching_id>/edit/<int:availability_id>/',
+        views.edit_availability,
+        name='edit_availability'
+    ),
+
+    path(
+        'availability/<int:teaching_id>/delete/<int:availability_id>/',
+        views.delete_availability,
+        name='delete_availability'
+    ),
+
+    path(
+        'availability/<int:teaching_id>/toggle/<int:availability_id>/',
+        views.toggle_availability,
+        name='toggle_availability'
+    ),
 
     # teaching management
     path('teaching/pending-requests', views.pending_student_request, name='pending_request'),
@@ -33,6 +64,9 @@ urlpatterns = [
 
     # Location
     path('manage-location/', views.manage_location, name='manage_location'),
+
+    # my_profile
+    path('my-tutor-profile/', views.my_tutor_profile, name='my_tutor_profile'),    
 
 ]
 

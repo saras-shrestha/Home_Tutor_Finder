@@ -9,9 +9,10 @@ from django.utils import timezone
 from .forms import TutorAvailabilityForm 
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, Prefetch, OuterRef, Subquery, F
+from django.db.models import Q, Count, Prefetch, OuterRef, Subquery, F
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -24,6 +25,8 @@ def tutor_dashboard(request):
         profile = request.user.tutor_profile
 
         if not profile.profile_completed:
+            from django.contrib import messages
+
             return render(
                 request,
                 "tutors/tutor_dashboard.html",
@@ -249,7 +252,7 @@ def tutor_availability(request):
 
     availabilities = TutorAvailability.objects.filter(
         tutor=tutor
-    ).order_by('day', 'start_time')
+    ).order_by('day', 'start_time')    
 
     return render(request, 'tutors/availability/availability.html', {
         'form': form,
@@ -257,36 +260,36 @@ def tutor_availability(request):
     })
 
 
-@login_required
-def edit_availability(request, pk):
-    tutor = request.user.tutor_profile
+# @login_required
+# def edit_availability(request, pk):
+#     tutor = request.user.tutor_profile
 
-    slot = get_object_or_404(
-        TutorAvailability, pk=pk, tutor=tutor
-    )
+#     slot = get_object_or_404(
+#         TutorAvailability, pk=pk, tutor=tutor
+#     )
 
-    if request.method == 'POST':
-        form = TutorAvailabilityForm(request.POST, instance=slot)
+#     if request.method == 'POST':
+#         form = TutorAvailabilityForm(request.POST, instance=slot)
 
-        if form.is_valid():
-            updated_slot = form.save(commit=False)
-            updated_slot.tutor = tutor
-            updated_slot.full_clean()
-            updated_slot.save()
+#         if form.is_valid():
+#             updated_slot = form.save(commit=False)
+#             updated_slot.tutor = tutor
+#             updated_slot.full_clean()
+#             updated_slot.save()
 
-            messages.success(request, 'Availability updated.')
-            return redirect('tutor_availability')
-    else:
-        form = TutorAvailabilityForm(instance=slot)
+#             messages.success(request, 'Availability updated.')
+#             return redirect('tutor_availability')
+#     else:
+#         form = TutorAvailabilityForm(instance=slot)
 
-    return render(request, 'tutors/availability/edit_availability.html', {
-        'form': form,
-        'slot': slot,
-    })
+#     return render(request, 'tutors/availability/edit_availability.html', {
+#         'form': form,
+#         'slot': slot,
+#     })
 
 
-@login_required
-def delete_availability(request, pk):
+# @login_required
+# def delete_availability(request, pk):
     tutor = request.user.tutor_profile
 
     slot = get_object_or_404(
@@ -298,6 +301,222 @@ def delete_availability(request, pk):
         messages.success(request, 'Availability deleted.')
 
     return redirect('tutor_availability')
+
+
+
+@login_required
+def availability_list(request):
+
+    tutor = request.user.tutor_profile
+
+    teaching_profiles = TutorTeaching.objects.filter(
+        tutor=request.user.tutor_profile
+    ).annotate(
+        active_availability_count=Count(
+            'availabilities',
+            filter=Q(availabilities__is_active=True)
+        )
+    ).prefetch_related('availabilities')
+
+    # Calculate total active slots
+    active_slots = sum(
+        t.active_availability_count for t in teaching_profiles
+    )
+    # Count teaching profiles without active availability
+    profiles_without_availability = sum(
+        1 for t in teaching_profiles
+        if t.active_availability_count == 0
+    )
+
+    context = {
+        'teaching_profiles': teaching_profiles,
+        'active_slots': active_slots,
+        'profiles_without_availability': profiles_without_availability,
+    }
+
+    return render(
+        request,
+        'tutors/availability/availability-list.html',
+        context
+    )
+
+@login_required
+def manage_availability(request, teaching_id):
+
+    tutor = request.user.tutor_profile
+
+    teaching = get_object_or_404(
+        TutorTeaching,
+        id=teaching_id,
+        tutor=tutor
+    )
+
+    if request.method == 'POST':
+
+        form = TutorAvailabilityForm(request.POST)
+
+        if form.is_valid():
+
+            availability = form.save(commit=False)
+            availability.tutor_teaching = teaching
+
+            try:
+                availability.full_clean()
+                availability.save()
+
+                messages.success(
+                    request,
+                    'Availability added successfully!'
+                )
+
+                return redirect(
+                    'manage_availability',
+                    teaching_id=teaching.id
+                )
+
+            except ValidationError as e:
+                form.add_error(None, e)
+
+    else:
+        form = TutorAvailabilityForm()
+
+    availabilities = teaching.availabilities.all()
+
+    return render(
+        request,
+        'tutors/availability/manage-availability.html',
+        {
+            'teaching': teaching,
+            'form': form,
+            'availabilities': availabilities,
+        }
+    )
+
+@login_required
+def edit_availability(request, teaching_id, availability_id):
+
+    tutor = request.user.tutor_profile
+
+    teaching = get_object_or_404(
+        TutorTeaching,
+        id=teaching_id,
+        tutor=tutor
+    )
+
+    availability = get_object_or_404(
+        TutorAvailability,
+        id=availability_id,
+        tutor_teaching=teaching
+    )
+
+    if request.method == 'POST':
+
+        form = TutorAvailabilityForm(
+            request.POST,
+            instance=availability
+        )
+
+        if form.is_valid():
+
+            try:
+                updated = form.save(commit=False)
+                updated.full_clean()
+                updated.save()
+
+                messages.success(
+                    request,
+                    'Availability updated successfully!'
+                )
+
+                return redirect(
+                    'manage_availability',
+                    teaching_id=teaching.id
+                )
+
+            except Exception as e:
+                form.add_error(None, str(e))
+
+    else:
+        form = TutorAvailabilityForm(instance=availability)
+
+    return render(
+        request,
+        'tutors/availability/edit-availability.html',
+        {
+            'teaching': teaching,
+            'form': form,
+            'availability': availability,
+        }
+    )
+
+
+@login_required
+@require_POST
+def delete_availability(request, teaching_id, availability_id):
+
+    tutor = request.user.tutor_profile
+
+    teaching = get_object_or_404(
+        TutorTeaching,
+        id=teaching_id,
+        tutor=tutor
+    )
+
+    availability = get_object_or_404(
+        TutorAvailability,
+        id=availability_id,
+        tutor_teaching=teaching
+    )
+
+    availability.delete()
+
+    messages.success(
+        request,
+        'Availability deleted successfully!'
+    )
+
+    return redirect(
+        'manage_availability',
+        teaching_id=teaching.id
+    )
+
+
+@login_required
+@require_POST
+def toggle_availability(request, teaching_id, availability_id):
+
+    tutor = request.user.tutor_profile
+
+    teaching = get_object_or_404(
+        TutorTeaching,
+        id=teaching_id,
+        tutor=tutor
+    )
+
+    availability = get_object_or_404(
+        TutorAvailability,
+        id=availability_id,
+        tutor_teaching=teaching
+    )
+
+    availability.is_active = not availability.is_active
+
+    try:
+        availability.full_clean()
+        availability.save()
+
+        messages.success(
+            request,
+            'Availability status updated successfully!'
+        )
+
+    except Exception as e:
+        messages.error(request, str(e))
+
+    return redirect(
+        'manage_availability',
+        teaching_id=teaching.id
+    )
 
 # Manage Location
 def manage_location(request):
@@ -935,3 +1154,128 @@ def complete_teaching(request, complete_request_id):
 
 
 
+@login_required
+def my_tutor_profile(request):
+    tutor = request.user.tutor_profile
+    if request.method=="POST":
+        data = {
+            "full_name": request.POST.get("full_name", "").strip(),
+            "gender": request.POST.get("gender", "").strip(),
+            "phone": request.POST.get("phone", "").strip(),
+            "description": request.POST.get("description", "").strip(),
+            "experience": request.POST.get("experience", "").strip(),
+            "region": request.POST.get("region", "").strip(),
+            "district": request.POST.get("district", "").strip(),
+            "city": request.POST.get("city", "").strip(),
+            "address": request.POST.get("address", "").strip(),
+            "highest_qualification": request.POST.get("highest_qualification", "").strip(),
+            "study_field": request.POST.get("study_field", "").strip(),
+            "degree_name": request.POST.get("degree_name", "").strip(),
+            "college_name": request.POST.get("college_name", "").strip(),
+            "university": request.POST.get("university", "").strip(),
+            "country": request.POST.get("study_country", "").strip(),
+            "gpa": request.POST.get("tutor_gpa", "").strip(),
+        }
+        # Check if any required field is empty
+        missing_fields = [
+            field.replace("_", " ").title()
+            for field, value in data.items()
+            if not value
+        ]
+
+        # Also check profile picture, certificate, and cv if the student doesn't have one saved yet
+        if not tutor.profile_picture and "profile_picture" not in request.FILES:
+            missing_fields.append("Profile Picture")
+
+        if not tutor.certificate and "certificate" not in request.FILES:
+            missing_fields.append("Certificate")
+
+        if not tutor.cv and "cv" not in request.FILES:
+            missing_fields.append("CV")
+
+        if missing_fields:
+            messages.error(
+                request,
+                f"Please fill in all required fields: {', '.join(missing_fields)}."
+            )
+            return render(
+                request,
+                "tutors/my-profile/my-profile.html",
+                {
+                    "tutor": tutor,
+                    "regions": Region.objects.all()
+                }
+            )
+
+        # Personal
+        tutor.full_name = data["full_name"]
+        tutor.gender = data["gender"]
+        tutor.phone = data["phone"]
+        if "profile_picture" in request.FILES:
+            tutor.profile_picture = request.FILES["profile_picture"]
+
+        # Location
+        latitude = request.POST.get("latitude") or None
+        longitude = request.POST.get("longitude") or None
+
+        if tutor.location:
+            location = tutor.location
+            location.region_id = data["region"]
+            location.district_id = data["district"]
+            location.city_id = data["city"]
+            location.address = data["address"]
+            location.latitude = latitude
+            location.longitude = longitude
+            location.save()
+        else:
+            location = Location.objects.create(
+                region_id=data["region"],
+                district_id=data["district"],
+                city_id=data["city"],
+                address=data["address"],
+                latitude=latitude,
+                longitude=longitude,
+            )
+            tutor.location = location
+
+        # About, Qualification & Academic
+        tutor.description = data["description"]
+        tutor.experience = data["experience"]
+               
+        # Qualification
+        Qualification.objects.update_or_create(
+            tutor=tutor,
+            defaults={
+                "highest_qualification": data["highest_qualification"],
+                "study_field": data["study_field"],
+                "degree_name": data["degree_name"],
+                "college": data["college_name"],
+                "university": data["university"],
+                "country": data["country"],
+                "gpa": data["gpa"] or None,
+            },
+        )    
+    
+        # Certification
+        
+        if "certificate" in request.FILES:
+            tutor.certificate = request.FILES["certificate"]           
+        
+        # CV and FINAL
+        
+        if "cv" in request.FILES:
+            tutor.cv = request.FILES["cv"]
+        tutor.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect(request.path)
+    
+    regions=Region.objects.all();
+    return render(
+        request,
+        "tutors/my-profile/my-profile.html",
+        {
+            "tutor": tutor,
+            "regions": regions,
+        }
+    )

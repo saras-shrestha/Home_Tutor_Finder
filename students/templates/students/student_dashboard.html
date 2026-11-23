@@ -81,11 +81,57 @@
                             <!-- task, page, download counter  starts -->
                             <div class="col-xl-3 col-md-6">
                                 <div class="card">
+                                    <div class="card-block">
+                                        <div class="row align-items-center">
+                                            <div class="col-8">
+                                                <h4 class="text-c-blue">290+</h4>
+                                                <h6 class="text-muted m-b-0">Tutors</h6>
+                                            </div>
+                                            <div class="col-4 text-right">
+                                                <i class="bi bi-person-badge text-c-blue"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-c-blue">
+                                        <div class="row align-items-center">
+                                            <div class="col-12 text-center">
+                                                <p class="text-white m-b-0"><a href="{% url 'tutors_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card">
+                                    <div class="card-block">
+                                        <div class="row align-items-center">
+                                            <div class="col-8">
+                                                <h4 class="text-c-red">145</h4>
+                                                <h6 class="text-muted m-b-0">Pending Requests</h6>
+                                            </div>
+                                            <div class="col-4 text-right">
+                                                <i class="bi bi-person-check text-c-red"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-c-red">
+                                        <div class="row align-items-center">
+                                            <div class="col-12 text-center">
+                                                <p class="text-white m-b-0"><a href="{% url 'students_list' %}" class="more-info-link"> More Info</i> <i class="bi bi-arrow-right"></i></a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card">
                                     <div class="card-block card-bg-purple">
                                         <div class="row align-items-center">
                                             <div class="col-8">
                                                 <h4 class="text-c-purple">$30200</h4>
-                                                <h6 class="text-muted m-b-0">Subjects</h6>
+                                                <h6 class="text-muted m-b-0">Accepted Requests</h6>
                                             </div>
                                             <div class="col-4 text-right">
                                                 <i class="bi bi-people text-c-purple"></i>
@@ -109,7 +155,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-8">
                                                 <h4 class="text-c-green">290+</h4>
-                                                <h6 class="text-muted m-b-0">Tutors</h6>
+                                                <h6 class="text-muted m-b-0">In-Progress Request</h6>
                                             </div>
                                             <div class="col-4 text-right">
                                                 <i class="bi bi-person-badge text-c-green"></i>
@@ -125,42 +171,21 @@
                                     </div>
                                 </div>
                             </div>
+                            
                             <div class="col-xl-3 col-md-6">
                                 <div class="card">
                                     <div class="card-block">
                                         <div class="row align-items-center">
                                             <div class="col-8">
-                                                <h4 class="text-c-red">145</h4>
-                                                <h6 class="text-muted m-b-0">Pending Approval</h6>
+                                                <h4 class="text-c-green">500</h4>
+                                                <h6 class="text-muted m-b-0">Completed Sessions</h6>
                                             </div>
                                             <div class="col-4 text-right">
-                                                <i class="bi bi-person-check text-c-red"></i>
+                                                <i class="bi bi-check-circle text-c-green"></i>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-footer bg-c-red">
-                                        <div class="row align-items-center">
-                                            <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"><a href="{% url 'students_list' %}" class="more-info-link"> More Info</i> <i class="bi bi-arrow-right"></i></a></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card">
-                                    <div class="card-block">
-                                        <div class="row align-items-center">
-                                            <div class="col-8">
-                                                <h4 class="text-c-blue">500</h4>
-                                                <h6 class="text-muted m-b-0">Active Tutors</h6>
-                                            </div>
-                                            <div class="col-4 text-right">
-                                                <i class="bi bi-check-circle text-c-blue"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-c-blue">
+                                    <div class="card-footer bg-c-green">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
                                                 <p class="text-white m-b-0"><a href="{% url 'students_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
@@ -171,6 +196,9 @@
                             </div>
                             <!-- task, page, download counter  end -->
                             <!--first row ends-->
+                        </div>
+
+                        <div class="row">
                              
                             <!--Second row start-->
                             <!--  Tutor Pending approvals starts -->

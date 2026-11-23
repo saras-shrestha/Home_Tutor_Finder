@@ -75,35 +75,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     form.addEventListener("submit", function (event) {
 
-        const firstName =
-            document.getElementById("first_name").value.trim();
-
-        const lastName =
-            document.getElementById("last_name").value.trim();
+        const fullName =
+            document.getElementById("full_name").value.trim();
 
         const phone =
             document.getElementById("phone").value.trim();
 
 
-        if (firstName === "") {
+        if (fullName === "") {
 
-            alert("Please enter your first name.");
-
-            event.preventDefault();
-
-            return;
-        }
-
-
-        if (lastName === "") {
-
-            alert("Please enter your last name.");
+            alert("Please enter your full name.");
 
             event.preventDefault();
 
             return;
         }
-
 
         if (phone !== "" &&
             !/^[0-9]{10}$/.test(phone)) {
@@ -184,8 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         certificateInput.value = "";
 
-        certificatePreview.src =
-            "{% static 'assets/images/profile/profile.png' %}";
+        certificatePreview.src = certificatePreview.dataset.default;
 
     });
     /* certificate part ended */

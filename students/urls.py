@@ -23,7 +23,11 @@ urlpatterns = [
 
     # my_learnings
     path('my-tutors/', views.my_tutors, name='my_tutors'),
+
+    # my_profile
+    path('my-student-profile/', views.my_student_profile, name='my_student_profile'),    
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

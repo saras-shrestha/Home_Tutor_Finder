@@ -876,3 +876,191 @@ def my_tutors(request):
         'students/my-learnings/my-tutors.html',
         context
     )
+
+
+# my profile
+# def my_student_profile(request):
+#     student = request.user.student_profile
+#     if request.method=="POST": 
+#         # personal  
+#         student.full_name = request.POST.get('full_name')
+#         student.gender = request.POST.get('gender')
+#         student.phone = request.POST.get('phone')
+#         student.date_of_birth = request.POST.get('dob') 
+#         if "profile_picture" in request.FILES:
+#             student.profile_picture = request.FILES["profile_picture"]          
+        
+#         #  Location
+#         region_id = request.POST.get("region")
+#         district_id = request.POST.get("district")
+#         city_id = request.POST.get("city")
+#         address = request.POST.get("address")
+#         latitude = request.POST.get("latitude")
+#         longitude = request.POST.get("longitude")         
+
+#         # If location already exists, update it
+#         if student.location:
+#             location = student.location
+#             location.region_id = region_id
+#             location.district_id = district_id
+#             location.city_id = city_id
+#             location.address = address
+#             location.latitude = latitude or None
+#             location.longitude = longitude or None
+#             location.save()
+
+#         # Otherwise create a new location
+#         else:
+
+#             location = Location.objects.create(
+#                 region_id=region_id,
+#                 district_id=district_id,
+#                 city_id=city_id,
+#                 address=address,
+#                 latitude=latitude or None,
+#                 longitude=longitude or None
+#             )
+
+#             student.location = location
+        
+#         # About        
+#         student.description = request.POST.get("description") 
+
+#         # Academic Information and Final        
+#         student.education_level = request.POST.get('education_level')
+#         student.grade = Grade.objects.get(id=request.POST.get('grade'))
+#         student.school_college = request.POST.get('school_college')
+#         student.profile_completed_at= timezone.now()           
+#         student.save()
+
+#         messages.success(request, "Profile updated successfully!")
+#         return redirect('my_student_profile')
+        
+#     regions=Region.objects.all();
+#     grades=Grade.objects.all();
+#     return render(
+#         request,
+#         "students/my-profile/my-profile.html",
+#         {
+#             "student": student,
+#             "regions": regions,
+#             "grades": grades
+#         }
+#     )
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.utils import timezone
+
+def my_student_profile(request):
+    student = request.user.student_profile
+
+    if request.method == "POST":
+        # Collected all text/select fields
+        data = {
+            "full_name": request.POST.get("full_name", "").strip(),
+            "gender": request.POST.get("gender", "").strip(),
+            "phone": request.POST.get("phone", "").strip(),
+            "dob": request.POST.get("dob", "").strip(),
+            "region": request.POST.get("region", "").strip(),
+            "district": request.POST.get("district", "").strip(),
+            "city": request.POST.get("city", "").strip(),
+            "address": request.POST.get("address", "").strip(),
+            "description": request.POST.get("description", "").strip(),
+            "education_level": request.POST.get("education_level", "").strip(),
+            "grade": request.POST.get("grade", "").strip(),
+            "school_college": request.POST.get("school_college", "").strip(),
+        }
+
+        # Check if any required field is empty
+        missing_fields = [
+            field.replace("_", " ").title()
+            for field, value in data.items()
+            if not value
+        ]
+
+        # Also check profile picture if the student doesn't have one saved yet
+        if not student.profile_picture and "profile_picture" not in request.FILES:
+            missing_fields.append("Profile Picture")
+
+        if missing_fields:
+            messages.error(
+                request,
+                f"Please fill in all required fields: {', '.join(missing_fields)}."
+            )
+            return render(
+                request,
+                "students/my-profile/my-profile.html",
+                {
+                    "student": student,
+                    "regions": Region.objects.all(),
+                    "grades": Grade.objects.all(),
+                }
+            )
+
+        # Safe Grade lookup
+        grade_obj = Grade.objects.filter(id=data["grade"]).first()
+        if not grade_obj:
+            messages.error(request, "Please select a valid grade.")
+            return render(
+                request,
+                "students/my-profile/my-profile.html",
+                {
+                    "student": student,
+                    "regions": Region.objects.all(),
+                    "grades": Grade.objects.all(),
+                }
+            )
+
+        # Personal
+        student.full_name = data["full_name"]
+        student.gender = data["gender"]
+        student.phone = data["phone"]
+        student.date_of_birth = data["dob"]
+        if "profile_picture" in request.FILES:
+            student.profile_picture = request.FILES["profile_picture"]
+
+        # Location
+        latitude = request.POST.get("latitude") or None
+        longitude = request.POST.get("longitude") or None
+
+        if student.location:
+            location = student.location
+            location.region_id = data["region"]
+            location.district_id = data["district"]
+            location.city_id = data["city"]
+            location.address = data["address"]
+            location.latitude = latitude
+            location.longitude = longitude
+            location.save()
+        else:
+            location = Location.objects.create(
+                region_id=data["region"],
+                district_id=data["district"],
+                city_id=data["city"],
+                address=data["address"],
+                latitude=latitude,
+                longitude=longitude,
+            )
+            student.location = location
+
+        # About & Academic
+        student.description = data["description"]
+        student.education_level = data["education_level"]
+        student.grade = grade_obj
+        student.school_college = data["school_college"]
+        student.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect(request.path)
+
+    return render(
+        request,
+        "students/my-profile/my-profile.html",
+        {
+            "student": student,
+            "regions": Region.objects.all(),
+            "grades": Grade.objects.all(),
+        }
+    )

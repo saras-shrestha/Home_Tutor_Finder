@@ -1,7 +1,9 @@
 from django.urls import path
-
 from admin_panel import views
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
@@ -31,17 +33,16 @@ urlpatterns = [
     path('subjects/<int:id>/delete', views.subject_delete, name='subject_delete'),
 
     path('grade-subject/', views.grade_subject, name='grade_subject'),
-    path(
-    'get-grade-subjects/<int:grade_id>/',
-    views.get_grade_subjects,
-    name='get_grade_subjects'
-),
-
-    # locations
-    path('regions/', views.regions, name='regions'),
+    path('get-grade-subjects/<int:grade_id>/', views.get_grade_subjects, name='get_grade_subjects'),
 
     path('login/', views.admin_login, name='admin_login'),   
     path('logout/', views.admin_logout, name='admin_logout'),
+
+    # my_profile
+    path('my-admin-profile/', views.my_admin_profile, name='my_admin_profile'), 
 ]
 
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

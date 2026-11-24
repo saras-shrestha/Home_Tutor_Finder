@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from tutors.models import TutorProfile, TutorRequest
 from students.models import StudentProfile
+from .models import AdminProfile
 from core.models import Grade, Subject, GradeSubject
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import user_passes_test
@@ -121,6 +122,60 @@ def student_info(request, student_id):
         'admin_panel/students/student-info.html',
         context
     )
+
+@admin_required
+def my_admin_profile(request):
+    if hasattr(request.user, "admin_profile"):
+        admin = request.user.admin_profile
+    else:
+        admin, created = AdminProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        # Collected all text/select fields
+        data = {
+            "full_name": request.POST.get("full_name", "").strip(),
+            "gender": request.POST.get("gender", "").strip(),
+            "phone": request.POST.get("phone", "").strip(),
+        }
+
+        # Check if any required field is empty
+        missing_fields = [
+            field.replace("_", " ").title()
+            for field, value in data.items()
+            if not value
+        ]
+
+        # Also check profile picture if the student doesn't have one saved yet
+        if not admin.profile_picture and "profile_picture" not in request.FILES:
+            missing_fields.append("Profile Picture")        
+
+        if missing_fields:
+            messages.error(
+                request,
+                f"Please fill in all required fields: {', '.join(missing_fields)}."
+            )
+        
+        if "profile_picture" in request.FILES:
+            profile_picture = request.FILES["profile_picture"]
+
+        admin_profile, created = AdminProfile.objects.update_or_create(
+            user = request.user,
+            defaults={
+                'profile_picture': profile_picture,
+                'full_name': data['full_name'],
+                'gender': data['gender'],
+                'phone': data['phone']
+            }
+        )
+        messages.success(request, "Profile updated successfully!")
+        return redirect(request.path)
+    context={
+        'admin':admin
+    }
+            
+    return render(request, 'admin_panel/my-profile/my-profile.html', context)
+        
+
 
 @admin_required
 def tutors_list(request):

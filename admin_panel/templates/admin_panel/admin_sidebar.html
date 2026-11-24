@@ -104,54 +104,22 @@
                 </a>
             </li>
         </ul> 
-
-        <div class="pcoded-navigation-label" data-i18n="nav.category.forms">Locations</div>
+        <div class="pcoded-navigation-label" data-i18n="nav.category.forms">Account & Profile</div>
         <ul class="pcoded-item pcoded-left-item">
             <li>
-                <a href="{% url 'regions' %}" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-geo-alt"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Regions</span>
+                <a href="{% url 'my_admin_profile' %}" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="bi bi-person"></i></span>
+                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">My Profile</span>
                     <span class="pcoded-mcaret"></span>
                 </a>
-            </li>
-            <li>
-                <a href="map-google.html" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-geo-alt"></i></span>
-                    <span class="pcoded-mtext" data-i18n="nav.form-components.main">Districts</span>
-                    <span class="pcoded-mcaret"></span>
-                </a>
-            </li>
-            <li class="pcoded-hasmenu">
-                <a href="javascript:void(0)" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="bi bi-geo-alt"></i></span>
-                    <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">City</span>
-                    <span class="pcoded-mcaret"></span>
-                </a>
-                <ul class="pcoded-submenu">
-                    <li class=" ">
-                        <a href="auth-normal-sign-in.html" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                            <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Login</span>
-                            <span class="pcoded-mcaret"></span>
-                        </a>
-                    </li>
-                    <li class=" ">
-                        <a href="auth-sign-up.html" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                            <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Register</span>
-                            <span class="pcoded-mcaret"></span>
-                        </a>
-                    </li>
-                    <li class=" ">
-                        <a href="sample-page.html" class="waves-effect waves-dark">
-                            <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                            <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Sample Page</span>
-                            <span class="pcoded-mcaret"></span>
-                        </a>
-                    </li>
-                </ul>
-            </li>            
+            </li>                                
         </ul> 
+
+        <div class="pcoded-navigation-label" data-i18n="nav.category.forms">
+            <a href="{% url 'admin_logout' %}" class="text-primary">
+                <i class="ti-layout-sidebar-left"></i> Logout
+            </a>
+        </div>     
 
     </div>
 </nav>

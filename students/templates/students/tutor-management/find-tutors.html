@@ -416,17 +416,6 @@
                                                                     <label class="form-check-label p-0 mb-1 mr-2 font-weight-bold" for="monthly">
                                                                         Monthly
                                                                     </label>
-                                                                </div>
-
-                                                                <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input"
-                                                                                type="radio"
-                                                                                name="fee_type"
-                                                                                id="session"
-                                                                                value="session">
-                                                                    <label class="form-check-label m-0 p-0 font-weight-bold" for="session">
-                                                                        Session
-                                                                    </label>
                                                                 </div>                                                          
                                                                     
                                                             </div>
@@ -534,18 +523,7 @@
 
                                                         <h5 class="fw-semibold mb-3">Availability</h5>
 
-                                                        <div class="row g-3">
-                                                            <div class="col-12 form-group">
-                                                                <label class="form-label">Available Day</label>
-                                                                <select name="day" class="form-select">
-                                                                    <option value="" selected disabled>Select Day</option>
-                                                                    {% for value, label in availability_days %}
-                                                                        <option value="{{ value }}">
-                                                                            {{ label }}
-                                                                        </option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
+                                                        <div class="row g-3">                                                            
 
                                                             <div class="col-12">
                                                                 <div class="row g-3">
@@ -703,210 +681,260 @@
 
     });
 
-    function sendRequest(button){
-        const tutorCard = button.closest('.tutor-card');
 
-        const requestBox = tutorCard.querySelector('.send-request');
+</script>
+<!--Tutor Search Result Display Starts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchForm = document.getElementById('tutorSearchForm');
+        if (!searchForm) return;
 
-        requestBox.classList.remove('d-none');
+        searchForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const form = this;
+            const params = new URLSearchParams(new FormData(form));
+            params.set('search', '1'); // Ensure backend enters `if request.GET.get('search'):`
+            const results = document.getElementById('searchResults');
+
+            results.innerHTML = '<p>Searching tutors...</p>';
+
+            fetch(`${form.action}?${params.toString()}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to search tutors.');
+                }
+                return data;
+            })
+            .then(data => {
+                if (!data.tutors || data.tutors.length === 0) {
+                    results.innerHTML = '<p>No tutors found matching your criteria.</p>';
+                    return;
+                }
+
+                results.innerHTML = data.tutors.map(tutor => {
+                    const hasReviews = tutor.total_reviews > 0 && !isNaN(Number(tutor.rating));
+                    const numericRating = hasReviews ? Number(tutor.rating) : 0;
+
+                    const freeSlotsBadges = (tutor.free_slots && tutor.free_slots.length > 0)
+                        ? tutor.free_slots.map(slot => `
+                            <span class="badge bg-light text-dark border me-1 mb-1">
+                                <i class="bi bi-clock"></i> ${slot.start_time} - ${slot.end_time}
+                            </span>
+                        `).join('')
+                        : `<small class="text-muted">No open slots</small>`;
+
+                    const slotSelectOptions = (tutor.free_slots && tutor.free_slots.length > 0)
+                        ? tutor.free_slots.map(slot => `
+                            <option value="${slot.id}">
+                                ${slot.start_time} - ${slot.end_time} (Daily)
+                            </option>
+                        `).join('')
+                        : '';
+
+                    return `
+                    <div class="tutor-card mb-3">
+                        <div class="d-flex">
+                            <!-- Profile Picture -->
+                            <div class="tutor-photo mr-9">
+                                <img src="${tutor.profile_picture || '/static/assets/images/profile/profile.png'}"
+                                    alt="${tutor.name}">
+                            </div>
+
+                            <!-- Tutor Information -->
+                            <div>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <h5 class="mb-0">${tutor.name}</h5>
+
+                                    ${tutor.status ? `
+                                        <span class="verified mx-2">
+                                            <i class="bi bi-patch-check-fill"></i> Verified
+                                        </span>
+                                    ` : ''}
+                                </div>
+
+                                <p class="text-muted small mt-1 mb-2">
+                                    ${tutor.experience} years experience
+                                </p>
+
+                                <!-- Rating -->
+                                <div class="mb-2">
+                                    ${
+                                        hasReviews
+                                        ? `
+                                            <span class="rating-stars">
+                                                ${Array.from({ length: 5 }, (_, i) =>
+                                                    `<i class="bi ${
+                                                        i < Math.round(numericRating)
+                                                        ? 'bi-star-fill'
+                                                        : 'bi-star'
+                                                    }"></i>`
+                                                ).join('')}
+                                            </span>
+                                            <strong>${numericRating.toFixed(1)}</strong>
+                                            <small class="text-muted">
+                                                (${tutor.total_reviews} reviews)
+                                            </small>
+                                        `
+                                        : `<small class="text-muted">No ratings yet</small>`
+                                    }
+                                </div>
+
+                                <!-- Location & Distance -->
+                                <p class="text-muted small mb-0">
+                                    <i class="bi bi-geo-alt"></i>
+                                    ${tutor.location || 'Location unavailable'}
+                                    ${
+                                        tutor.distance_km !== null && tutor.distance_km !== undefined
+                                        ? `<span class="badge bg-info text-dark ms-2">${tutor.distance_km} km away</span>`
+                                        : ''
+                                    }
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <div class="d-flex gap-3">
+                            <!-- Teaching Information -->
+                            <div class="flex-grow-1 w-100">
+                                <!-- Grade and Subject -->
+                                <div class="mb-2">
+                                    <span class="subject-tag">${tutor.grade}</span>
+                                    <span class="subject-tag">${tutor.subject}</span>
+                                </div>
+
+                                <!-- Available Daily Time Slots -->
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-1">Available Daily Time Slots:</small>
+                                    ${freeSlotsBadges}
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div>
+                                        <small class="text-muted">Teaching Fee</small>
+                                        <h5 class="text-success mb-0">
+                                            Rs. ${tutor.fee}
+                                            <small class="text-muted">
+                                                / ${tutor.fee_type}
+                                            </small>
+                                        </h5>
+                                    </div>
+
+                                    <div>
+                                        <a href="#" class="btn btn-outline-primary btn-sm">
+                                            View Profile
+                                        </a>
+
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="sendRequest(this)">
+                                            Send Request
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Send Request Form -->
+                        <div class="d-none send-request">
+                            <hr/>
+                            <div class="d-flex gap-3">
+                                <div class="flex-grow-1 w-100">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div>
+                                            <h4 class="font-weight-bold mb-1">Send Tutor Request</h4>
+                                            <p class="text-muted mb-0">
+                                                Select a daily time slot and include a message about your learning requirements.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <form method="POST" class="request-form" action="{% url 'send_tutor_request' %}">
+                                            {% csrf_token %}
+
+                                            <input type="hidden" name="tutor_teaching_id" value="${tutor.id}">
+                                            <input type="hidden" name="search" value="1">
+
+                                            <!-- Select Time Slot -->
+                                            <div class="mb-3 w-100">
+                                                <label class="form-label">
+                                                    Select Daily Time Slot <span class="text-danger">*</span>
+                                                </label>
+                                                <select name="availability_id" class="form-control w-100" required>
+                                                    <option value="">-- Choose a time slot --</option>
+                                                    ${slotSelectOptions}
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3 w-100">
+                                                <label class="form-label">
+                                                    Message <span class="text-muted">(Optional)</span>
+                                                </label>
+                                                <textarea
+                                                    name="message"
+                                                    class="form-control w-100"
+                                                    rows="4"
+                                                    placeholder="Write a message to the tutor..."
+                                                ></textarea>
+
+                                                <div class="d-flex justify-content-center mt-3">
+                                                    <button type="submit" class="btn btn-primary py-2 mr-1">
+                                                        Send Request
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary ml-1" onclick="cancelAndClear(this)">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            })
+            .catch(error => {
+                results.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Search Error:</strong> ${error.message}
+                    </div>
+                `;
+            });
+            
+        });
+    });
+
+    function sendRequest(button) {
+        const card = button.closest('.tutor-card');
+        if (!card) return;
+        const requestSection = card.querySelector('.send-request');
+        if (requestSection) {
+            requestSection.classList.remove('d-none');
+        }
     }
 
     function cancelAndClear(button) {
-        const tutorCard = button.closest('.tutor-card');
-
-        const requestBox = tutorCard.querySelector('.send-request');
-
-        requestBox.querySelector('form').reset();
-
-        requestBox.classList.add('d-none');
+        const card = button.closest('.tutor-card');
+        if (!card) return;
+        const requestSection = card.querySelector('.send-request');
+        const form = card.querySelector('.request-form');
+        if (form) {
+            form.reset();
+        }
+        if (requestSection) {
+            requestSection.classList.add('d-none');
+        }
     }
-
 </script>
+<!--Tutor Search Result Display Ends-->
 
-<script>
-    document.getElementById('tutorSearchForm').addEventListener('submit', function(e) {
-
-        e.preventDefault();
-
-        const form = this;
-        const params = new URLSearchParams(new FormData(form));
-        const results = document.getElementById('searchResults');
-
-        results.innerHTML = '<p>Searching tutors...</p>';
-
-        fetch(`${form.action}?${params}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-
-            if (data.tutors.length === 0) {
-                results.innerHTML = '<p>No tutors found.</p>';
-                return;
-            }
-
-            results.innerHTML = data.tutors.map(tutor => `
-                <div class="tutor-card mb-3">
-
-                    <div class="d-flex">
-
-                        <!-- Profile Picture -->
-                        <div class="tutor-photo mr-9">
-                            <img src="${tutor.profile_picture || '/assets/images/profile/profile.png'}"
-                                alt="${tutor.name}">
-                        </div>
-
-                        <!-- Tutor Information -->
-                        <div>
-
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <h5 class="mb-0">${tutor.name}</h5>
-
-                                ${tutor.status ? `
-                                    <span class="verified mx-2">
-                                        <i class="bi bi-patch-check-fill"></i> Verified
-                                    </span>
-                                ` : ''}
-                            </div>
-
-                            <p class="text-muted small mt-1 mb-2">
-                                ${tutor.experience} years experience
-                            </p>
-
-                            <!-- Rating -->
-                            <div class="mb-2">
-                                ${
-                                    tutor.rating !== null && tutor.rating !== undefined
-                                    ? `
-                                        <span class="rating-stars">
-                                            ${Array.from({length: 5}, (_, i) =>
-                                                `<i class="bi ${
-                                                    i < Math.round(tutor.rating)
-                                                    ? 'bi-star-fill'
-                                                    : 'bi-star'
-                                                }"></i>`
-                                            ).join('')}
-                                        </span>
-
-                                        <strong>${Number(tutor.rating).toFixed(1)}</strong>
-                                        <small class="text-muted">
-                                            (${tutor.total_reviews} reviews)
-                                        </small>
-                                    `
-                                    : `<small class="text-muted">No reviews yet</small>`
-                                }
-                            </div>
-
-                            <p class="text-muted small mb-2">
-                                <i class="bi bi-geo-alt"></i>
-                                ${tutor.location || 'Location unavailable'}
-                            </p>                            
-
-                        </div>
-                    </div>
-                    <hr/>
-                    <div class="d-flex gap-3">
-
-                        <!-- Teaching Information -->
-                        <div class="flex-grow-1 w-100">                          
-
-                            <!-- Grade and Subject -->
-                            <div class="mb-3">
-                                <span class="subject-tag">${tutor.grade}</span>
-                                <span class="subject-tag">${tutor.subject}</span>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-                                <div>
-                                    <small class="text-muted">Teaching Fee</small>
-                                    <h5 class="text-success mb-0">
-                                        Rs. ${tutor.fee}
-                                        <small class="text-muted">
-                                            / ${tutor.fee_type}
-                                        </small>
-                                    </h5>
-                                </div>
-
-                                <div>
-                                    <a href="#" class="btn btn-outline-primary btn-sm">
-                                        View Profile
-                                    </a>
-
-                                    <button class="btn btn-primary btn-sm" onclick="sendRequest(this)">
-                                        Send Request
-                                    </button>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="d-none send-request">
-                        <hr/>
-                        <div class="d-flex gap-3">
-                            <!-- Sending Request -->
-                            <div class="flex-grow-1 w-100">                          
-
-                                <div class="d-flex align-items-center mb-4">
-                                    <div>
-                                        <h4 class="font-weight-bold mb-1">Send Tutor Request</h4>
-                                        <p class="text-muted mb-0">
-                                            Send a request to this tutor. You can include a message about your learning requirements.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <form method="POST" class="request-form" action="{% url 'send_tutor_request' %}">
-                                        {% csrf_token %}
-
-                                        <input type="hidden" name="tutor_teaching_id" value="${tutor.id}">
-
-                                        <div class="mb-3 w-100">
-                                            <label class="form-label">
-                                                Message <span class="text-muted">(Optional)</span>
-                                            </label>
-
-                                            <textarea
-                                                name="message"
-                                                class="form-control w-100"
-                                                rows="4"
-                                                placeholder="Write a message to the tutor..."
-                                            ></textarea>
-                                        </div>
-
-                                        <div class="d-flex justify-content-center">
-                                            <!--for if request.GET.get('search'): in backend -->
-                                            <input type="hidden" name="search" value="1">
-
-                                            <button type="submit" class="btn btn-primary py-2 mr-1">
-                                                Send Request
-                                            </button>
-                                            <button type="button" class="btn btn-outline-secondary ml-1" onclick="cancelAndClear(this)">
-                                                Cancel
-                                            </button>
-                                        </div>                                        
-                                    </form>
-                                </div>
-                            
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            `).join('');
-
-        })
-        .catch(error => {
-            console.error(error);
-            results.innerHTML = '<p class="text-danger">Something went wrong.</p>';
-        });
-
-    });
-</script>
 
 {% endblock %}
 

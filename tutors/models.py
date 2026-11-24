@@ -132,7 +132,6 @@ class TutorTeaching(models.Model):
         PER_HOUR = 'hour', 'Per Hour'
         PER_DAY = 'day', 'Per Day'
         PER_MONTH = 'month', 'Per Month'
-        PER_SESSION = 'session', 'Per Session'
 
     fee_type = models.CharField(
         max_length=10,
@@ -164,26 +163,10 @@ from django.core.exceptions import ValidationError
 
 
 class TutorAvailability(models.Model):
-
-    DAYS = [
-        ('sunday', 'Sunday'),
-        ('monday', 'Monday'),
-        ('tuesday', 'Tuesday'),
-        ('wednesday', 'Wednesday'),
-        ('thursday', 'Thursday'),
-        ('friday', 'Friday'),
-        ('saturday', 'Saturday'),
-    ]
-
     tutor_teaching = models.ForeignKey(
         TutorTeaching,
         on_delete=models.CASCADE,
         related_name='availabilities'
-    )
-
-    day = models.CharField(
-        max_length=10,
-        choices=DAYS
     )
 
     start_time = models.TimeField()
@@ -202,17 +185,10 @@ class TutorAvailability(models.Model):
                     'end_time': 'End time must be after start time.'
                 })
 
-        # Check overlapping availability
-        if (
-            self.tutor_teaching_id
-            and self.day
-            and self.start_time
-            and self.end_time
-        ):
-
+        # Check overlapping time slots across all teachings of this tutor
+        if self.tutor_teaching_id and self.start_time and self.end_time:
             overlapping = TutorAvailability.objects.filter(
                 tutor_teaching__tutor_id=self.tutor_teaching.tutor_id,
-                day=self.day,
                 is_active=True,
                 start_time__lt=self.end_time,
                 end_time__gt=self.start_time,
@@ -223,12 +199,11 @@ class TutorAvailability(models.Model):
 
             if overlapping.exists():
                 raise ValidationError(
-                    'This time slot overlaps with an existing availability.'
+                    'This time slot overlaps with an existing daily availability.'
                 )
 
     class Meta:
-        ordering = ['day', 'start_time']
-
+        ordering = ['start_time']
         constraints = [
             models.CheckConstraint(
                 condition=Q(end_time__gt=F('start_time')),
@@ -239,14 +214,10 @@ class TutorAvailability(models.Model):
     def __str__(self):
         return (
             f"{self.tutor_teaching.tutor.full_name} - "
-            f"{self.get_day_display()} "
-            f"{self.start_time} - {self.end_time}"
+            f"{self.start_time.strftime('%I:%M %p')} to {self.end_time.strftime('%I:%M %p')}"
         )
 
-
-
 class TutorReview(models.Model):
-
     student = models.ForeignKey(
         StudentProfile,
         on_delete=models.SET_NULL,
@@ -314,7 +285,17 @@ class TutorRequest(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
-
+    requested_duration = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[MinValueValidator(1)]
+    )
+    availability = models.ForeignKey(
+        TutorAvailability,
+        on_delete=models.PROTECT,
+        related_name='booking_requests',
+        null=True,
+        blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -339,6 +320,9 @@ class TutorRequest(models.Model):
                 name='unique_active_tutor_request'
             )
         ]
+    @property
+    def requested_duration_unit(self):
+        return self.tutor_teaching.get_fee_type_display()
         
     def __str__(self):
             return f"{self.student} - {self.tutor_teaching.tutor}"

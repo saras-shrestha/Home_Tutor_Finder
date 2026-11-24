@@ -1,0 +1,266 @@
+{% extends 'admin_panel/admin-base.html' %}
+{% load static %}
+
+{% block location_css %}
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+{% endblock location_css %}
+
+{% block content %}
+<style>
+h2, label{
+    color:black;
+}    
+</style>
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+
+                <div class="page-body">                    
+                    <div class="row"> 
+
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>My Profile</h5>
+                                </div>
+                                <form class="col-12" method="POST" enctype="multipart/form-data" data-url="{% url 'my_admin_profile' %}">
+                                    {% csrf_token %}                            
+                                    <div class="container-fluid py-4">  
+                                        <!--First row starts-->
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-block">
+                                                    {% if messages %}
+                                                        {% for message in messages %}
+                                                            {% if message.tags == 'success' %}
+                                                                <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px;">
+                                                                    {{ message }}
+                                                                </div>
+                                                            {% elif message.tags == 'error' %}
+                                                                <div style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px;">
+                                                                    {{ message }}
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    <hr>
+                                                    <!--div for Personal Information start-->
+                                                    <div class="section-title">
+                                                        <h2>Personal Information</h2>
+                                                        <p>Your basic personal information.</p>
+                                                    </div>
+                                                    <hr>
+                                                    <!--div for profile picture upload starts-->
+                                                    <div class="form">
+                                                        <div class="form-group">
+                                                            <div class="profile-picture-label">
+                                                                <label>
+                                                                    Profile Picture
+                                                                </label>
+                                                                <p>Upload a picture for your profile.</p>
+                                                            </div>
+                                                            <div class="profile-picture-area">
+                                                                <div class="profile-picture">
+                                                                    {% if admin.profile_picture %}
+                                                                        <img id="profilePreview"
+                                                                            src="{{ admin.profile_picture.url }}"
+                                                                            data-default="{% static 'assets/images/profile/profile.png' %}"
+                                                                            alt="Profile Picture">
+                                                                    {% else %}
+                                                                        <img id="profilePreview"
+                                                                            src="{% static 'assets/images/profile/profile.png' %}"
+                                                                            data-default="{% static 'assets/images/profile/profile.png' %}"
+                                                                            alt="Profile Picture">
+                                                                    {% endif %}
+                                                                </div>
+
+                                                                <div class="picture-info">
+                                                                    <!-- Using <label for="..."> opens the file chooser natively without JS .click() -->
+                                                                    <label for="profile_picture" id="choosePhoto" class="upload-btn" style="cursor: pointer;">
+                                                                        Choose Photo
+                                                                    </label>
+                                                                    <button type="button" id="removePhoto" class="remove-btn">
+                                                                        Remove
+                                                                    </button>
+
+                                                                    <input type="file"
+                                                                        id="profile_picture"
+                                                                        name="profile_picture"
+                                                                        accept="image/*"
+                                                                        hidden>
+
+                                                                    <p>JPG, PNG or JPEG. Maximum 2MB.</p>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <!--div for profile picture upload ends-->
+                                                
+
+                                                    <div class="form-grid">
+                                                        <div class="form-group">
+                                                            <label for="full_name">
+                                                                Full Name
+                                                            </label>
+                                                            <input type="text"
+                                                                id="full_name"
+                                                                value="{{ admin.full_name }}"
+                                                                name="full_name"
+                                                                placeholder="Enter full name"
+                                                                required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="gender">
+                                                                Gender
+                                                            </label>
+                                                            <select id="gender" name="gender">
+
+                                                                <option value="" disabled>
+                                                                    Select Gender
+                                                                </option>
+
+                                                                <option value="F" {% if admin.gender == "F" %} selected {% endif %}>Female</option>
+                                                                <option value="M" {% if admin.gender == "M" %} selected {% endif %}>Male</option>
+                                                                <option value="O" {% if admin.gender == "O" %} selected {% endif %}>Others</option>
+
+                                                            </select>
+
+                                                        </div>
+
+
+                                                        <div class="form-group">
+
+                                                            <label for="phone">
+                                                                Phone Number
+                                                            </label>
+
+                                                            <input type="tel"
+                                                                id="phone"
+                                                                name="phone"
+                                                                value="{{ admin.phone }}"
+                                                                placeholder="98XXXXXXXX"
+                                                                maxlength="10">
+                                                        </div>                                                        
+
+                                                    </div>
+                                                    <!--div for personal Information ends-->  
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--First row ends-->                             
+                                        
+                                        <div class="progress-buttons d-flex justify-content-end">                                            
+                                            <input type="submit" name="update_profile" value="Upadate Profile" class="complete-profile-btn"/>                                                                                        
+                                        </div>
+                                    <div>
+                                </form> 
+                            </div>
+                        </div>                 
+
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"> </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    function setupImageUploader({ inputId, previewId, removeBtnId }) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        const removeBtn = document.getElementById(removeBtnId);
+
+        if (!input || !preview) return;
+
+        input.addEventListener("change", function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith("image/")) {
+                alert("Please select an image file.");
+                this.value = "";
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Image size must be less than 2MB.");
+                this.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        if (removeBtn) {
+            removeBtn.addEventListener("click", function () {
+                input.value = "";
+                if (preview.dataset.default) {
+                    preview.src = preview.dataset.default;
+                }
+            });
+        }
+    }
+
+    // Initialize all three safely (skips any that don't exist on the current page)
+    setupImageUploader({
+        inputId: "profile_picture",
+        previewId: "profilePreview",
+        removeBtnId: "removePhoto"
+    });
+
+    /*setupImageUploader({
+        inputId: "certificate",
+        previewId: "certificatePreview",
+        removeBtnId: "removeCertificate"
+    });
+
+    setupImageUploader({
+        inputId: "cv",
+        previewId: "cvPreview",
+        removeBtnId: "removeCV"
+    });*/
+
+    /* Form validation */
+    const form = document.getElementById("profileForm");
+    if (form) {
+        form.addEventListener("submit", function (event) {
+            const fullName = document.getElementById("full_name")?.value.trim() || "";
+            const phone = document.getElementById("phone")?.value.trim() || "";
+
+            if (fullName === "") {
+                alert("Please enter your full name.");
+                event.preventDefault();
+                return;
+            }
+
+            if (phone !== "" && !/^[0-9]{10}$/.test(phone)) {
+                alert("Please enter a valid 10-digit phone number.");
+                event.preventDefault();
+                return;
+            }
+        });
+    }
+
+});
+
+</script>
+{% endblock %}

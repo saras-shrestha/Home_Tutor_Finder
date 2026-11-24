@@ -157,11 +157,7 @@
 
                         <div class="d-flex justify-content-between align-items-center">
 
-                            <div>
-
-                                <h6 class="font-weight-bold mb-2">
-                                    {{ slot.get_day_display }}
-                                </h6>
+                            <div>                                
 
                                 <span class="time-display">
 
@@ -264,7 +260,7 @@
                             </h6>
 
                             <p class="text-muted small">
-                                Start by adding your available teaching days.
+                                Start by adding your available teaching time slots.
                             </p>
 
                         </div>
@@ -291,7 +287,7 @@
                     </h5>
 
                     <small class="text-muted">
-                        Add a new available day and time.
+                        Add a new available time slots.
                     </small>
 
                 </div>
@@ -312,7 +308,7 @@
                             </div>
                         {% endif %}
 
-                        <div class="form-group">
+                        {% comment %} <div class="form-group">
                             <div id="availability_error"
                                 class="text-danger small mb-2">
                             </div>
@@ -327,7 +323,7 @@
                                 <small class="text-danger">{{ error }}</small>
                             {% endfor %}
 
-                        </div>
+                        </div> {% endcomment %}
 
 
                         <div class="form-group">
@@ -396,7 +392,7 @@
 
                 <p class="small text-muted mb-0">
                     Keep your availability updated so students can
-                    see the days and hours when you are available
+                    timeslots when you are available
                     to teach this particular subject.
                 </p>
 

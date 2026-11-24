@@ -5,14 +5,259 @@
 
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">        
         <title>ADME | Home Tutor Finder</title>
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <!-- Favicon icon -->
+        <link rel="icon" href="{% static 'assets/images/favicon.ico' %}" type="image/x-icon">
+        <!-- Google font-->
+        <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
+        <!-- Required Fremwork -->
+        <link rel="stylesheet" type="text/css" href="{% static 'assets/css/bootstrap/css/bootstrap.min.css' %}">
+        <!-- waves.css -->
+        <link rel="stylesheet" href="{% static 'assets/pages/waves/css/waves.min.css' %}" type="text/css" media="all">
+        <!-- themify-icons line icon -->
+        <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/themify-icons/themify-icons.css' %}">
+        <!-- ico font -->
+        <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/icofont/css/icofont.css' %}">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/font-awesome/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        >
+        <!-- scrollbar.css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'assets/css/jquery.mCustomScrollbar.css' %}">
+        <!-- location leaflet -->
+        <link rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+        <style>
+
+        /*location and map starts*/
+            .location-card {
+                border: none;
+                border-radius: 15px;
+                box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+            }
+
+            #map {
+                height: 380px;
+                width: 100%;
+                border-radius: 12px;
+                z-index: 1;
+            }
+
+            .location-btn {
+                background: #fff8e8;
+                color: #a66c00;
+                border: 1px solid #edcf8e;
+                border-radius: 8px;
+                padding: 11px;
+            }
+
+            .location-btn:hover {
+                background: #ffefcc;
+            }
+
+            .location-hint {
+                font-size: 13px;
+                color: #777;
+            }
+
+            #addressSuggestions {
+                max-height: 250px;
+                overflow-y: auto;
+                background: white;
+            }
+
+            #addressSuggestions .list-group-item {
+                cursor: pointer;
+                padding: 12px 15px;
+            }
+
+            #addressSuggestions .list-group-item:hover {
+                background: #fff8e8;
+            }
+        /*location and map ends*/
+
+        /* filter options and div */
+
+            .filter-options {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 15px;
+                margin: 20px 0 25px;
+            }
+
+            .filter-card {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                min-height: 115px;
+                padding: 18px 8px;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                background: #ffffff;
+                cursor: pointer;
+                transition: all 0.25s ease;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            }
+
+            .filter-card input {
+                position: absolute;
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            .check-icon {
+                width: 45px;
+                height: 45px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 12px;
+                background: #f1f5f9;
+                color: #64748b;
+                font-size: 22px;
+                transition: all 0.25s ease;
+            }
+
+            .filter-name {
+                font-size: 13px;
+                font-weight: 600;
+                color: #475569;
+                text-align: center;
+            }
+
+            .check-mark {
+                position: absolute;
+                top: 8px;
+                right: 9px;
+                font-size: 15px;
+                color: #2563eb;
+                opacity: 0;
+            }
+
+            /* Selected state */
+            .filter-card:has(input:checked) {
+                border: 2px solid #2563eb;
+                background: #eff6ff;
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.10);
+            }
+
+            .filter-card:has(input:checked) .check-icon {
+                background: #2563eb;
+                color: #ffffff;
+            }
+
+            .filter-card:has(input:checked) .filter-name {
+                color: #1d4ed8;
+            }
+
+            .filter-card:has(input:checked) .check-mark {
+                opacity: 1;
+            }
+
+            /* Hover */
+            .filter-card:hover {
+                transform: translateY(-3px);
+                border-color: #93c5fd;
+            }
+
+            /* Hide all filter fields initially */
+            .filter-section {
+                display: none;
+                padding: 20px;
+                border: 1px solid #dee2e6;
+                border-radius: 10px;
+                margin-bottom: 15px;
+            }
+            /* Responsive */
+            @media (max-width: 768px) {
+                .filter-options {
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 10px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .filter-options {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            /* Tutor Search Result */
+            .tutor-card {
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                padding: 20px;
+                transition: all 0.2s ease;
+            }
+
+            .tutor-card:hover {
+                border-color: #b8c9e8;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            }
+
+            .tutor-photo {
+                width: 105px;
+                height: 105px;
+                flex-shrink: 0;
+            }
+
+            .tutor-photo img {
+                width: 95%;
+                height: 95%;
+                object-fit: cover;
+                border-radius: 10px;
+            }
+
+            .verified {
+                background: #e8f5ed;
+                color: #198754;
+                padding: 4px 9px;
+                border-radius: 20px;
+                font-size: 12px;
+            }
+
+            .rating-stars {
+                color: #f5a623;
+                letter-spacing: 2px;
+            }
+
+            .subject-tag {
+                background: #eef4ff;
+                color: #315b9a;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-size: 12px;
+                margin-right: 5px;
+            }
+
+            @media(max-width: 576px) {
+                .tutor-card {
+                    padding: 14px;
+                }
+
+                .tutor-photo {
+                    width: 75px;
+                    height: 75px;
+                }
+
+                .tutor-card .d-flex.gap-3 {
+                    gap: 12px !important;
+                }
+            }
+    </style>
     </head>
 
 
     <body>
-
         <!-- NAVBAR -->
 
         <nav class="navbar">
@@ -118,101 +363,7 @@
 
         <!--  SEARCH BOX -->
 
-        <div class="search-wrapper" id="search">
-
-            <form class="search-box">
-
-
-                <div class="search-field">
-
-                    <label>
-                        Class
-                    </label>
-
-                    <select>
-
-                        <option>
-                            Select Class
-                        </option>
-
-                        <option>Class 2</option>
-                        <option>Class 3</option>
-                        <option>Class 4</option>
-                        <option>Class 5</option>
-                        <option>Class 6</option>
-                        <option>Class 7</option>
-                        <option>Class 8</option>
-                        <option>Class 9</option>
-                        <option>Class 10</option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="search-field">
-
-                    <label>
-                        Subject
-                    </label>
-
-                    <select>
-
-                        <option>
-                            Select Subject
-                        </option>
-
-                        <option>Mathematics</option>
-                        <option>Science</option>
-                        <option>English</option>
-                        <option>Nepali</option>
-                        <option>Social Studies</option>
-                        <option>Computer</option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="search-field">
-
-                    <label>
-                        Location
-                    </label>
-
-                    <input
-                        type="text"
-                        placeholder="Enter location"
-                    >
-
-                </div>
-
-
-                <div class="search-field">
-
-                    <label>
-                        Maximum Fee
-                    </label>
-
-                    <input
-                        type="number"
-                        placeholder="Rs. / hour"
-                    >
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    class="search-button"
-                >
-                    Search
-                </button>
-
-
-            </form>
-
-        </div>
+       
 
 
         <!-- FEATURES -->
@@ -295,200 +446,389 @@
         </section>
 
 
-        <!--  POPULAR TUTORS -->
-
-        <section class="section tutor-section" id="tutors">
+        <!--  FIND TUTORS -->
+        <section class="section" id="tutors">
 
             <div class="section-header">
 
                 <h2>
-                    Popular Tutors
+                    Find Tutors
                 </h2>
 
-                <p>
-                    Explore some of our highly rated tutors.
-                </p>
-
             </div>
 
+                <div class="container-fluid py-4">
+                    <div class="card mb-4">
+                        <div class="card-body p-4">
 
-            <div class="tutors">
+                            <div class="d-flex align-items-center mb-4">
+                                <div>
+                                    <p class="text-muted mb-0">
+                                        Search tutors using one or more of your preferences.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- FILTER OPTIONS: SINGLE ROW -->    
+                            <div class="filter-options">
 
+                                <label class="filter-card">
+                                    <input type="checkbox" class="filter-check" value="academic">
+                                    <span class="check-icon">
+                                        <i class="bi bi-book"></i>
+                                    </span>
+                                    <span class="filter-name">Grade & Subject</span>
+                                    <span class="check-mark">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </label>
 
-                <!-- TUTOR 1 -->
+                                <label class="filter-card">
+                                    <input type="checkbox" class="filter-check" value="budget">
+                                    <span class="check-icon">
+                                        <i class="bi bi-wallet2"></i>
+                                    </span>
+                                    <span class="filter-name">Budget</span>
+                                    <span class="check-mark">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </label>
 
-                <div class="tutor-card">
+                                <label class="filter-card">
+                                    <input type="checkbox" class="filter-check" value="location">
+                                    <span class="check-icon">
+                                        <i class="bi bi-geo-alt"></i>
+                                    </span>
+                                    <span class="filter-name">Location</span>
+                                    <span class="check-mark">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </label>
 
-                    <div class="tutor-top">
+                                <label class="filter-card">
+                                    <input type="checkbox" class="filter-check" value="availability">
+                                    <span class="check-icon">
+                                        <i class="bi bi-calendar-week"></i>
+                                    </span>
+                                    <span class="filter-name">Availability</span>
+                                    <span class="check-mark">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </label>
 
-                        <div class="tutor-photo">
-                            👨‍🏫
-                        </div>
+                                <label class="filter-card">
+                                    <input type="checkbox" class="filter-check" value="rating">
+                                    <span class="check-icon">
+                                        <i class="bi bi-star"></i>
+                                    </span>
+                                    <span class="filter-name">Rating</span>
+                                    <span class="check-mark">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </label>
 
-                        <div>
-
-                            <div class="tutor-name">
-                                Ram Sharma
                             </div>
 
-                            <div class="verified">
-                                ✓ Verified Tutor
-                            </div>
+                            <!-- FILTER FORM -->
+                            <form method="GET" action="{% url 'home-page' %}" id="tutorSearchForm">
+                                <!-- GRADE AND SUBJECT -->
+                                <div class="filter-section" id="academic">
+                                    <h5 class="fw-semibold mb-3">Grade and Subject</h5>                                                        
+
+                                    <div class="row">
+                                        <!-- Grade -->
+                                        <div class="mb-3 col-12 form-group">
+                                            <label class="form-label fw-semibold" for="gradeSelect">
+                                                Grade
+                                            </label>
+                                            <select name="grade" class="form-select" id="gradeSelect">
+                                                {% if request.user.student_profile.grade %}
+                                                    <option value="{{ request.user.student_profile.grade.id }}"  selected>
+                                                        {{ request.user.student_profile.grade}}
+                                                    </option>
+                                                {% else %}
+                                                    <option value="" selected disabled>All grades</option>
+                                                    {% for grade in grades %} 
+                                                    <option value="{{ grade.id }}">
+                                                        {{ grade }}
+                                                    </option>
+                                                {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <!-- Subject -->
+                                        <div class="mb-3 col-12 form-group">
+                                            <label class="form-label fw-semibold" for="subjectSelect">
+                                                Subject
+                                            </label>
+                                            {% if request.user.student_profile.grade %}
+                                            <select name="subject">
+                                                <option value="" selected disabled>Select Grade First</option>
+                                                {% for subject in my_subjects %} 
+                                                    <option value="{{ subject.subject.id }}">
+                                                        {{ subject.subject.name }}
+                                                    </option> 
+                                                {% endfor %}                                                                     
+                                            </select>
+                                            {% else %}
+                                            <select name="subject" class="form-select" id="subjectSelect">
+                                                <option value="" selected disabled>Select Grade First</option>                                                                       
+                                            </select>
+                                            {% endif%}
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <!-- BUDGET -->
+                                <div class="filter-section" id="budget">
+
+                                    <h5 class="fw-semibold mb-3">Budget</h5>
+
+                                    <div class="row g-3">
+                                        <div class="col-12 form-group">
+                                            <label class="form-label">Maximum Budget (Rs.)</label>
+                                            <input type="number" name="budget"
+                                                class="form-control"
+                                                placeholder="Enter your budget">
+                                        </div>
+
+                                        <div class="my-0 col-12 px-5">
+                                            <div class="form-check form-check-inline pr-4">
+                                                <input class="form-check-input" type="radio" name="fee_type" id="hourly" value="hour">
+                                                <label class="form-check-label p-0 mb-1 mr-2 font-weight-bold" for="hourly">
+                                                    Hourly
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-check-inline pr-4">
+                                                <input class="form-check-input"
+                                                            type="radio"
+                                                            name="fee_type"
+                                                            id="daily"
+                                                            value="day">
+                                                <label class="form-check-label p-0 mb-1 mr-2 font-weight-bold" for="daily">
+                                                    Daily
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-check-inline pr-4">
+                                                <input class="form-check-input"
+                                                            type="radio"
+                                                            name="fee_type"
+                                                            id="monthly"
+                                                            value="month" checked>
+                                                <label class="form-check-label p-0 mb-1 mr-2 font-weight-bold" for="monthly">
+                                                    Monthly
+                                                </label>
+                                            </div>
+                                                          
+                                                
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- LOCATION -->
+                                <div class="filter-section" id="location">
+
+                                    <h5 class="fw-semibold mb-3">Preferred Location</h5>
+
+                                    <div class="mt-3 form-group">
+                                        <div class="position-relative mb-2">
+                                            <label class="form-label fw-semibold">
+                                                Enter your address
+                                            </label>
+                                            <div class="input-group">
+
+                                                <input type="text"
+                                                            id="address"
+                                                            class="form-control"
+                                                            placeholder="e.g. New Baneshwor, Kathmandu"
+                                                            autocomplete="off">
+
+                                                <button type="button"
+                                                                class="btn btn-primary"
+                                                                id="searchAddress">
+                                                    Search
+                                                </button>
+
+                                            </div>
+                                            <!-- Autocomplete suggestions -->
+                                            <div id="addressSuggestions"
+                                                        class="list-group position-absolute w-100 shadow"
+                                                        style="z-index: 1000; display: none;">
+                                            </div>
+                                        </div>             
+
+                                        <p class="location-hint">
+                                            Enter an area, street, or landmark.
+                                        </p>
+
+                                        <!-- GPS -->
+                                        <button type="button"
+                                                        class="btn location-btn w-100 mb-4"
+                                                        id="currentLocation">
+
+                                            <i class="bi bi-crosshair"></i>
+                                            Use My Current Location
+
+                                        </button>
+
+                                        <div class="d-flex justify-content-between mb-2">
+
+                                            <label class="form-label fw-semibold">
+                                                Select your location on map
+                                            </label>
+
+                                            <small class="text-muted">
+                                                Drag the marker to adjust
+                                            </small>
+
+                                        </div>
+
+                                        <!-- Map -->
+                                        <div id="map" class="mb-3"></div>
+
+                                        <!-- Selected address -->
+                                        <div class="alert alert-light border">
+
+                                            <strong>
+                                                <i class="bi bi-geo-alt-fill text-danger"></i>
+                                                Selected Location
+                                            </strong>
+
+                                            <p class="mb-0 mt-1" id="selectedAddress">
+                                                No location selected yet.
+                                            </p>
+
+                                        </div>
+
+                                        <!-- Hidden coordinates -->
+                                        <input type="hidden"
+                                                    name="latitude"
+                                                    id="latitude">
+
+                                        <input type="hidden"
+                                                    name="longitude"
+                                                    id="longitude">
+
+                                        <input type="hidden"
+                                                    name="address"
+                                                    id="finalAddress">
+                                    
+                                    </div>                                                 
+
+                                </div>
+
+
+                                <!-- AVAILABILITY -->
+                                <div class="filter-section" id="availability">
+
+                                    <h5 class="fw-semibold mb-3">Availability</h5>
+
+                                    <div class="row g-3">                                        
+
+                                        <div class="col-12">
+                                            <div class="row g-3">
+                                                <div class="col-12 col-sm-6 form-group">
+                                                    <label class="form-label font-weight-semibold">From</label>
+                                                    <input type="time"
+                                                            name="start_time"
+                                                            class="form-control"
+                                                            value="{{ request.GET.start_time }}">
+                                                </div>
+
+                                                <div class="col-12 col-sm-6 form-group">
+                                                    <label class="form-label font-weight-semibold">To</label>
+                                                    <input type="time"
+                                                            name="end_time"
+                                                            class="form-control"
+                                                            value="{{ request.GET.end_time }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <!-- RATING -->
+                                <div class="filter-section" id="rating">
+
+                                    <h5 class="fw-semibold mb-3">Minimum Rating</h5>
+                                    <div class="row g-3">
+                                            <div class="col-12 form-group mt-3">
+                                            <label class="form-label fw-semibold">
+                                                <i class="bi bi-star me-1 text-warning"></i>
+                                                Minimum Tutor Rating
+                                            </label>
+
+                                            <select name="rating" class="form-select">
+                                                <option value="" selected disabled>Select Rating</option>
+                                                <option value="">Below 3 Stars</option>
+
+                                                <option value="3"
+                                                    {% if request.GET.rating == "3" %}selected{% endif %}>
+                                                    3+ Stars
+                                                </option>
+
+                                                <option value="4"
+                                                    {% if request.GET.rating == "4" %}selected{% endif %}>
+                                                    4+ Stars
+                                                </option>
+
+                                                <option value="4.5"
+                                                    {% if request.GET.rating == "4.5" %}selected{% endif %}>
+                                                    4.5+ Stars
+                                                </option>
+                                            </select>
+
+                                            <small class="text-muted">
+                                                Find tutors with your preferred rating.
+                                            </small>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-center">
+                                    <!--for if request.GET.get('search'): in backend -->
+                                    <input type="hidden" name="search" value="1">
+
+                                    <button type="submit" class="btn btn-primary py-2 mr-1">
+                                        <i class="bi bi-search me-2"></i>
+                                        Find Tutors
+                                    </button>
+                                    <a href=""
+                                                class="btn btn-outline-secondary ml-1">
+                                        Reset Filters
+                                    </a>
+                                </div>
+                                <div class="text-center mt-3">                                                                
+                                    <small>
+                                        <strong>Note:</strong><span class="text-muted"> You can search using one criterion or combine multiple criteria. All filters are optional.</span>
+                                    </small>
+                                </div>
+
+                            </form>
 
                         </div>
-
                     </div>
 
-
-                    <div class="tutor-details">
-
-                        Mathematics • Science
-
-                        <div class="rating">
-                            ★★★★★ 4.8
-                        </div>
-
-                        📍 2.3 km away
-
-                        <br>
-
-                        Experience: 5 years
-
-                    </div>
-
-
-                    <div class="tutor-bottom">
-
-                        <span class="fee">
-                            Rs. 500/hour
-                        </span>
-
-                        <a href="#" class="view-btn">
-                            View Profile
-                        </a>
-
-                    </div>
+                    <div id="searchResults" class="mt-4">
+                        
+                    </div>                                        
 
                 </div>
 
 
-
-                <!-- TUTOR 2 -->
-
-                <div class="tutor-card">
-
-                    <div class="tutor-top">
-
-                        <div class="tutor-photo">
-                            👩‍🏫
-                        </div>
-
-                        <div>
-
-                            <div class="tutor-name">
-                                Sita Thapa
-                            </div>
-
-                            <div class="verified">
-                                ✓ Verified Tutor
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="tutor-details">
-
-                        Science • Mathematics
-
-                        <div class="rating">
-                            ★★★★★ 4.7
-                        </div>
-
-                        📍 3.1 km away
-
-                        <br>
-
-                        Experience: 4 years
-
-                    </div>
-
-
-                    <div class="tutor-bottom">
-
-                        <span class="fee">
-                            Rs. 600/hour
-                        </span>
-
-                        <a href="#" class="view-btn">
-                            View Profile
-                        </a>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- TUTOR 3 -->
-
-                <div class="tutor-card">
-
-                    <div class="tutor-top">
-
-                        <div class="tutor-photo">
-                            👩‍🏫
-                        </div>
-
-                        <div>
-
-                            <div class="tutor-name">
-                                Maya KC
-                            </div>
-
-                            <div class="verified">
-                                ✓ Verified Tutor
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="tutor-details">
-
-                        English • Nepali
-
-                        <div class="rating">
-                            ★★★★★ 4.9
-                        </div>
-
-                        📍 1.8 km away
-
-                        <br>
-
-                        Experience: 6 years
-
-                    </div>
-
-
-                    <div class="tutor-bottom">
-
-                        <span class="fee">
-                            Rs. 450/hour
-                        </span>
-
-                        <a href="#" class="view-btn">
-                            View Profile
-                        </a>
-
-                    </div>
-
-                </div>
-
-
-            </div>
+            
 
         </section>
 
@@ -656,3 +996,805 @@
 
 </html>
 
+<script>    
+    document.querySelectorAll('.filter-check').forEach(checkbox => {
+
+        checkbox.addEventListener('change', function () {
+
+            const section = document.getElementById(this.value);
+
+            if (this.checked) {
+
+                section.style.display = 'block';
+
+                // Refresh Leaflet map when location section is displayed
+                if (this.value === 'location') {
+
+                    setTimeout(() => {
+
+                        if (window.tutorMap) {
+                            window.tutorMap.invalidateSize();
+                        }
+
+                    }, 200);
+                }
+
+            } else {
+
+                section.style.display = 'none';
+
+                // Clear values when filter is deselected
+                section.querySelectorAll('input, select, textarea')
+                    .forEach(field => {
+
+                        if (field.type === 'checkbox' ||
+                            field.type === 'radio') {
+
+                            field.checked = false;
+
+                        } else {
+                            field.value = '';
+                        }
+                    });
+            }
+
+        });
+
+    });
+
+
+</script>
+
+<!--Tutor Search Result Display Starts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchForm = document.getElementById('tutorSearchForm');
+        if (!searchForm) return;
+
+        searchForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const form = this;
+            const params = new URLSearchParams(new FormData(form));
+            params.set('search', '1'); // Ensure backend enters `if request.GET.get('search'):`
+            const results = document.getElementById('searchResults');
+
+            results.innerHTML = '<p>Searching tutors...</p>';
+
+            fetch(`${form.action}?${params.toString()}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to search tutors.');
+                }
+                return data;
+            })
+            .then(data => {
+                if (!data.tutors || data.tutors.length === 0) {
+                    results.innerHTML = '<p>No tutors found matching your criteria.</p>';
+                    return;
+                }
+
+                results.innerHTML = data.tutors.map(tutor => {
+                    const hasReviews = tutor.total_reviews > 0 && !isNaN(Number(tutor.rating));
+                    const numericRating = hasReviews ? Number(tutor.rating) : 0;
+
+                    const freeSlotsBadges = (tutor.free_slots && tutor.free_slots.length > 0)
+                        ? tutor.free_slots.map(slot => `
+                            <span class="badge bg-light text-dark border me-1 mb-1">
+                                <i class="bi bi-clock"></i> ${slot.start_time} - ${slot.end_time}
+                            </span>
+                        `).join('')
+                        : `<small class="text-muted">No open slots</small>`;
+
+                    const slotSelectOptions = (tutor.free_slots && tutor.free_slots.length > 0)
+                        ? tutor.free_slots.map(slot => `
+                            <option value="${slot.id}">
+                                ${slot.start_time} - ${slot.end_time} (Daily)
+                            </option>
+                        `).join('')
+                        : '';
+
+                    return `
+                    <div class="tutor-card mb-3">
+                        <div class="d-flex">
+                            <!-- Profile Picture -->
+                            <div class="tutor-photo mr-9">
+                                <img src="${tutor.profile_picture || '/static/assets/images/profile/profile.png'}"
+                                    alt="${tutor.name}">
+                            </div>
+
+                            <!-- Tutor Information -->
+                            <div>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <h5 class="mb-0">${tutor.name}</h5>
+
+                                    ${tutor.status ? `
+                                        <span class="verified mx-2">
+                                            <i class="bi bi-patch-check-fill"></i> Verified
+                                        </span>
+                                    ` : ''}
+                                </div>
+
+                                <p class="text-muted small mt-1 mb-2">
+                                    ${tutor.experience} years experience
+                                </p>
+
+                                <!-- Rating -->
+                                <div class="mb-2">
+                                    ${
+                                        hasReviews
+                                        ? `
+                                            <span class="rating-stars">
+                                                ${Array.from({ length: 5 }, (_, i) =>
+                                                    `<i class="bi ${
+                                                        i < Math.round(numericRating)
+                                                        ? 'bi-star-fill'
+                                                        : 'bi-star'
+                                                    }"></i>`
+                                                ).join('')}
+                                            </span>
+                                            <strong>${numericRating.toFixed(1)}</strong>
+                                            <small class="text-muted">
+                                                (${tutor.total_reviews} reviews)
+                                            </small>
+                                        `
+                                        : `<small class="text-muted">No ratings yet</small>`
+                                    }
+                                </div>
+
+                                <!-- Location & Distance -->
+                                <p class="text-muted small mb-0">
+                                    <i class="bi bi-geo-alt"></i>
+                                    ${tutor.location || 'Location unavailable'}
+                                    ${
+                                        tutor.distance_km !== null && tutor.distance_km !== undefined
+                                        ? `<span class="badge bg-info text-dark ms-2">${tutor.distance_km} km away</span>`
+                                        : ''
+                                    }
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <div class="d-flex gap-3">
+                            <!-- Teaching Information -->
+                            <div class="flex-grow-1 w-100">
+                                <!-- Grade and Subject -->
+                                <div class="mb-2">
+                                    <span class="subject-tag">${tutor.grade}</span>
+                                    <span class="subject-tag">${tutor.subject}</span>
+                                </div>
+
+                                <!-- Available Daily Time Slots -->
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-1">Available Daily Time Slots:</small>
+                                    ${freeSlotsBadges}
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div>
+                                        <small class="text-muted">Teaching Fee</small>
+                                        <h5 class="text-success mb-0">
+                                            Rs. ${tutor.fee}
+                                            <small class="text-muted">
+                                                / ${tutor.fee_type}
+                                            </small>
+                                        </h5>
+                                    </div>
+
+                                    <div>
+                                        <a href="#" class="btn btn-outline-primary btn-sm">
+                                            View Profile
+                                        </a>
+
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="sendRequest(this)">
+                                            Send Request
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Send Request Form -->
+                        <div class="d-none send-request">
+                            <hr/>
+                            <div class="d-flex gap-3">
+                                <div class="flex-grow-1 w-100">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div>
+                                            <h4 class="font-weight-bold mb-1">Send Tutor Request</h4>
+                                            <p class="text-muted mb-0">
+                                                Select a daily time slot and include a message about your learning requirements.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <form method="POST" class="request-form" action="{% url 'send_tutor_request' %}">
+                                            {% csrf_token %}
+
+                                            <input type="hidden" name="tutor_teaching_id" value="${tutor.id}">
+                                            <input type="hidden" name="search" value="1">
+
+                                            <!-- Select Time Slot -->
+                                            <div class="mb-3 w-100">
+                                                <label class="form-label">
+                                                    Select Daily Time Slot <span class="text-danger">*</span>
+                                                </label>
+                                                <select name="availability_id" class="form-control w-100" required>
+                                                    <option value="">-- Choose a time slot --</option>
+                                                    ${slotSelectOptions}
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3 w-100">
+                                                <label class="form-label">
+                                                    Message <span class="text-muted">(Optional)</span>
+                                                </label>
+                                                <textarea
+                                                    name="message"
+                                                    class="form-control w-100"
+                                                    rows="4"
+                                                    placeholder="Write a message to the tutor..."
+                                                ></textarea>
+
+                                                <div class="d-flex justify-content-center mt-3">
+                                                    <button type="submit" class="btn btn-primary py-2 mr-1">
+                                                        Send Request
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary ml-1" onclick="cancelAndClear(this)">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            })
+            .catch(error => {
+                results.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Search Error:</strong> ${error.message}
+                    </div>
+                `;
+            });
+            
+        });
+    });
+
+    function sendRequest(button) {
+        const card = button.closest('.tutor-card');
+        if (!card) return;
+        const requestSection = card.querySelector('.send-request');
+        if (requestSection) {
+            requestSection.classList.remove('d-none');
+        }
+    }
+
+    function cancelAndClear(button) {
+        const card = button.closest('.tutor-card');
+        if (!card) return;
+        const requestSection = card.querySelector('.send-request');
+        const form = card.querySelector('.request-form');
+        if (form) {
+            form.reset();
+        }
+        if (requestSection) {
+            requestSection.classList.add('d-none');
+        }
+    }
+</script>
+<!--Tutor Search Result Display Ends-->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const gradeSelect = document.getElementById('gradeSelect');
+        const subjectSelect = document.getElementById('subjectSelect');
+
+        // Check whether dropdown elements exist
+        if (!gradeSelect || !subjectSelect) {
+            console.error("Grade or Subject dropdown not found!");
+            return;
+        }
+
+        // Function to load subjects based on selected grade
+        function loadSubjects(gradeId) {
+
+            if (!gradeId) {
+                subjectSelect.innerHTML =
+                    '<option value="" selected disabled>Select Grade First</option>';
+                return;
+            }
+
+            const url = "{% url 'get_subjects' 0 %}".replace('/0/', `/${gradeId}/`);
+
+            console.log("Fetching URL:", url);
+
+            subjectSelect.innerHTML =
+                '<option value="">Loading subjects...</option>';
+
+            fetch(url)
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status}`);
+                    }
+
+                    console.log("HTTP Status:", response.status);
+
+                    return response.json();
+                })
+
+                .then(data => {
+
+                    console.log("Subjects received:", data);
+
+                    // Clear previous options
+                    subjectSelect.innerHTML = '';
+
+                    // Add default option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select Subject';
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+
+                    subjectSelect.appendChild(defaultOption);
+
+                    // Check whether subjects exist
+                    if (data.length === 0) {
+
+                        subjectSelect.innerHTML =
+                            '<option value="" disabled selected>No subjects available</option>';
+
+                        return;
+                    }
+
+                    // Populate subject dropdown
+                    data.forEach(subject => {
+
+                        const option = document.createElement('option');
+
+                        option.value = subject.id;
+                        option.textContent = subject.name;
+
+                        subjectSelect.appendChild(option);
+
+                    });
+
+                    console.log("Total dropdown options:", subjectSelect.options.length);
+
+                })
+
+                .catch(error => {
+
+                    console.error("Error loading subjects:", error);
+
+                    subjectSelect.innerHTML =
+                        '<option value="" disabled selected>Unable to load subjects</option>';
+
+                });
+        }
+
+        // Listen for grade selection changes
+        gradeSelect.addEventListener('change', function () {
+
+            const gradeId = this.value;
+
+            console.log("Selected Grade ID:", gradeId);
+
+            loadSubjects(gradeId);
+
+        });
+
+    });
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+    // 1. INITIALIZE MAP
+
+    window.tutorMap = L.map('map').setView(
+        [27.7172, 85.3240],
+        13
+    );
+
+    // Keep using map in the rest of your existing code
+    const map = window.tutorMap;
+
+    L.tileLayer(
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        }
+    ).addTo(map);
+
+
+    // 2. CREATE MAP MARKER
+
+    let marker = L.marker(
+        [27.7172, 85.3240],
+        {
+            draggable: true
+        }
+    ).addTo(map);
+
+
+    // 3. GET HTML ELEMENTS
+
+    const addressInput = document.getElementById('address');
+
+    const suggestionsBox = document.getElementById(
+        'addressSuggestions'
+    );
+
+    const latitudeInput = document.getElementById('latitude');
+
+    const longitudeInput = document.getElementById('longitude');
+
+    const finalAddressInput = document.getElementById('finalAddress');
+
+    const selectedAddress = document.getElementById('selectedAddress');
+
+    const addressUrl = "{% url 'address_autocomplete' %}";
+
+    let selectedLocation = false;
+    let searchTimeout = null;
+
+
+    // 4. UPDATE LOCATION AND MAP
+
+    function updateLocation(lat, lng, address = null) {
+
+        marker.setLatLng([lat, lng]);
+
+        map.setView([lat, lng], 16);
+
+        latitudeInput.value = lat;
+        longitudeInput.value = lng;
+
+        selectedLocation = true;
+
+        if (address) {
+
+            addressInput.value = address;
+            finalAddressInput.value = address;
+
+            selectedAddress.innerText = address;
+
+        } else {
+
+            const coordinates = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+            finalAddressInput.value = coordinates;
+
+            selectedAddress.innerText = coordinates;
+
+            // Find the actual address from coordinates
+            reverseGeocode(lat, lng);
+        }
+
+        suggestionsBox.style.display = 'none';
+    }
+
+
+    // 5. REVERSE GEOCODING
+    // COORDINATES TO ADDRESS
+    async function reverseGeocode(lat, lng) {
+
+        try {
+
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
+            );
+
+            if (!response.ok) {
+                throw new Error('Address lookup failed');
+            }
+
+            const data = await response.json();
+
+            if (data.display_name) {
+
+                addressInput.value = data.display_name;
+
+                finalAddressInput.value = data.display_name;
+
+                selectedAddress.innerText = data.display_name;
+            }
+
+        } catch (error) {
+
+            console.error('Reverse geocoding error:', error);
+
+        }
+    }
+
+
+    // 6. SEARCH ADDRESS AUTOCOMPLETE
+
+    addressInput.addEventListener('input', function () {
+
+        const query = this.value.trim();
+
+        clearTimeout(searchTimeout);
+
+        selectedLocation = false;
+
+        latitudeInput.value = '';
+        longitudeInput.value = '';
+        finalAddressInput.value = '';
+
+        suggestionsBox.innerHTML = '';
+
+        if (query.length < 3) {
+
+            suggestionsBox.style.display = 'none';
+
+            return;
+        }
+
+        // Wait 400 milliseconds before searching
+        searchTimeout = setTimeout(async function () {
+
+            try {
+
+                const response = await fetch(
+                    `${addressUrl}?q=${encodeURIComponent(query)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Address search failed');
+                }
+
+                const data = await response.json();
+
+                suggestionsBox.innerHTML = '';
+
+                if (!data.results || data.results.length === 0) {
+
+                    suggestionsBox.innerHTML = `
+                        <div class="list-group-item text-muted">
+                            No locations found.
+                        </div>
+                    `;
+
+                } else {
+
+                    data.results.forEach(function (place) {
+
+                        const item = document.createElement('button');
+
+                        item.type = 'button';
+
+                        item.className =
+                            'list-group-item list-group-item-action';
+
+                        const icon = document.createElement('i');
+
+                        icon.className =
+                            'bi bi-geo-alt text-warning me-2';
+
+                        const text = document.createElement('span');
+
+                        text.textContent = place.name;
+
+                        item.appendChild(icon);
+                        item.appendChild(text);
+
+                        // Select suggested address
+                        item.addEventListener('click', function () {
+
+                            selectAddress(place);
+
+                        });
+
+                        suggestionsBox.appendChild(item);
+
+                    });
+
+                }
+
+                suggestionsBox.style.display = 'block';
+
+            } catch (error) {
+
+                console.error('Autocomplete error:', error);
+
+                suggestionsBox.innerHTML = `
+                    <div class="list-group-item text-danger">
+                        Unable to search locations.
+                    </div>
+                `;
+
+                suggestionsBox.style.display = 'block';
+
+            }
+
+        }, 400);
+
+    });
+
+
+    // 7. SELECT ADDRESS FROM SUGGESTIONS
+
+    function selectAddress(place) {
+
+        const lat = parseFloat(place.latitude);
+
+        const lng = parseFloat(place.longitude);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return;
+        }
+
+        updateLocation(lat, lng, place.name);
+
+    }
+
+    // 8. SEARCH BUTTON
+    document.getElementById('searchAddress')
+        .addEventListener('click', async function () {
+
+            const query = addressInput.value.trim();
+
+            if (query.length < 3) {
+
+                alert('Please enter at least 3 characters.');
+
+                return;
+            }
+
+            this.disabled = true;
+
+            try {
+
+                const response = await fetch(
+                    `${addressUrl}?q=${encodeURIComponent(query)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Search failed');
+                }
+
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+
+                    selectAddress(data.results[0]);
+
+                } else {
+
+                    alert('No matching address found.');
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert('Unable to search address. Please try again.');
+
+            } finally {
+
+                this.disabled = false;
+
+            }
+
+        });
+
+
+    // 9. USE CURRENT GPS LOCATION
+
+    document.getElementById('currentLocation')
+        .addEventListener('click', function () {
+
+            if (!navigator.geolocation) {
+
+                alert('Your browser does not support GPS location.');
+
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+
+                function (position) {
+
+                    const lat = position.coords.latitude;
+
+                    const lng = position.coords.longitude;
+
+                    updateLocation(lat, lng);
+
+                },
+
+                function (error) {
+
+                    alert(
+                        'Unable to detect your location. Please allow location permission or enter your address manually.'
+                    );
+
+                },
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000
+                }
+
+            );
+
+        });
+
+
+    // 10. DRAG MARKER TO CHANGE LOCATION
+
+    marker.on('dragend', function (event) {
+
+        const position = event.target.getLatLng();
+
+        updateLocation(
+            position.lat,
+            position.lng
+        );
+
+    });
+
+
+    // 11. CLICK MAP TO SELECT LOCATION
+
+    map.on('click', function (event) {
+
+        updateLocation(
+            event.latlng.lat,
+            event.latlng.lng
+        );
+
+    });
+
+
+    // 12. HIDE SUGGESTIONS WHEN CLICKING OUTSIDE
+
+    document.addEventListener('click', function (event) {
+
+        if (
+            !addressInput.contains(event.target) &&
+            !suggestionsBox.contains(event.target)
+        ) {
+
+            suggestionsBox.style.display = 'none';
+
+        }
+
+    });
+
+
+    // 13. FORM VALIDATION
+
+    document.getElementById('locationForm')
+        .addEventListener('submit', function (event) {
+
+            if (!selectedLocation) {
+
+                event.preventDefault();
+
+                alert('Please select your location first.');
+
+            }
+
+        });
+
+</script>

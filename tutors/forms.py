@@ -5,18 +5,12 @@ class TutorAvailabilityForm(forms.ModelForm):
     class Meta:
         model = TutorAvailability
 
-        fields = [
-            'day',
+        fields = [        
             'start_time',
             'end_time',
         ]
 
         widgets = {
-
-            'day': forms.Select(
-                attrs={'class': 'form-select'}
-            ),
-
             'start_time': forms.TimeInput(
                 attrs={
                     'type': 'time',

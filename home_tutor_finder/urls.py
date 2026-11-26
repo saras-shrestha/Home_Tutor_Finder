@@ -23,6 +23,9 @@ import accounts.views as account_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',account_views.homePage, name="home-page"),
+    path("findtutors/", account_views.homePage, {"section": "findtutors"}, name="find-your-tutors"),
+    path("how-it-works/", account_views.homePage, {"section": "how-it-works"}, name="how-it-works"),
+    path("about/", account_views.homePage, {"section": "about"}, name="about"),
     path('accounts/', include('accounts.urls')),
     path('students/', include('students.urls')),
     path('tutors/', include('tutors.urls')),

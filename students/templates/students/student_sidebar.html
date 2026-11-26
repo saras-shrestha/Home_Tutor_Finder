@@ -4,7 +4,7 @@
         <!--navigation list -->
        <div class="pcoded-navigation-label" data-i18n="nav.category.navigation"></div>
         <ul class="pcoded-item pcoded-left-item">
-            <li class="active">
+            <li>
                 <a href="{% url 'student_dashboard' %}" class="waves-effect waves-dark">
                     <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
                     <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
@@ -69,3 +69,27 @@
        
     </div>
 </nav>
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const navItems = document.querySelectorAll(".pcoded-navbar .pcoded-item li");
+        const currentPath = window.location.pathname;
+
+        // 1. Keep the clicked link's page active after reload
+        navItems.forEach((li) => {
+            const link = li.querySelector("a");
+            if (link && link.getAttribute("href") === currentPath) {
+                li.classList.add("active");
+            }
+
+            // 2. Immediately switch active class on click
+            link?.addEventListener("click", function () {
+                navItems.forEach((item) => item.classList.remove("active"));
+                li.classList.add("active");
+            });
+        });
+    });
+</script>
+
+{% endblock %}

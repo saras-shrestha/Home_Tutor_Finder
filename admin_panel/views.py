@@ -263,6 +263,14 @@ def student_tutor_requests(request):
         'tutor_teaching__grade_subject__subject',
     )
 
+    # Determine active tab from URL
+    allowed_tabs = ['pending', 'not_started', 'in_progress', 'completed']
+
+    tab = request.GET.get('tab', 'pending')
+
+    if tab not in allowed_tabs:
+        tab = 'pending'
+
     # 1. Querysets
     pending_requests = TutorRequest.objects.filter(
         status='pending'
@@ -316,7 +324,7 @@ def student_tutor_requests(request):
     started_paginator = Paginator(started_requests, 5)
     completed_paginator = Paginator(completed_requests, 5)  
 
-    tab = request.GET.get('tab', 'pending')
+    # tab = request.GET.get('tab', 'pending')
     page_number = request.GET.get('page', 1)
 
     page_obj_pending = pending_paginator.get_page(page_number if tab == 'pending' else 1)
@@ -339,6 +347,8 @@ def student_tutor_requests(request):
         'search_not_started_count': search_not_started_count,
         'search_in_progress_count': search_in_progress_count,
         'search_completed_count': search_completed_count,
+
+        'active_tab': tab,
     }
 
     # 6. AJAX request

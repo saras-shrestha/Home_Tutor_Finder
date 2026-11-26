@@ -667,31 +667,7 @@ def send_tutor_request(request):
 
 
 
-# @login_required
-# def tutor_requests(request):
 
-#     if request.user.role != "student":
-#         return redirect("home-page")
-
-#     student = request.user.student_profile
-
-#     tutor_requests = TutorRequest.objects.filter(
-#         student=student
-#     ).select_related(
-#         'tutor_teaching',
-#         'tutor_teaching__tutor',
-#         'tutor_teaching__grade_subject',
-#         'tutor_teaching__grade_subject__grade',
-#         'tutor_teaching__grade_subject__subject'
-#     ).order_by('-created_at')
-
-#     return render(
-#         request,
-#         'students/tutor-management/tutor-requests.html',
-#         {
-#             'tutor_requests': tutor_requests
-#         }
-#     )
 @login_required
 def tutor_requests(request):
     if request.user.role != "student":
@@ -748,6 +724,14 @@ def tutor_requests(request):
 
         return redirect("tutor_requests")
 
+
+    # Determine active tab from URL
+    allowed_tabs = ['pending', 'not_started', 'in_progress', 'completed']
+
+    tab = request.GET.get('tab', 'pending')
+
+    if tab not in allowed_tabs:
+        tab = 'pending'
     
     # 1. Querysets
     pending_requests = TutorRequest.objects.filter(
@@ -806,7 +790,7 @@ def tutor_requests(request):
     started_paginator = Paginator(started_requests, 3)
     completed_paginator = Paginator(completed_requests, 3)  
 
-    tab = request.GET.get('tab', 'pending')
+    # tab = request.GET.get('tab', 'pending')
     page_number = request.GET.get('page', 1)
 
     page_obj_pending = pending_paginator.get_page(page_number if tab == 'pending' else 1)
@@ -839,6 +823,8 @@ def tutor_requests(request):
         'search_not_started_count': search_not_started_count,
         'search_in_progress_count': search_in_progress_count,
         'search_completed_count': search_completed_count,
+
+        'active_tab': tab,
     }
 
     # 6. AJAX request
@@ -873,7 +859,72 @@ def tutor_requests(request):
     return render(request, 'students/tutor-management/tutor-requests.html', context)
 
 def my_tutors(request):
-    tutors = TutorProfile.objects.filter(verification_status=1).all()
+    student = request.user.student_profile
+    # tutors = TutorProfile.objects.filter(
+    #     teaching_subjects__student_requests__student=student,
+    #     teaching_subjects__student_requests__status__in=[
+    #         'accepted',
+    #         'in_progress',
+    #         'completed'
+    #     ],
+    #     verification_status=TutorProfile.VerificationStatus.VERIFIED
+    # ).distinct()
+    
+   
+    ALLOWED_STATUSES = ['accepted', 'in_progress', 'completed']
+    tutors = (
+        TutorProfile.objects.filter(
+            teaching_subjects__student_requests__student=student,
+            teaching_subjects__student_requests__status__in=ALLOWED_STATUSES,
+            verification_status=TutorProfile.VerificationStatus.VERIFIED
+        )
+        .prefetch_related(
+            # 1. Prefetch only the subjects where THIS student has accepted/in_progress/completed requests
+            Prefetch(
+                'teaching_subjects',
+                queryset=(
+                    TutorTeaching.objects.filter(
+                        student_requests__student=student,
+                        student_requests__status__in=ALLOWED_STATUSES
+                    )
+                    .select_related('grade_subject') # Add '__grade', '__subject' if those are FKs
+                    .distinct()
+                ),
+                to_attr='student_enrolled_subjects'
+            ),
+            # 2. Prefetch the specific student requests (status, duration, booked timeslot) for those subjects
+            Prefetch(
+                'student_enrolled_subjects__student_requests',
+                queryset=(
+                    TutorRequest.objects.filter(
+                        student=student,
+                        status__in=ALLOWED_STATUSES
+                    )
+                    .select_related('availability')
+                    .order_by('-updated_at')
+                ),
+                to_attr='matched_requests'
+            ),
+            # 3. Prefetch ALL active subjects, fees & study timeslots taught by this tutor
+            Prefetch(
+                'teaching_subjects',
+                queryset=(
+                    TutorTeaching.objects.filter(is_active=True)
+                    .select_related('grade_subject')
+                    .prefetch_related(
+                        Prefetch(
+                            'availabilities',
+                            queryset=TutorAvailability.objects.filter(is_active=True)
+                        )
+                    )
+                ),
+                to_attr='all_active_teachings'
+            )
+        )
+        .distinct()
+    )
+
+
     paginator = Paginator(tutors, 5)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -886,81 +937,57 @@ def my_tutors(request):
         context
     )
 
+def my_tutor_details(request, id):
+    student = request.user.student_profile
+    ALLOWED_STATUSES = ['accepted', 'in_progress', 'completed']
 
-# my profile
-# def my_student_profile(request):
-#     student = request.user.student_profile
-#     if request.method=="POST": 
-#         # personal  
-#         student.full_name = request.POST.get('full_name')
-#         student.gender = request.POST.get('gender')
-#         student.phone = request.POST.get('phone')
-#         student.date_of_birth = request.POST.get('dob') 
-#         if "profile_picture" in request.FILES:
-#             student.profile_picture = request.FILES["profile_picture"]          
-        
-#         #  Location
-#         region_id = request.POST.get("region")
-#         district_id = request.POST.get("district")
-#         city_id = request.POST.get("city")
-#         address = request.POST.get("address")
-#         latitude = request.POST.get("latitude")
-#         longitude = request.POST.get("longitude")         
+    # Ensure the student actually has an accepted, in_progress, or completed request with this tutor
+    tutor = get_object_or_404(
+        TutorProfile.objects.filter(
+            teaching_subjects__student_requests__student=student,
+            teaching_subjects__student_requests__status__in=ALLOWED_STATUSES
+        ).distinct(),
+        id=id
+    )
 
-#         # If location already exists, update it
-#         if student.location:
-#             location = student.location
-#             location.region_id = region_id
-#             location.district_id = district_id
-#             location.city_id = city_id
-#             location.address = address
-#             location.latitude = latitude or None
-#             location.longitude = longitude or None
-#             location.save()
+    # 1. Fetch all accepted, in_progress, and completed requests between this student & tutor
+    student_bookings = (
+        TutorRequest.objects
+        .filter(
+            student=student,
+            tutor_teaching__tutor=tutor,
+            status__in=ALLOWED_STATUSES
+        )
+        .select_related(
+            'tutor_teaching__grade_subject', # Add '__grade', '__subject' if those are FKs
+            'availability'
+        )
+        .order_by('-updated_at')
+    )
 
-#         # Otherwise create a new location
-#         else:
+    # 2. Fetch all active subjects, fees, and timeslots taught by this tutor
+    all_teachings = (
+        TutorTeaching.objects
+        .filter(tutor=tutor, is_active=True)
+        .select_related('grade_subject')
+        .prefetch_related(
+            Prefetch(
+                'availabilities',
+                queryset=TutorAvailability.objects.filter(is_active=True)
+            )
+        )
+    )
 
-#             location = Location.objects.create(
-#                 region_id=region_id,
-#                 district_id=district_id,
-#                 city_id=city_id,
-#                 address=address,
-#                 latitude=latitude or None,
-#                 longitude=longitude or None
-#             )
-
-#             student.location = location
-        
-#         # About        
-#         student.description = request.POST.get("description") 
-
-#         # Academic Information and Final        
-#         student.education_level = request.POST.get('education_level')
-#         student.grade = Grade.objects.get(id=request.POST.get('grade'))
-#         student.school_college = request.POST.get('school_college')
-#         student.profile_completed_at= timezone.now()           
-#         student.save()
-
-#         messages.success(request, "Profile updated successfully!")
-#         return redirect('my_student_profile')
-        
-#     regions=Region.objects.all();
-#     grades=Grade.objects.all();
-#     return render(
-#         request,
-#         "students/my-profile/my-profile.html",
-#         {
-#             "student": student,
-#             "regions": regions,
-#             "grades": grades
-#         }
-#     )
-
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.utils import timezone
+    context = {
+        'tutor': tutor,
+        'student_bookings': student_bookings,
+        'all_teachings': all_teachings,
+    }
+    
+    return render(
+            request,
+            'students/my-learnings/my-tutor-details.html', context
+        )
 
 def my_student_profile(request):
     student = request.user.student_profile

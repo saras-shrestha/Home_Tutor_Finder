@@ -43,6 +43,8 @@
     <link rel="stylesheet" href="{% static 'assets/students/css/styles.css' %}">
     <!--Profile Progress Bar-->
     <link rel="stylesheet" href="{% static 'assets/tutors/css/styles.css' %}">
+    <!--Custom nabvar for managing gap in mobile view-->
+    <link rel="stylesheet" href="{% static 'assets/css/custom-navbar.css' %}">
     <!-- for location-->
     {% block location_css %}
     {% endblock %}
@@ -218,7 +220,7 @@
                                 </a>
                                 <ul class="show-notification profile-notification">                                    
                                     <li class="waves-effect waves-light">
-                                        <a href="{% url 'student_profile' %}">
+                                        <a href="{% url 'my_student_profile' %}">
                                             <i class="ti-user"></i> Profile
                                         </a>
                                     </li>                                    
@@ -291,6 +293,7 @@
     
     <!--Extra JS-->
     {% block extra_js %}
+    
     {% endblock %}
     <!--Script for location-->
     {% block location_js %}    

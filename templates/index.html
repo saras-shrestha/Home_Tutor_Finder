@@ -253,16 +253,145 @@
                     gap: 12px !important;
                 }
             }
+
+         /* About Section */
+        .about-section {
+        padding: 90px 20px;
+        background-color: #f8fafc;
+        scroll-margin-top: 80px; /* Prevents sticky navbar from overlapping the heading */
+        }
+
+        .about-container {
+        max-width: 1140px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 50px;
+        align-items: center;
+        }
+
+        
+        .about-title {
+        font-size: 2.2rem;
+        line-height: 1.25;
+        color: #0f172a;
+        margin-bottom: 18px;
+        font-weight: 700;
+        }
+
+        .about-description {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #475569;
+        margin-bottom: 24px;
+        }
+
+        .about-checklist {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 32px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        }
+
+        .about-checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 0.98rem;
+        color: #334155;
+        line-height: 1.5;
+        }
+
+    
+        /* Right Grid Cards */
+        .about-cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        }
+
+        .about-card {
+        background: #ffffff;
+        padding: 26px 22px;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .about-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .card-icon {
+        font-size: 1.75rem;
+        margin-bottom: 12px;
+        }
+
+        .about-card h3 {
+        font-size: 1.1rem;
+        color: #0f172a;
+        margin-bottom: 8px;
+        font-weight: 600;
+        }
+
+        .about-card p {
+        font-size: 0.92rem;
+        line-height: 1.55;
+        color: #64748b;
+        margin: 0;
+        }
+
+        .about-card.highlight-stat {
+        background: linear-gradient(135deg, #2563eb, #6366f1);
+        color: #ffffff;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        }
+
+        .about-card.highlight-stat h3 {
+        font-size: 2rem;
+        color: #ffffff;
+        margin-bottom: 6px;
+        }
+
+        .about-card.highlight-stat p {
+        color: #e0e7ff;
+        }
+
+        /* Responsive Layout for Tablets & Mobile */
+        @media (max-width: 900px) {
+        .about-container {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .about-title {
+            font-size: 1.85rem;
+        }
+        }
+
+        @media (max-width: 520px) {
+        .about-cards {
+            grid-template-columns: 1fr;
+        }
+        }
+        
     </style>
     </head>
 
 
-    <body>
+    <body data-initial-section="{{ section|default:'' }}">
         <!-- NAVBAR -->
 
         <nav class="navbar">
 
-            <a href="/" class="logo">
+            <a href="{% url 'home-page' %}" class="logo">
 
                 <span class="logo-icon">
                     🎓
@@ -277,19 +406,19 @@
 
             <div class="nav-links" id="navLinks">
 
-                <a href="#">
+                <a href="{% url 'home-page' %}" data-section="hero">
                     Home
                 </a>
 
-                <a href="#tutors">
+                <a href="{% url 'find-your-tutors' %}" data-section="findtutors">
                     Find Tutors
                 </a>
 
-                <a href="#how-it-works">
+                <a href="{% url 'how-it-works' %}" data-section="how-it-works">
                     How It Works
                 </a>
 
-                <a href="#about">
+                <a href="{% url 'about' %}" data-section="about">
                     About
                 </a>
 
@@ -317,7 +446,7 @@
 
         <!-- HERO -->
 
-        <section class="hero">
+        <section id="hero" class="hero">
 
             <div class="hero-container">
 
@@ -338,12 +467,11 @@
 
 
                     <div class="hero-buttons">
-
-                        <a href="#search" class="primary-btn">
+                        <a href="{% url 'find-your-tutors' %}" data-section="findtutors" class="primary-btn" style="color: white" onmouseover="this.style.color='white'">
                             Find a Tutor
                         </a>
 
-                        <a href="#" class="secondary-btn">
+                        <a href="{% url 'login' %}" class="secondary-btn">
                             Become a Tutor
                         </a>
 
@@ -351,26 +479,97 @@
 
                 </div>
 
-
                 <div class="hero-image">
                 </div>
-
 
             </div>
 
         </section>
 
 
-        <!--  SEARCH BOX -->
-
+    
+        <!--ABOUT-->
        
 
-
-        <!-- FEATURES -->
-
-        <section class="section" id="about">
-
+        <section id="about" class="section">
             <div class="section-header">
+
+                <h2>About Us</h2>
+                <p>
+                    We bring trusted, verified tutors straight to your home.
+                </p>
+
+            </div>
+            
+            <div class="about-container">
+                
+                <!-- Left Column: Story & Mission -->
+                <div class="about-content">
+                
+                <h2 class="about-title">Connecting Curious Minds with the Right Tutor</h2>
+                <p class="about-description">
+                    At <strong>ADME | Home Tutor Finder</strong>, we believe every student learns differently—and the right tutor can unlock their full potential. Whether you're preparing for exams, mastering a tough subject, or learning a new skill from scratch, we make finding trusted educators simple and personal.
+                </p>
+
+                <ul class="about-checklist">
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <span><strong>Verified & Background-Checked:</strong> Every tutor is carefully screened for qualifications, experience, and reliability.</span>
+                    </li>
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <span><strong>Neighborhood Matching:</strong> Find qualified tutors near your location for convenient, punctual home visits.</span>
+                    </li>
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <span><strong>1-on-1 Home Comfort:</strong> Distraction-free, personal attention tailored to your child's school syllabus and pace.</span>
+                    </li>
+                    
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <span><strong>Transparent Pricing:</strong> Compare profiles, reviews, and rates with zero hidden fees.</span>
+                    </li>
+                    
+                </ul>
+
+                <div class="about-cta">
+                    <a href="{% url 'find-your-tutors' %}" data-section="findtutors" class="primary-btn" style="color: white" onmouseover="this.style.color='white'">
+                        Find a Tutor
+                    </a>
+                </div>
+                </div>
+
+                <!-- Right Column: Feature & Stat Cards -->
+                <div class="about-cards">
+                <div class="about-card">
+                    <div class="card-icon">🏠</div>
+                    <h3>Doorstep Convenience</h3>
+                    <p>Skip the daily commute—qualified tutors travel directly to your home at your preferred time.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Safe & Vetted Tutors</h3>
+                    <p>Profiles and credentials are verified so parents can invite tutors home with complete peace of mind.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="card-icon">📚</div>
+                    <h3>Focused 1-on-1 Care</h3>
+                    <p>Direct face-to-face mentoring to strengthen fundamentals, homework habits, and exam confidence.</p>
+                </div>
+
+                <div class="about-card highlight-stat">
+                    <h3>100%</h3>
+                    <p>Dedicated to safe, personalized in-home learning for every student.</p>
+                </div>
+                </div>
+
+            </div>
+
+            <!--why choose-->
+
+            <div class="section-header mt-5">
 
                 <h2>
                     Why Choose ADME?
@@ -440,14 +639,13 @@
 
                 </div>
 
-
             </div>
 
         </section>
 
 
         <!--  FIND TUTORS -->
-        <section class="section" id="tutors">
+        <section class="section" id="findtutors">
 
             <div class="section-header">
 
@@ -825,10 +1023,7 @@
                         
                     </div>                                        
 
-                </div>
-
-
-            
+                </div>            
 
         </section>
 
@@ -925,7 +1120,7 @@
                 the right tutor today.
             </p>
 
-            <a href="#search" class="cta-btn">
+            <a href="{% url 'find-your-tutors' %}" data-section="findtutors" class="cta-btn">
                 Find a Tutor
             </a>
 
@@ -955,20 +1150,20 @@
 
                 <div class="footer-links">
 
-                    <a href="#">
+                    <a href="{% url 'home-page'%}" data-section="hero">
                         Home
                     </a>
 
-                    <a href="#tutors">
-                        Tutors
+                    <a href="{% url 'find-your-tutors' %}" data-section="findtutors">
+                        Find Tutors
                     </a>
 
-                    <a href="#how-it-works">
+                    <a href="{% url 'how-it-works'%}" data-section="how-it-works">
                         How It Works
                     </a>
 
-                    <a href="#">
-                        Contact
+                    <a href="{% url 'about'%}" data-section="about">
+                        About
                     </a>
 
                 </div>
@@ -987,6 +1182,39 @@
 
 
         <!-- JAVASCRIPT -->
+         <script>
+           document.addEventListener("DOMContentLoaded", () => {
+  const sectionLinks = document.querySelectorAll("a[data-section]");
+  const initialSection = document.body.dataset.initialSection;
+
+  if (initialSection) {
+    const target = document.getElementById(initialSection);
+    if (target) target.scrollIntoView({ behavior: "smooth" });
+  }
+
+  sectionLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const targetId = link.dataset.section;
+      const targetElement = document.getElementById(targetId);
+
+      if (targetElement) {
+        e.preventDefault();
+        
+        // 1. Update URL bar immediately
+        const newUrl = link.getAttribute("href");
+        window.history.pushState({ section: targetId }, "", newUrl);
+
+        // 2. Smooth scroll
+        if (targetId === "hero") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          targetElement.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    });
+  });
+});
+        </script>
 
         <script src="{% static 'js/scripts.js' %}">           
 
@@ -1189,75 +1417,19 @@
                                     </div>
 
                                     <div>
-                                        <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm">
                                             View Profile
                                         </a>
 
-                                        <button type="button" class="btn btn-primary btn-sm" onclick="sendRequest(this)">
+                                        <a href="{% url 'login' %}" class="btn btn-primary btn-sm" onclick="sendRequest(this)">
                                             Send Request
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Collapsible Send Request Form -->
-                        <div class="d-none send-request">
-                            <hr/>
-                            <div class="d-flex gap-3">
-                                <div class="flex-grow-1 w-100">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div>
-                                            <h4 class="font-weight-bold mb-1">Send Tutor Request</h4>
-                                            <p class="text-muted mb-0">
-                                                Select a daily time slot and include a message about your learning requirements.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <form method="POST" class="request-form" action="{% url 'send_tutor_request' %}">
-                                            {% csrf_token %}
-
-                                            <input type="hidden" name="tutor_teaching_id" value="${tutor.id}">
-                                            <input type="hidden" name="search" value="1">
-
-                                            <!-- Select Time Slot -->
-                                            <div class="mb-3 w-100">
-                                                <label class="form-label">
-                                                    Select Daily Time Slot <span class="text-danger">*</span>
-                                                </label>
-                                                <select name="availability_id" class="form-control w-100" required>
-                                                    <option value="">-- Choose a time slot --</option>
-                                                    ${slotSelectOptions}
-                                                </select>
-                                            </div>
-
-                                            <div class="mb-3 w-100">
-                                                <label class="form-label">
-                                                    Message <span class="text-muted">(Optional)</span>
-                                                </label>
-                                                <textarea
-                                                    name="message"
-                                                    class="form-control w-100"
-                                                    rows="4"
-                                                    placeholder="Write a message to the tutor..."
-                                                ></textarea>
-
-                                                <div class="d-flex justify-content-center mt-3">
-                                                    <button type="submit" class="btn btn-primary py-2 mr-1">
-                                                        Send Request
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-secondary ml-1" onclick="cancelAndClear(this)">
-                                                        Cancel
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                       
                     </div>
                     `;
                 }).join('');
@@ -1273,27 +1445,6 @@
         });
     });
 
-    function sendRequest(button) {
-        const card = button.closest('.tutor-card');
-        if (!card) return;
-        const requestSection = card.querySelector('.send-request');
-        if (requestSection) {
-            requestSection.classList.remove('d-none');
-        }
-    }
-
-    function cancelAndClear(button) {
-        const card = button.closest('.tutor-card');
-        if (!card) return;
-        const requestSection = card.querySelector('.send-request');
-        const form = card.querySelector('.request-form');
-        if (form) {
-            form.reset();
-        }
-        if (requestSection) {
-            requestSection.classList.add('d-none');
-        }
-    }
 </script>
 <!--Tutor Search Result Display Ends-->
 

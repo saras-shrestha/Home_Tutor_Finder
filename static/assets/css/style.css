@@ -5898,45 +5898,50 @@ table tbody .border-bottom-info td {
 
 .text-dropbox {
   color: #3380FF; }
-
+/* blue */
 .bg-c-blue {
-  background: #448aff; }
+  background: #4F46E5; }
 
 .text-c-blue {
   color: #448aff; }
 
+/* red */
 .bg-c-red {
   background: #ff5252; }
 
 .text-c-red {
   color: #ff5252; }
 
+/* green */
 .bg-c-green {
   background: #11c15b; }
 
 .text-c-green {
   color: #11c15b; }
 
+/* yellow */
 .bg-c-yellow {
   background: #ffe100; }
 
 .text-c-yellow {
   color: #ffe100; }
 
+/* orange */
 .bg-c-orenge {
   background: #FE8A7D; }
 
 .text-c-orenge {
   color: #FE8A7D; }
 
+/* lite-green */
 .bg-c-lite-green {
   background: #69CEC6; }
 
 .text-c-lite-green {
   color: #69CEC6; }
-
+/* purple */
 .bg-c-purple {
-  background: #536dfe; }
+  background: #7c3aed; }
 
 .text-c-purple {
   color: #536dfe; }

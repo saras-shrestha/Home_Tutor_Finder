@@ -1,0 +1,25 @@
+/* Fix mobile sidebar top gap */
+@media only screen and (max-width: 992px) {
+    .pcoded[theme-layout="vertical"][pcoded-device-type="phone"][vertical-nav-type="expanded"] .pcoded-navbar {
+        top: 0 !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* Fix mobile sidebar buttom gap */
+@media screen and (max-width: 992px) {
+    .pcoded-navbar {
+        position: fixed !important;
+        top: 56px !important;
+        bottom: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    .pcoded-navbar .pcoded-inner-navbar {
+        min-height: 100%;
+    }
+}

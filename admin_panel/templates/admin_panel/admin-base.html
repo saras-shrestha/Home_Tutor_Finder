@@ -42,6 +42,35 @@
     <!--Profile Update-->
     <link rel="stylesheet" href="{% static 'assets/students/css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
+    <!--Custom nabvar for managing gap in mobile view-->
+    <link rel="stylesheet" href="{% static 'assets/css/custom-navbar.css' %}">
+
+    <style>
+        .header-notification > a {
+            position: relative;
+            display: inline-block;
+        }
+
+        .header-notification > a .badge {
+            position: absolute !important;
+            top: 6px !important;
+            right: 3px !important;
+
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+
+            line-height: normal !important;
+            text-align: center;
+            font-size: 10px;
+            border-radius: 50%;
+            z-index: 10;
+        }
+    </style>
 </head>
 
 <body>
@@ -137,7 +166,7 @@
                                 <div class="sidebar_toggle"><a href="javascript:void(0)"><i class="ti-menu"></i></a>
                                 </div>
                             </li>
-                            <li class="header-search">
+                            {% comment %} <li class="header-search">
                                 <div class="main-search morphsearch-search">
                                     <div class="input-group">
                                         <span class="input-group-addon search-close"><i class="ti-close"></i></span>
@@ -145,7 +174,7 @@
                                         <span class="input-group-addon search-btn"><i class="ti-search"></i></span>
                                     </div>
                                 </div>
-                            </li>
+                            </li> {% endcomment %}
                             <li>
                                 <a href="#!" onclick="javascript:toggleFullScreen()" class="waves-effect waves-light">
                                     <i class="ti-fullscreen"></i>
@@ -153,59 +182,90 @@
                             </li>
                         </ul>
                         <ul class="nav-right">
+                            <!--Notification-->
                             <li class="header-notification">
+
                                 <a href="#!" class="waves-effect waves-light">
                                     <i class="ti-bell"></i>
-                                    <span class="badge bg-c-red"></span>
+
+                                    {% if unread_count > 0 %}
+                                        <span class="badge bg-c-red">
+                                            {{ unread_count }}
+                                        </span>
+                                    {% endif %}
                                 </a>
+
                                 <ul class="show-notification">
+
                                     <li>
                                         <h6>Notifications</h6>
-                                        <label class="label label-danger">New</label>
+                                        {% if unread_count > 0 %}
+                                            <a href="#!" id="mark-all-read">
+                                                Mark all as read
+                                            </a>
+
+                                            <label class="label label-danger" id="notification-label">
+                                                {{ unread_count }} New
+                                            </label>
+                                        {% endif %}
+
                                     </li>
-                                    <li class="waves-effect waves-light">
-                                        <div class="media">
-                                            <img class="d-flex align-self-center img-radius"
-                                                src="assets/images/avatar-2.jpg" alt="Generic placeholder image">
-                                            <div class="media-body">
-                                                <h5 class="notification-user">John Doe</h5>
-                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer
-                                                    elit.</p>
-                                                <span class="notification-time">30 minutes ago</span>
+
+                                    {% for notification in recent_notifications %}
+
+                                        <li class="waves-effect waves-light
+                                            {% if not notification.is_read %}unread-notification{% endif %}">
+
+                                            <a href="{{ notification.link|default:'#' }}"
+                                            class="notification-link">
+
+                                                <div class="media">
+
+                                                    <div class="media-body">
+
+                                                        <h5 class="notification-user">
+                                                            {{ notification.title }}
+                                                        </h5>
+
+                                                        <p class="notification-msg">
+                                                            {{ notification.message }}
+                                                        </p>
+
+                                                        <span class="notification-time">
+                                                            {{ notification.created_at|timesince }} ago
+                                                        </span>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </a>
+
+                                        </li>
+
+                                    {% empty %}
+
+                                        <li>
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <p class="notification-msg">
+                                                        No notifications yet.
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </li>
-                                    <li class="waves-effect waves-light">
-                                        <div class="media">
-                                            <img class="d-flex align-self-center img-radius"
-                                                src="assets/images/avatar-4.jpg" alt="Generic placeholder image">
-                                            <div class="media-body">
-                                                <h5 class="notification-user">Joseph William</h5>
-                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer
-                                                    elit.</p>
-                                                <span class="notification-time">30 minutes ago</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="waves-effect waves-light">
-                                        <div class="media">
-                                            <img class="d-flex align-self-center img-radius"
-                                                src="assets/images/avatar-3.jpg" alt="Generic placeholder image">
-                                            <div class="media-body">
-                                                <h5 class="notification-user">Sara Soudein</h5>
-                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer
-                                                    elit.</p>
-                                                <span class="notification-time">30 minutes ago</span>
-                                            </div>
-                                        </div>
-                                    </li>
+                                        </li>
+
+                                    {% endfor %}
+
                                 </ul>
+
                             </li>
+
                             <li class="user-profile header-notification">
                                 <a href="#!" class="waves-effect waves-light">
-                                    {% if request.user.tutor_profile.profile_picture or request.user.tutor_profile.full_name %}
-                                    <img src="{{request.user.profile_picture.url}}" class="img-radius" alt="User-Profile-Image">
-                                    <span>{{request.user.tutor_profile.full_name}}</span>
+                                    {% if request.user.admin_profile.profile_picture or request.user.admin_profile.full_name %}
+                                    <img src="{{request.user.admin_profile.profile_picture.url}}" class="img-radius" alt="User-Profile-Image">
+                                    <span>{{request.user.admin_profile.full_name}}</span>
                                 {% else %}
                                     <img src="{% static 'assets/images/profile/profile.png' %}" class="img-radius" alt="User-Profile-Image">
                                     <span>{{request.user.name}}</span>
@@ -214,7 +274,7 @@
                                 </a>
                                 <ul class="show-notification profile-notification">
                                     <li class="waves-effect waves-light">
-                                        <a href="{% url 'student_profile' %}">
+                                        <a href="{% url 'my_admin_profile' %}">
                                             <i class="ti-user"></i> Profile
                                         </a>
                                     </li>                                    
@@ -284,7 +344,113 @@
     <!--Extra JS-->
     {% block extra_js %}
     {% endblock %}
+    <script>
+    $(document).ready(function () {
 
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(
+                            cookie.substring(name.length + 1)
+                        );
+                        break;
+                    }
+                }
+            }
+
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+
+        // Mark individual notification as read
+        $('.notification-link').on('click', function (e) {
+
+            e.preventDefault();
+
+            const link = $(this).attr('href');
+            const notificationItem = $(this).closest('li');
+            const notificationId = $(this).data('id');
+
+            if (!notificationId) {
+                window.location.href = link;
+                return;
+            }
+
+            $.ajax({
+                url: `/notifications/read/${notificationId}/`,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+
+                success: function (response) {
+
+                    if (response.success) {
+
+                        notificationItem.removeClass(
+                            'unread-notification'
+                        );
+
+                        $('.header-notification .badge')
+                            .text(response.unread_count);
+
+                        if (response.unread_count === 0) {
+                            $('.header-notification .badge').hide();
+                            $('#notification-label').hide();
+                            $('#mark-all-read').hide();
+                        }
+                    }
+
+                    if (link && link !== '#') {
+                        window.location.href = link;
+                    }
+                }
+            });
+
+        });
+
+
+        // Mark all notifications as read
+        $('#mark-all-read').on('click', function (e) {
+
+            e.preventDefault();
+
+            $.ajax({
+                url: '/notifications/read-all/',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+
+                success: function (response) {
+
+                    if (response.success) {
+
+                        $('.unread-notification').removeClass(
+                            'unread-notification'
+                        );
+
+                        $('.header-notification .badge').hide();
+                        $('#notification-label').hide();
+                        $('#mark-all-read').hide();
+                    }
+                }
+            });
+
+        });
+
+    });  
+    </script>
 </body>
 
 </html>

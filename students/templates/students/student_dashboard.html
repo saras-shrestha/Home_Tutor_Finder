@@ -118,7 +118,7 @@
                                     <div class="card-footer bg-c-red">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"><a href="{% url 'students_list' %}" class="more-info-link"> More Info</i> <i class="bi bi-arrow-right"></i></a></p>
+                                                <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=pending" class="more-info-link"> More Info</i> <i class="bi bi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
                                     </div>
@@ -141,7 +141,7 @@
                                     <div class="card-footer bg-c-purple">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"> <a href="{% url 'students_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                                <p class="text-white m-b-0"> <a href="{% url 'tutor_requests' %}?tab=not_started" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
 
@@ -165,7 +165,7 @@
                                     <div class="card-footer bg-c-green">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"><a href="{% url 'tutors_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                                <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=in_progress" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
                                     </div>
@@ -178,7 +178,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-8">
                                                 <h4 class="text-c-green">500</h4>
-                                                <h6 class="text-muted m-b-0">Completed Sessions</h6>
+                                                <h6 class="text-muted m-b-0">Completed Requests</h6>
                                             </div>
                                             <div class="col-4 text-right">
                                                 <i class="bi bi-check-circle text-c-green"></i>
@@ -188,7 +188,7 @@
                                     <div class="card-footer bg-c-green">
                                         <div class="row align-items-center">
                                             <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"><a href="{% url 'students_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                                <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=completed" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
                                     </div>

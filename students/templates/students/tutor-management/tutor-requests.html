@@ -273,7 +273,7 @@
                                                     <ul class="nav nav-tabs" id="acceptedTabs" role="tablist">
                                                         
                                                         <li class="nav-item">
-                                                            <a class="nav-link active"
+                                                            <a class="nav-link {% if active_tab == 'pending' %}active{% endif %}"
                                                             id="pending-tab"
                                                             data-toggle="tab"
                                                             href="#pending"
@@ -288,7 +288,7 @@
                                                         </li>   
 
                                                         <li class="nav-item">
-                                                            <a class="nav-link"
+                                                            <a class="nav-link {% if active_tab == 'not_started' %}active{% endif %}" 
                                                             id="not-started-tab"
                                                             data-toggle="tab"
                                                             href="#not-started"
@@ -304,7 +304,7 @@
                                                         </li>
 
                                                         <li class="nav-item">
-                                                            <a class="nav-link"
+                                                            <a class="nav-link {% if active_tab == 'in_progress' %}active{% endif %}"
                                                             id="in-progress-tab"
                                                             data-toggle="tab"
                                                             href="#in-progress"
@@ -320,7 +320,7 @@
                                                         </li>
 
                                                         <li class="nav-item">
-                                                            <a class="nav-link"
+                                                            <a class="nav-link {% if active_tab == 'completed' %}active{% endif %}"
                                                             id="completed-tab"
                                                             data-toggle="tab"
                                                             href="#completed"
@@ -346,7 +346,7 @@
                                                     <div class="tab-content" id="acceptedTabsContent">
 
                                                         <!-- PENDING TAB -->
-                                                        <div class="tab-pane fade show active"
+                                                        <div class="tab-pane fade {% if active_tab == 'pending' %}show active{% endif %}"
                                                             id="pending"
                                                             role="tabpanel">
 
@@ -357,7 +357,7 @@
                                                         </div>
 
                                                         <!-- NOT STARTED TAB -->
-                                                        <div class="tab-pane fade"
+                                                        <div class="tab-pane fade {% if active_tab == 'not_started' %}show active{% endif %}"
                                                             id="not-started"
                                                             role="tabpanel">
 
@@ -368,7 +368,7 @@
                                                         </div>
 
                                                         <!-- IN PROGRESS TAB -->
-                                                        <div class="tab-pane fade"
+                                                        <div class="tab-pane fade {% if active_tab == 'in_progress' %}show active{% endif %}"
                                                             id="in-progress"
                                                             role="tabpanel">
 
@@ -381,7 +381,7 @@
                                                         </div>  
 
                                                         <!-- COMPLETED TAB -->
-                                                        <div class="tab-pane fade"
+                                                        <div class="tab-pane fade {% if active_tab == 'completed' %}show active{% endif %}"
                                                             id="completed"
                                                             role="tabpanel">
 
@@ -559,7 +559,6 @@ $(document).ready(function () {
 
     });
 
-
     // AJAX Pagination
     $(document).on('click', '.ajax-page', function (e) {
 
@@ -592,6 +591,53 @@ $(document).ready(function () {
         loadTeachingTable(tab, page, form.length ? form : null);
 
     });
+
+    // Update URL whenever a tab is changed
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+
+        let tabId = $(e.target).attr('id');
+
+        let tabMap = {
+            'pending-tab': 'pending',
+            'not-started-tab': 'not_started',
+            'in-progress-tab': 'in_progress',
+            'completed-tab': 'completed'
+        };
+
+        let tab = tabMap[tabId];
+
+        if (!tab) return;
+
+        const url = new URL(window.location.href);
+
+        url.searchParams.set('tab', tab);
+        url.searchParams.delete('page');
+
+        window.history.pushState({}, '', url);
+
+    });
+
+    //When the student uses the browser's Back or Forward button, activate the tab corresponding to the URL.
+    window.addEventListener('popstate', function () {
+
+        const url = new URL(window.location.href);
+        const tab = url.searchParams.get('tab') || 'pending';
+
+        const tabMap = {
+            'pending': '#pending-tab',
+            'not_started': '#not-started-tab',
+            'in_progress': '#in-progress-tab',
+            'completed': '#completed-tab'
+        };
+
+        const target = tabMap[tab];
+
+        if (target) {
+            $(target).tab('show');
+        }
+
+    });
+
 
 });
 </script>

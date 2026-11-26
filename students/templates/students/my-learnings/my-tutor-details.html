@@ -1,0 +1,362 @@
+{% extends 'students/student-base.html' %}
+    {% load static %}
+    {% block content %}
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <!-- Main-body start -->
+
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <!-- Page-body start -->
+                    <div class="page-body">
+                        <div class="row">
+
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h5>My Tutor</h5>
+                                        <p class="text-muted mb-0">
+                                            My tutor information.
+                                        </p>
+                                    </div>
+
+                                    <div class="card-block"> 
+                                        
+                                        <div class="container-fluid">
+
+                                            <div class="profile-card">
+                                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                                    <h5 class="fw-bold mb-0">Tutor Information</h5>
+                                                    {% if tutor.verification_status == 1 %}
+                                                        <span class="badge bg-success">Verified</span>
+                                                    {% elif tutor.verification_status == 2 %}
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning text-dark">Pending</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="row g-0">
+                                                    <!-- Profile Sidebar -->
+                                                    <aside class="col-12 profile-sidebar text-center d-flex flex-column justify-content-center align-items-center">
+                                                        <div>
+                                                            {% if tutor.profile_picture %}
+                                                                <img id="profilePreview" src="{{ tutor.profile_picture.url }}" alt="Profile Picture" class="profile-img">
+                                                            {% else %}
+                                                                <img id="profilePreview" src="{% static 'assets/images/profile/profile.png' %}" alt="Profile Picture" class="profile-img">
+                                                            {% endif %}
+                                                            <h5 class="profile-name">{{ tutor.full_name }}</h5>
+                                                        </div>                                               
+                                                        <div class="text-justify">
+                                                            <span class="info-label">About Tutor:</span>
+                                                            
+                                                            <div class="info-value">
+                                                                {{tutor.description|default:"No description provided."}}
+                                                            </div>
+                                                        </div>
+
+                                                    </aside>
+
+                                                    <!-- User Profile Details -->
+                                                    <main class="col-12">
+
+                                                        <!-- Personal Information -->
+                                                        <section class="section">
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                
+                                                            <div class="section-title">Personal Information</div>
+                                                                <div>
+                                                                    <span class="info-label">Gender:</span>
+                                                                    <span class="info-value">
+                                                                        {{ tutor.get_gender_display }}
+                                                                    </span>
+                                                                </div> 
+                                                                <div>
+                                                                    <span class="info-label">Phone number:</span>
+                                                                    <span class="info-value">
+                                                                        {{ tutor.phone }}
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="info-label">Email:</span>
+                                                                    <span class="info-value">{{ tutor.user.email }}</span>
+                                                                </div>
+                                                                 
+                                                                <div>
+                                                                    <span class="info-label">Address:</span>
+                                                                    <i class="bi bi-geo-alt" style="font-size: 15px;"></i>
+                                                                    <span class="info-value">{{ tutor.address }} </span>
+                                                                </div>  
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="section-title">Qualifications</div>
+                                                                <div class="setting-row">
+                                                                    {% for tutor_qualification in tutor.qualifications.all %}
+                                                                    <div class="setting-item">
+                                                                        <span class="info-label">Highest Degree:</span>
+                                                                        <span class="info-value">                                                                
+                                                                            {{ tutor_qualification.highest_qualifiction }}                                                               
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <div class="setting-item">
+                                                                        <span class="info-label">Study Field:</span>
+                                                                        <span class="info-value">{{ tutor_qualification.study_field }} </span>
+                                                                    </div>
+                                                                    <div class="setting-item">
+                                                                        <span class="info-label">Degree Name:</span>
+                                                                        <span class="info-value">{{ tutor_qualification.degree_name }} </span>
+                                                                    </div>
+                                                                    <div class="setting-item">
+                                                                        <span class="info-label">College:</span>
+                                                                        <span class="info-value">{{ tutor_qualification.college }} </span>
+                                                                    </div>
+                                                                    <div class="setting-item">
+                                                                        <span class="info-label">University:</span>
+                                                                        <span class="info-value">{{ tutor_qualification.university }} </span>
+                                                                    </div>
+                                                                    <div class="setting-item">
+                                                                        <span class="info-label">Country:</span>
+                                                                        <span class="info-value">{{ tutor_qualification.country }} </span>
+                                                                    </div>
+                                                                    <div class="setting-item">
+                                                                        <span class="info-label">GPA:</span>
+                                                                        <span class="info-value">{{ tutor_qualification.gpa }} </span>
+                                                                    </div>
+                                                                    {% endfor %}                                                 
+                                                                </div>
+                                                            </div> 
+                                                        </div>
+                                           
+                                                        </section>    
+                                                        
+                                                        <!-- Uploaded Documents -->
+                                                        <section class="section">
+                                                            <div class="section-title">Uploaded Documents</div>
+
+                                                            <div class="setting-row">
+                                                                
+                                                                <div class="col-12 border rounded p-3 mb-3
+                                                                            d-flex justify-content-between
+                                                                            align-items-center gap-3">
+                                                                    <div>
+                                                                        <div class="fw-semibold">
+                                                                            Professional Certificate
+                                                                        </div>
+                                                                        <small class="text-muted">
+                                                                            Uploaded certificate
+                                                                        </small>
+                                                                    </div>
+
+                                                                    {% if tutor.certificate %}
+                                                                        <a href="{{ tutor.certificate.url }}"
+                                                                        target="_blank"
+                                                                        rel="noopener"
+                                                                        class="btn btn-sm btn-outline-primary">
+                                                                            View
+                                                                        </a>
+                                                                    {% else %}
+                                                                        <span class="text-muted small">
+                                                                            Not uploaded
+                                                                        </span>
+                                                                    {% endif %}
+                                                                </div>
+
+                                                                <div class="col-12 border rounded p-3
+                                                                            d-flex justify-content-between
+                                                                            align-items-center gap-3">
+                                                                    <div>
+                                                                        <div class="fw-semibold">CV / Resume</div>
+                                                                        <small class="text-muted">
+                                                                            Tutor experience document
+                                                                        </small>
+                                                                    </div>
+
+                                                                    {% if tutor.cv %}
+                                                                        <a href="{{ tutor.cv.url }}"
+                                                                        target="_blank"
+                                                                        rel="noopener"
+                                                                        class="btn btn-sm btn-outline-primary">
+                                                                            View
+                                                                        </a>
+                                                                    {% else %}
+                                                                        <span class="text-muted small">
+                                                                            Not uploaded
+                                                                        </span>
+                                                                    {% endif %}
+                                                                </div>
+                                                                                                               
+                                                            </div>
+
+                                                        </section> 
+                                                        
+
+
+                                                    </main>
+                                                    
+                                                </div>
+                                            </div>
+                                            <!--Requested Subject Informations Start-->
+                                            <!--dnf-->
+                                            <!-- Tutor Profile Header -->
+<div class="tutor-header">
+  <h2>{{ tutor.full_name }}</h2>
+  <p>{{ tutor.description }}</p>
+  <p>Phone: {{ tutor.phone }} | Location: {{ tutor.location }} | Experience: {{ tutor.experience }}</p>
+</div>
+
+<hr>
+
+<!-- Section 1: Student's Enrolled Classes (Accepted, In Progress, Completed) -->
+<h3>Your Classes with {{ tutor.full_name }}</h3>
+{% for booking in student_bookings %}
+  <div class="booking-item">
+    <p>
+      <strong>Grade & Subject:</strong> {{ booking.tutor_teaching.grade_subject }} 
+      <span class="badge">{{ booking.get_status_display }}</span>
+    </p>
+    <p>
+      <strong>Fee:</strong> NPR {{ booking.tutor_teaching.fee }} ({{ booking.tutor_teaching.get_fee_type_display }}) | 
+      <strong>Duration:</strong> {{ booking.requested_duration }} {{ booking.requested_duration_unit }}
+    </p>
+    <p>
+      <strong>Booked Study Timeslot:</strong>
+      {% if booking.availability %}
+        {{ booking.availability.start_time|time:"h:i A" }} - {{ booking.availability.end_time|time:"h:i A" }}
+      {% else %}
+        Flexible / Not Set
+      {% endif %}
+    </p>
+  </div>
+{% endfor %}
+
+<hr>
+
+<!-- Section 2: All Subjects & Study Timeslots Taught by This Tutor -->
+<h3>All Subjects & Available Timeslots</h3>
+<ul>
+  {% for teaching in all_teachings %}
+    <li>
+      <strong>{{ teaching.grade_subject }}</strong> — 
+      NPR {{ teaching.fee }} ({{ teaching.get_fee_type_display }})
+      <br>
+      Study Timeslots:
+      {% for slot in teaching.availabilities.all %}
+        <span>{{ slot.start_time|time:"h:i A" }} - {{ slot.end_time|time:"h:i A" }}</span>{% if not forloop.last %}, {% endif %}
+      {% empty %}
+        <span>No active timeslots</span>
+      {% endfor %}
+    </li>
+  {% endfor %}
+</ul>
+
+
+
+
+                                            <!--cvmm-->
+
+
+
+                                            <div class="profile-card">
+                                                <h5>Request Information</h5>                                                                                                       
+                                                <hr> 
+                                                {% for req in active_requests %}
+                                                    <div class="profile-card">
+
+                                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                                            <h6 class="fw-bold mb-0">Status</h6>
+                                                            {% if req.status == "in_progress" %}
+                                                                <span class="badge bg-success">In Progress</span>
+                                                            {% elif req.verification_status == "rejected" %}
+                                                                <span class="badge bg-danger">Rejected</span>
+                                                            {% elif req.verification_status == "accepted" %}
+                                                                <span class="badge bg-success">Accepted</span>
+                                                            {% elif req.verification_status == "cancelled" %}
+                                                                <span class="badge bg-danger">Cancelled</span>
+                                                            {% elif req.verification_status == "completed" %}
+                                                                <span class="badge bg-danger">Completed</span>
+                                                            {% else %}
+                                                                <span class="badge bg-warning text-dark">Pending</span>
+                                                            {% endif %}
+                                                        </div>
+
+                                                        <hr>
+
+                                                        <div class="mb-3">
+                                                            <p>
+                                                                Subject: {{ req.tutor_teaching.grade_subject.subject.name }}
+                                                            <p>
+
+                                                            <p>
+                                                                Grade: {{ req.tutor_teaching.grade_subject.grade.name }}
+                                                            </p>
+
+                                                            <p>
+                                                                Fee: Rs. {{ req.tutor_teaching.fee }}
+                                                                / {{ req.tutor_teaching.get_fee_type_display }}
+                                                            </p>
+                                                            <p>
+                                                                <strong>Message:</strong>
+                                                                {{ req.message }}
+                                                            </p>
+
+                                                            <p>
+                                                                <strong>Request Date:</strong>
+                                                                {{ req.created_at|date:"M d, Y" }}
+                                                            </p>
+
+                                                            <p>
+                                                                <strong>Accepted Date:</strong>
+                                                                {{ req.responded_at|date:"M d, Y" }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}  
+                                            </div>
+                                            <!--Requested Subject information Ends-->   
+                                        </div>                                           
+
+                                    </div>
+
+                                    </div>
+
+                                </div>
+                            </div> 
+
+                        </div>
+                    </div>
+                    <!-- Page-body end -->
+                </div>
+                <!--Style Selector-->
+                <div id="styleSelector"> </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        function tutorRejection(){
+            event.preventDefault(); 
+            document.getElementById('tutor-reject').classList.remove('d-none')
+        }
+        function cancelReject(){            
+            document.getElementById('tutor-reject').classList.add('d-none')
+        }
+        function validateReject() {
+            const reason = document.getElementById("rejection_reason").value.trim();
+
+            if (!reason) {
+                alert("Please enter a reason before rejecting this tutor.");
+                document.getElementById("rejection_reason").focus();
+                return false;
+            }
+
+            return confirm("Are you sure you want to reject this tutor?");
+        }
+    </script>
+    {% endblock content %}
+
+
+
+
+

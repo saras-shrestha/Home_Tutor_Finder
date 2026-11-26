@@ -19,7 +19,7 @@ from django.db import IntegrityError
 from core.models import GradeSubject, Location, Grade
 
 # Create your views here.
-def homePage(request):
+def homePage(request, section=None):
     tutors = TutorTeaching.objects.none()
 
     # Check if user is a logged-in student
@@ -256,6 +256,7 @@ def homePage(request):
         'selected_rating': request.GET.get('rating', ''),
         'selected_start_time': request.GET.get('start_time', ''),
         'selected_end_time': request.GET.get('end_time', ''),
+        'section': section
     }
   
     # AJAX request: return only tutor results
@@ -385,7 +386,7 @@ def user_login(request):
 
 def user_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('home-page')
 
 def password_forgot(request):
     return render(request, 'accounts/forgot_password.html')

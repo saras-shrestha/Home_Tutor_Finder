@@ -123,3 +123,41 @@
 
     </div>
 </nav>
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const navItems = document.querySelectorAll(".pcoded-navbar .pcoded-item li");
+    const currentPath = window.location.pathname;
+
+    function setActiveItem(li) {
+        navItems.forEach((item) => item.classList.remove("active"));
+        li.classList.add("active");
+
+        // If the item is inside a submenu, keep the parent dropdown open and active
+        const parentDropdown = li.closest(".pcoded-hasmenu");
+        if (parentDropdown) {
+            parentDropdown.classList.add("active", "pcoded-trigger");
+        }
+    }
+
+    // 1. Highlight matching link (and open its parent submenu) on page load
+    navItems.forEach((li) => {
+        const link = li.querySelector(":scope > a");
+        if (!link) return;
+
+        const href = link.getAttribute("href");
+        if (href && href !== "#" && href !== "javascript:void(0)" && href === currentPath) {
+            setActiveItem(li);
+        }
+
+        // 2. Highlight on click (skip dropdown parent toggles)
+        link.addEventListener("click", function () {
+            if (href && href !== "#" && href !== "javascript:void(0)") {
+                setActiveItem(li);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

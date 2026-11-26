@@ -20,18 +20,18 @@
                                     <!-- Page Heading -->
                                     <div class="card-header d-flex justify-content-between align-items-center mb-4">
                                         <div>
-                                            <h5>Verified Tutors List</h5>
+                                            <h5>My Tutors</h5>
                                         </div>
 
                                         <span class="badge bg-primary rounded-pill px-3 py-2">
-                                            {{ students.count }} Students
+                                            {{ tutors.count }} Tutors
                                         </span>
                                     </div>
                                         
                                     <div class="card-block">
                                         <div class="container-fluid">
                                             <!-- Search and Filter -->
-                                            <div class="card border-0 shadow-sm mb-4">
+                                            {% comment %} <div class="card border-0 shadow-sm mb-4">
                                                 <div class="card-body">
                                                     <form method="GET" class="row g-3 align-items-end">
 
@@ -57,7 +57,7 @@
 
                                                     </form>
                                                 </div>
-                                            </div>
+                                            </div> {% endcomment %}
 
                                             <!-- Students Table -->
                                             <div class="card border-0 shadow-sm">
@@ -75,18 +75,15 @@
                                                                         <th>
                                                                         Tutors
                                                                         </th>
-                                                                        <th>Qualifications</th>
-                                                                        <th>Submission Date</th>
-                                                                        <th>Verification Status</th>
-                                                                        <th>Account Status</th>
-                                                                        <th></th>
+                                                                        <th>Subjects</th>
+                                                                        <th class="text-center">Action</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {% for tutor in tutors %}                                                    
                                                                     <tr>
-                                                                        <td>{{forloop.counter }}</td>
-                                                                        <td>
+                                                                        <td class="align-middle">{{forloop.counter }}</td>
+                                                                        <td class="align-middle">
                                                                             <div class="d-inline-block align-middle">
                                                                                 <img src="{{ tutor.profile_picture.url }}" alt="user image"
                                                                                     class="img-radius img-40 align-top m-r-15">
@@ -95,33 +92,23 @@
                                                                                 </div>
                                                                             </div>
                                                                         </td>
-                                                                        <td>
-                                                                            {% for tutor_qualification in tutor.qualifications.all %}
-                                                                            <p> {{ tutor_qualification.degree_name }} </p>
-                                                                            {% endfor %}
+                                                                        <td class="align-middle">
+                                                                            <ul>
+                                                                                {% for teaching in tutor.teaching_subjects.student_requests.all %}
+                                                                                    {% if teaching.is_active %}
+                                                                                        <li>
+                                                                                            {{ teaching.grade_subject.grade }} - {{ teaching.grade_subject.subject }}
+                                                                                        </li>
+                                                                                    {% endif %}
+                                                                                {% empty %}
+                                                                                    <li>No subjects listed.</li>
+                                                                                {% endfor %}
+                                                                            </ul>
                                                                         </td>
-                                                                        <td>{{ tutor.profile_completed_at }}</td>
-                                                                        <td>
-                                                                            {% if tutor.verification_status == 0 %}
-                                                                            <p><span class="badge bg-warning text-dark">Pending</span></p>
-                                                                            {% elif tutor.verification_status == 1 %}
-                                                                            <p><span class="badge bg-success">Verified</span></p>
-                                                                            {% elif tutor.verification_status == 2 %}
-                                                                            <p><span class="badge bg-danger">Rejected</span></p>                                                            
-                                                                            {% endif %}
-                                                                        </td>
-                                                                        <td>
-                                                                            {% if tutor.verification_status == 1 and tutor.user.is_active %}
-                                                                            <p><span class="badge bg-success">Active</span></p>
-                                                                            {% elif tutor.verification_status != 1 and tutor.user.is_active %}
-                                                                            <p><span class="badge bg-danger">Inactive</span></p>  
-                                                                            {% elif not tutor.user.is_active %}
-                                                                            <p><span class="badge bg-danger">Suspended</span></p> 
-                                                                            {% endif %}
-                                                                        </td>
-                                                                        <td class="text-right">
+                                                                        
+                                                                        <td class="align-middle text-center">
                                                                             
-                                                                            <a href="{% url 'tutor_info' id=tutor.id %}" class="btn btn-sm btn-primary">
+                                                                            <a href="{% url 'my_tutor_details' id=tutor.id %}" class="btn btn-sm btn-primary">
                                                                                 <i class="bi bi-eye"></i> 
                                                                             </a>
                                                                         </td>

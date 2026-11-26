@@ -44,6 +44,8 @@
     <link rel="stylesheet" href="{% static 'assets/tutors/css/tutor-availability.css' %}">
      <!-- scrollbar.css -->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/jquery.mCustomScrollbar.css' %}">
+    <!--Custom nabvar for managing gap in mobile view-->
+    <link rel="stylesheet" href="{% static 'assets/css/custom-navbar.css' %}">
      
     <!-- for location-->
     {% block location_css %}
@@ -219,24 +221,10 @@
                                     <i class="ti-angle-down"></i>
                                 </a>
                                 <ul class="show-notification profile-notification">
+                                    
                                     <li class="waves-effect waves-light">
-                                        <a href="#!">
-                                            <i class="ti-settings"></i> Settings
-                                        </a>
-                                    </li>
-                                    <li class="waves-effect waves-light">
-                                        <a href="{% url 'tutor_profile' %}">
+                                        <a href="{% url 'my_tutor_profile' %}">
                                             <i class="ti-user"></i> Profile
-                                        </a>
-                                    </li>
-                                    <li class="waves-effect waves-light">
-                                        <a href="email-inbox.html">
-                                            <i class="ti-email"></i> My Messages
-                                        </a>
-                                    </li>
-                                    <li class="waves-effect waves-light">
-                                        <a href="auth-lock-screen.html">
-                                            <i class="ti-lock"></i> Lock Screen
                                         </a>
                                     </li>
                                     <li class="waves-effect waves-light">

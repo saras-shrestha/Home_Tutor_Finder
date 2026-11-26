@@ -5,12 +5,7 @@
 
     <head>
         <title>Mega Able bootstrap admin template by codedthemes </title>
-        <!-- HTML5 Shim and Respond.js IE10 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 10]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
+      
         <!-- Meta -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
@@ -30,10 +25,15 @@
         <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/themify-icons/themify-icons.css' %}">
         <!-- ico font -->
         <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/icofont/css/icofont.css' %}">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/font-awesome/css/font-awesome.min.css' %}">
         <!-- Style.css -->
         <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/font-awesome/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        >
     </head>
 
     <body themebg-pattern="theme1">
@@ -192,9 +192,9 @@
                                     </div>
                                     <hr/>
                                     <div class="row">
-                                        <div class="col-md-10">
-                                            <p class="text-inverse text-left m-b-0">Thank you.</p>
-                                            <p class="text-inverse text-left"><a href="{% url 'home-page' %}"><b>Back to website</b></a></p>
+                                        <div class="col-md-12">
+                                            <p class="text-inverse text-left m-b-0">Already have an account? <a href="{% url 'login' %}" style="color:blue; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Login</a></p>
+                                            <p class="text-inverse text-right"><a href="{% url 'home-page' %}"><i class="bi bi-arrow-left-short"></i><span><b>Back to website</b></span></a></p>
                                         </div>
                                     </div>
                                 </div>

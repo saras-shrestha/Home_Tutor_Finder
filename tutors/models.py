@@ -155,13 +155,6 @@ class TutorTeaching(models.Model):
     def __str__(self):
         return f"{self.tutor} - {self.grade_subject} - NPR {self.fee}"
 
-
-
-from django.db import models
-from django.db.models import Q, F
-from django.core.exceptions import ValidationError
-
-
 class TutorAvailability(models.Model):
     tutor_teaching = models.ForeignKey(
         TutorTeaching,

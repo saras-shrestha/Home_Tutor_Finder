@@ -13,6 +13,7 @@ from django.db.models import Q, Count, Prefetch, OuterRef, Subquery, F
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 from django.core.exceptions import ValidationError
+from notifications.utils import notify_admins
 
 # Create your views here.
 
@@ -185,7 +186,7 @@ def tutor_profile(request):
                 "message": "Qualification saved successfully.",
                 "next_step": 5
             })
-        # Step 5: Certificationel
+        # Step 5: Certification
         if section == "certification":
             if "certificate" in request.FILES:
                 tutor.certificate = request.FILES["certificate"]
@@ -209,11 +210,24 @@ def tutor_profile(request):
                     "message": "Please upload your CV."
                 })
 
+            # Check whether this is the first completion
+            first_completion = not tutor.profile_completed
+
             tutor.cv = cv
             tutor.profile_completed = True
             tutor.profile_completed_at= timezone.now()
             tutor.current_step = 7
             tutor.save()
+            
+            # Notify admins only on the first completion
+            if first_completion:
+                notify_admins(
+                    title="New Tutor Profile Completed",
+                    message=f"{tutor.full_name} has completed their tutor profile. Please review it.",
+                    notification_type="profile_completed",
+                    sender=request.user,
+                    link=reverse("tutors_approval") 
+                )
 
             return JsonResponse({
                 "success": True,

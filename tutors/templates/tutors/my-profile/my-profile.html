@@ -307,11 +307,7 @@
                                                                         Remove
                                                                     </button>
 
-                                                                    <input type="file"
-                                                                        id="profile_picture"
-                                                                        name="profile_picture"
-                                                                        accept="image/*"
-                                                                        hidden>
+                                                                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" {% if not tutor.profile_picture %}required{% endif %} hidden>
 
                                                                     <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                        
 
@@ -725,7 +721,7 @@
                                                                             class="remove-certificate">
                                                                         Remove
                                                                     </button>
-                                                                    <input type="file" id="certificate" name="certificate" accept="image/*" hidden>
+                                                                    <input type="file" id="certificate" name="certificate" accept="image/*" {% if not tutor.certificate %}required{% endif %} hidden>
                                                                     <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                       
                                                                 </div>
 
@@ -779,7 +775,7 @@
                                                                             class="remove-cv">
                                                                         Remove
                                                                     </button>
-                                                                    <input type="file" id="cv" name="cv" accept="image/*" hidden>
+                                                                    <input type="file" id="cv" name="cv" accept="image/*" {% if not tutor.cv %}required{% endif %} hidden>
                                                                     <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                        
 
                                                                 </div>

@@ -85,6 +85,12 @@
                          {% elif profile_incomplete and profile.verification_status == 2  %}
                         <!--DIV for PROFILE COMPLETION STARTS -->
                         <div class="col-12">
+                            <div class="alert alert-danger" role="alert">
+                               <div>
+                                    <i class="ti-info-alt mr-2" style="font-size: 1.2rem;"></i>
+                                    <strong>Action Required:</strong> Your profile was rejected; please review the rejection reasons and update your details to resubmit.
+                                </div>
+                            </div>
                             <div class="card">
                                 <div class="card-block">
 

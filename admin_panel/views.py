@@ -11,6 +11,9 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.db.models import Q
 from django.template.loader import render_to_string
+from notifications.utils import create_notification
+from django.urls import reverse
+
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -215,19 +218,43 @@ def tutor_review(request, id):
         status=request.POST.get("decision")
         if status == "verified":
             tutor.verification_status = 1
+            tutor_verification_status=1 # for approval notification
         if status == "rejected":
             tutor.verification_status = 2
             tutor.current_step = 6
             tutor.profile_completed=False
             rejection_reason = request.POST.get("rejection_reason").strip()
             tutor.rejection_reason = rejection_reason
+            # for rejection notification
+            tutor_verification_status= 2 
         if status == "update_reason":
             rejection_reason = request.POST.get("update_reason").strip()
             tutor.rejection_reason = rejection_reason
             tutor.save()
             return redirect("tutors_approval")
         tutor.save()
-        return redirect("tutors_list")
+        # Notify admins only on the first completion
+        if tutor_verification_status==1:
+            create_notification(
+                title="Your Profile has been approved.",
+                message="Now you can add the grades, subjects, teaching fees and availability. Please add the details.",
+                notification_type="tutor_rejected",
+                sender=request.user,
+                recipient=tutor.user,
+                link=reverse("tutor_approved") 
+            )
+        if tutor_verification_status==2:
+                    create_notification(
+                        title="Your Profile has been rejected.",
+                        message=f"Reason: {tutor.rejection_reason}. Please review your profile.",
+                        notification_type="tutor_approved",
+                        sender=request.user,
+                        recipient=tutor.user,
+                        link=reverse("my_tutor_profile") 
+                    )
+
+        # return redirect("tutors_list")
+        return redirect("tutors_approval")
     context={
         "tutor":tutor
     }

@@ -3,11 +3,41 @@ document.addEventListener("DOMContentLoaded", function () {
     const profileInput =document.getElementById("profile_picture");
 
     const profilePreview =document.getElementById("profilePreview");
+    const choosePhoto = document.getElementById('choosePhoto');
 
     const removePhoto =document.getElementById("removePhoto");
+    choosePhoto.addEventListener('click', function () {
+        profileInput.click();
+    });
+
+     /* Certificate */
+
+    const certificateInput = document.getElementById("certificate");
+    const certificatePreview = document.getElementById("certificatePreview");
+    const chooseCertificate = document.getElementById("chooseCertificate");
+    const removeCertificate = document.getElementById("removeCertificate");
 
 
-    /* Profile picture preview */
+    // Choose certificate
+    chooseCertificate.addEventListener("click", function () {
+        certificateInput.click();
+    });
+
+      /* CV */
+
+    const cvInput = document.getElementById("cv");
+    const cvPreview = document.getElementById("cvPreview");
+    const chooseCV = document.getElementById("chooseCV");
+    const removeCV = document.getElementById("removeCV");
+
+
+    // Choose certificate
+    chooseCV.addEventListener("click", function () {
+        cvInput.click();
+    });
+
+
+   /* Profile picture preview */
 
     profileInput.addEventListener("change", function () {
 
@@ -91,33 +121,22 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (phone !== "" &&
-            !/^[0-9]{10}$/.test(phone)) {
+        // if (phone !== "" &&
+        //     !/^[0-9]{10}$/.test(phone)) {
 
-            alert(
-                "Please enter a valid 10-digit phone number."
-            );
+        //     alert(
+        //         "Please enter a valid 10-digit phone number."
+        //     );
 
-            event.preventDefault();
+        //     event.preventDefault();
 
-            return;
-        }
+        //     return;
+        // }
 
     });
 
 
-    /* Certificate */
-
-    const certificateInput = document.getElementById("certificate");
-    const certificatePreview = document.getElementById("certificatePreview");
-    const chooseCertificate = document.getElementById("chooseCertificate");
-    const removeCertificate = document.getElementById("removeCertificate");
-
-
-    // Choose certificate
-    chooseCertificate.addEventListener("click", function () {
-        certificateInput.click();
-    });
+   
 
 
     // Preview certificate
@@ -175,21 +194,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     /* certificate part ended */
 
-    /* CV */
+  
 
-    const cvInput = document.getElementById("cv");
-    const cvPreview = document.getElementById("cvPreview");
-    const chooseCV = document.getElementById("chooseCV");
-    const removeCV = document.getElementById("removeCV");
-
-
-    // Choose certificate
-    chooseCV.addEventListener("click", function () {
-        cvInput.click();
-    });
-
-
-    // Preview certificate
+    // Preview cv
     cvInput.addEventListener("change", function () {
 
         const file = this.files[0];

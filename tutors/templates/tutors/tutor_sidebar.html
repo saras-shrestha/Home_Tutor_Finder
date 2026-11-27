@@ -77,7 +77,7 @@
         <div class="pcoded-navigation-label" data-i18n="nav.category.forms">Fee Management</div>
         <ul class="pcoded-item pcoded-left-item">
             <li>
-                <a href="{% url 'teaching_fees' %}" class="waves-effect waves-dark">
+                <a href="{% if request.user.is_authenticated and request.user.tutor_profile.profile_completed %}{% url 'teaching_fees' %}{% else %}{% url 'tutor_dashboard' %}{% endif %}" class="waves-effect waves-dark">
                     <span class="pcoded-micon"><i class="bi bi-wallet"></i></span>
                     <span class="pcoded-mtext" data-i18n="nav.form-components.main">Set My Fees</span>
                     <span class="pcoded-mcaret"></span>
@@ -131,30 +131,42 @@ document.addEventListener("DOMContentLoaded", function () {
         navItems.forEach((item) => item.classList.remove("active"));
         li.classList.add("active");
 
-        // If the item is inside a submenu, keep the parent dropdown open and active
         const parentDropdown = li.closest(".pcoded-hasmenu");
         if (parentDropdown) {
             parentDropdown.classList.add("active", "pcoded-trigger");
         }
     }
 
-    // 1. Highlight matching link (and open its parent submenu) on page load
+    // 1. Highlight ONLY the first matching link on page load
+    for (const li of navItems) {
+        const link = li.querySelector(":scope > a");
+        if (!link) continue;
+
+        const href = link.getAttribute("href");
+        if (href && href !== "#" && href !== "javascript:void(0)" && href === currentPath) {
+            setActiveItem(li);
+            break; // Stop immediately so lower fallback links don't steal the active state
+        }
+    }
+
+    // 2. Highlight on click (only if navigating to a different URL)
     navItems.forEach((li) => {
         const link = li.querySelector(":scope > a");
         if (!link) return;
 
         const href = link.getAttribute("href");
-        if (href && href !== "#" && href !== "javascript:void(0)" && href === currentPath) {
-            setActiveItem(li);
-        }
-
-        // 2. Highlight on click (skip dropdown parent toggles)
         link.addEventListener("click", function () {
-            if (href && href !== "#" && href !== "javascript:void(0)") {
+            if (
+                href &&
+                href !== "#" &&
+                href !== "javascript:void(0)" &&
+                href !== currentPath
+            ) {
                 setActiveItem(li);
             }
         });
     });
 });
 </script>
+
 {% endblock %}

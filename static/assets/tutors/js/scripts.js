@@ -464,12 +464,12 @@ document
             document.getElementById("certificate").files[0];
 
         // Check certificate
-        if (!certificate) {
+        // if (!certificate) {
 
-            alert("Please upload a certificate.");
+        //     alert("Please upload a certificate.");
 
-            return;
-        }
+        //     return;
+        // }
 
         const formData = new FormData();
 
@@ -550,10 +550,10 @@ document
         const cv =
             document.getElementById("cv").files[0];
 
-        if (!cv) {
-            alert("Please upload your CV.");
-            return;
-        }
+        // if (!cv) {
+        //     alert("Please upload your CV.");
+        //     return;
+        // }
 
         const formData = new FormData();
 

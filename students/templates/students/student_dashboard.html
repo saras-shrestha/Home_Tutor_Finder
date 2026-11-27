@@ -10,9 +10,9 @@
                 <!-- Page-body start -->
 
                 <div class="page-body">
+                    {% if profile_incomplete %}
                     <div class="row">
-                        <!--First row starts-->
-                        {% if profile_incomplete %}
+                        <!--First row starts-->                        
                         <!--DIV for PROFILE COMPLETION STARTS -->
                         <div class="col-12">
                             <div class="card">
@@ -75,258 +75,320 @@
                         </div>
                         <!--DIV for PROFILE COMPLETION ENDS-->
                         <!--First row ends-->
+                    </div>
+                    {% else %}
 
-                        {% else %}
-                        <!--first row-->                            
-                            <!-- task, page, download counter  starts -->
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card">
-                                    <div class="card-block">
-                                        <div class="row align-items-center">
-                                            <div class="col-8">
-                                                <h4 class="text-c-blue">290+</h4>
-                                                <h6 class="text-muted m-b-0">Tutors</h6>
-                                            </div>
-                                            <div class="col-4 text-right">
-                                                <i class="bi bi-person-badge text-c-blue"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-c-blue">
-                                        <div class="row align-items-center">
-                                            <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"><a href="{% url 'tutors_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card">
-                                    <div class="card-block">
-                                        <div class="row align-items-center">
-                                            <div class="col-8">
-                                                <h4 class="text-c-red">145</h4>
-                                                <h6 class="text-muted m-b-0">Pending Requests</h6>
-                                            </div>
-                                            <div class="col-4 text-right">
-                                                <i class="bi bi-person-check text-c-red"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-c-red">
-                                        <div class="row align-items-center">
-                                            <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=pending" class="more-info-link"> More Info</i> <i class="bi bi-arrow-right"></i></a></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card">
-                                    <div class="card-block card-bg-purple">
-                                        <div class="row align-items-center">
-                                            <div class="col-8">
-                                                <h4 class="text-c-purple">$30200</h4>
-                                                <h6 class="text-muted m-b-0">Accepted Requests</h6>
-                                            </div>
-                                            <div class="col-4 text-right">
-                                                <i class="bi bi-people text-c-purple"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-c-purple">
-                                        <div class="row align-items-center">
-                                            <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"> <a href="{% url 'tutor_requests' %}?tab=not_started" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card">
-                                    <div class="card-block">
-                                        <div class="row align-items-center">
-                                            <div class="col-8">
-                                                <h4 class="text-c-green">290+</h4>
-                                                <h6 class="text-muted m-b-0">In-Progress Request</h6>
-                                            </div>
-                                            <div class="col-4 text-right">
-                                                <i class="bi bi-person-badge text-c-green"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-c-green">
-                                        <div class="row align-items-center">
-                                            <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=in_progress" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="row">
                             
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card">
-                                    <div class="card-block">
-                                        <div class="row align-items-center">
-                                            <div class="col-8">
-                                                <h4 class="text-c-green">500</h4>
-                                                <h6 class="text-muted m-b-0">Completed Requests</h6>
-                                            </div>
-                                            <div class="col-4 text-right">
-                                                <i class="bi bi-check-circle text-c-green"></i>
+                        <!--Second row start-->
+                       
+                        <div class="container-fluid">
+
+                            <!-- Welcome Section -->
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-body p-4">
+                                    <div class="row align-items-center">
+
+                                        <div class="col-md-9">
+                                            <h4 class="font-weight-bold mb-2">
+                                                Welcome back, {{ request.user.student_profile.full_name }}!
+                                            </h4>
+                                            <p class="text-muted mb-3">
+                                                Find the right tutor and continue your learning journey.
+                                            </p>
+                                        </div>
+
+                                        <div class="col-md-3 d-flex justify-content-center">
+                                            <a href="{% url 'find_tutors' %}"
+                                            class="btn btn-primary">
+                                                <i class="fas fa-search mr-2"></i>
+                                                Find a Tutor
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Statistics Cards -->
+                            <div class="row mb-4">
+
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <div class="row align-items-center">
+                                                <div class="col-8">
+                                                    <h4 class="text-c-blue">290+</h4>
+                                                    <h6 class="text-muted m-b-0">Tutors</h6>
+                                                </div>
+                                                <div class="col-4 text-right">
+                                                    <i class="bi bi-person-badge text-c-blue"></i>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="card-footer bg-c-green">
-                                        <div class="row align-items-center">
-                                            <div class="col-12 text-center">
-                                                <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=completed" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                        <div class="card-footer bg-c-blue">
+                                            <div class="row align-items-center">
+                                                <div class="col-12 text-center">
+                                                    <p class="text-white m-b-0"><a href="{% url 'tutors_list' %}" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- task, page, download counter  end -->
-                            <!--first row ends-->
-                        </div>
 
-                        <div class="row">
-                             
-                            <!--Second row start-->
-                            <!--  Tutor Pending approvals starts -->
-                            <div class="col-xl-8 col-md-12">
-                                <div class="card table-card">
-                                    <div class="card-header">
-                                        <h5>Pending Tutor Approvals</h5>
-                                        <p class="text-muted mb-0 small">
-                                            Tutors waiting for verification
-                                        </p>
-                                        <div class="card-header-right">
-                                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <div class="row align-items-center">
+                                                <div class="col-8">
+                                                    <h4 class="text-c-red">145</h4>
+                                                    <h6 class="text-muted m-b-0">Pending Requests</h6>
+                                                </div>
+                                                <div class="col-4 text-right">
+                                                    <i class="bi bi-person-check text-c-red"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-c-red">
+                                            <div class="row align-items-center">
+                                                <div class="col-12 text-center">
+                                                    <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=pending" class="more-info-link"> More Info</i> <i class="bi bi-arrow-right"></i></a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card">
+                                        <div class="card-block card-bg-purple">
+                                            <div class="row align-items-center">
+                                                <div class="col-8">
+                                                    <h4 class="text-c-purple">$30200</h4>
+                                                    <h6 class="text-muted m-b-0">Accepted Requests</h6>
+                                                </div>
+                                                <div class="col-4 text-right">
+                                                    <i class="bi bi-people text-c-purple"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-c-purple">
+                                            <div class="row align-items-center">
+                                                <div class="col-12 text-center">
+                                                    <p class="text-white m-b-0"> <a href="{% url 'tutor_requests' %}?tab=not_started" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <div class="row align-items-center">
+                                                <div class="col-8">
+                                                    <h4 class="text-c-green">290+</h4>
+                                                    <h6 class="text-muted m-b-0">In-Progress Request</h6>
+                                                </div>
+                                                <div class="col-4 text-right">
+                                                    <i class="bi bi-person-badge text-c-green"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-c-green">
+                                            <div class="row align-items-center">
+                                                <div class="col-12 text-center">
+                                                    <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=in_progress" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <div class="row align-items-center">
+                                                <div class="col-8">
+                                                    <h4 class="text-c-green">500</h4>
+                                                    <h6 class="text-muted m-b-0">Completed Requests</h6>
+                                                </div>
+                                                <div class="col-4 text-right">
+                                                    <i class="bi bi-check-circle text-c-green"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-c-green">
+                                            <div class="row align-items-center">
+                                                <div class="col-12 text-center">
+                                                    <p class="text-white m-b-0"><a href="{% url 'tutor_requests' %}?tab=completed" class="more-info-link"> More Info <i class="bi bi-arrow-right"></i></a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <div class="row">
+
+                                <!-- Recent Tutor Requests -->
+                                <div class="col-lg-7 mb-4">
+                                    <div class="card border-0 shadow-sm h-100">
+
+                                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                            <h6 class="font-weight-bold mb-0">
+                                                Recent Tutor Requests
+                                            </h6>
+
+                                            <a href="{% url 'tutor_requests' %}"
+                                            class="small text-primary">
                                                 View All
                                             </a>
                                         </div>
-                                    </div>
-                                    <div class="card-block">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>                                                            
-                                                            Tutors
-                                                        </th>
-                                                        <th>Qualifications</th>
-                                                        <th>Submitted</th>
-                                                        <th></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for pending_tutor in pending_tutors %}
-                                                    <tr>
-                                                        <td>
-                                                           
-                                                            <div class="d-inline-block align-middle">
-                                                                <img src="{{ pending_tutor.profile_picture.url }}" alt="user image"
-                                                                    class="img-radius img-40 align-top m-r-15">
-                                                                <div class="d-inline-block">
-                                                                    <h6>{{ pending_tutor.full_name }}</h6>
-                                                                    <p class="text-muted m-b-0">Graphics
-                                                                        Designer</p>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            {% for pending_tutor_qualification in pending_tutor.qualifications.all %}
-                                                            <p> {{ pending_tutor_qualification.degree_name }} </p>
-                                                            {% endfor %}
-                                                        </td>
-                                                        <td>{{ pending_tutor.profile_completed_at }}</td>
-                                                        <td class="text-right">
-                                                             <a href="#" class="btn btn-sm btn-primary">
-                                                                Review
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    {% empty %}
-                                                        <p>No tutors found.</p>
-                                                    {% endfor %}
-                                                   
-                                                </tbody>
-                                            </table>
 
-                                            <div class="text-right m-r-20">
-                                                <a href="#!" class="b-b-primary text-primary">View all
-                                                    Projects</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                        <div class="card-body p-0">
 
-                            <div class="col-xl-4 col-md-12">
-                                <div class="card ">
-                                    <div class="card-header">
-                                        <h5>Recent Activity</h5>
-                                        <p class="text-muted mb-0 small">
-                                            Latest activity on ADME
-                                        </p>
-                                    </div>
-                                    <div class="card-block p-4">
-                                        <div class="d-flex mb-4">
-                                            <i class="bi bi-person-plus text-primary fs-5 me-3"></i>
+                                            {% for tutor_request in recent_requests %}
 
-                                            <div>
-                                                <strong>New tutor registered</strong>
-                                                <div class="small text-muted">
-                                                    10 minutes ago
+                                                <div class="p-3 border-bottom">
+                                                    <div class="d-flex justify-content-between align-items-center">
+
+                                                        <div>
+                                                            <h6 class="font-weight-bold mb-1">
+                                                                {{ tutor_request.tutor_teaching.grade_subject.subject.name }}
+                                                            </h6>
+
+                                                            <small class="text-muted">
+                                                                {{ tutor_request.tutor_teaching.tutor.full_name }}
+                                                            </small>
+                                                        </div>
+
+                                                        <div>
+                                                            {% if tutor_request.status == 'pending' %}
+                                                                <span class="badge badge-warning">
+                                                                    Pending
+                                                                </span>
+
+                                                            {% elif tutor_request.status == 'accepted' %}
+                                                                <span class="badge badge-success">
+                                                                    Accepted
+                                                                </span>
+
+                                                            {% elif tutor_request.status == 'rejected' %}
+                                                                <span class="badge badge-danger">
+                                                                    Rejected
+                                                                </span>
+
+                                                            {% elif tutor_request.status == 'in_progress' %}
+                                                                <span class="badge badge-info">
+                                                                    In Progress
+                                                                </span>
+
+                                                            {% elif tutor_request.status == 'completed' %}
+                                                                <span class="badge badge-secondary">
+                                                                    Completed
+                                                                </span>
+                                                            {% endif %}
+                                                        </div>
+
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                        </div>
+                                            {% empty %}
 
+                                                <div class="text-center py-5">
+                                                    <i class="fas fa-inbox text-muted mb-3"
+                                                    style="font-size: 35px;"></i>
 
-                                        <div class="d-flex mb-4">
+                                                    <p class="text-muted mb-2">
+                                                        You haven't sent any tutor requests yet.
+                                                    </p>
 
-                                            <i class="bi bi-check-circle text-success fs-5 me-3"></i>
-
-                                            <div>
-                                                <strong>Tutor approved</strong>
-                                                <div class="small text-muted">
-                                                    1 hour ago
+                                                    <a href="{% url 'find_tutors' %}"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                        Find Your First Tutor
+                                                    </a>
                                                 </div>
-                                            </div>
 
-                                        </div>
-
-
-                                        <div class="d-flex">
-
-                                            <i class="bi bi-person text-secondary fs-5 me-3"></i>
-
-                                            <div>
-                                                <strong>New student registered</strong>
-                                                <div class="small text-muted">
-                                                    2 hours ago
-                                                </div>
-                                            </div>
+                                            {% endfor %}
 
                                         </div>
                                     </div>
                                 </div>
+
+
+                                <!-- Recent Activities -->
+                                <div class="col-lg-5 mb-4">
+                                    <div class="card border-0 shadow-sm h-100">
+
+                                        <div class="card-header bg-white py-3">
+                                            <h6 class="font-weight-bold mb-0">
+                                                Learning Overview
+                                            </h6>
+                                        </div>
+
+                                        <div class="card-body">
+
+                                            <div class="d-flex align-items-center mb-4">
+                                                <div class="activity-icon text-success">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </div>
+
+                                                <div class="ml-3">
+                                                    <h6 class="mb-1">Accepted Requests</h6>
+                                                    <small class="text-muted">
+                                                        {{ accepted_requests }} tutor requests accepted
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex align-items-center mb-4">
+                                                <div class="activity-icon text-primary">
+                                                    <i class="fas fa-book-reader"></i>
+                                                </div>
+
+                                                <div class="ml-3">
+                                                    <h6 class="mb-1">Ongoing Learning</h6>
+                                                    <small class="text-muted">
+                                                        {{ ongoing_sessions }} active teaching sessions
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex align-items-center mb-4">
+                                                <div class="activity-icon text-info">
+                                                    <i class="fas fa-graduation-cap"></i>
+                                                </div>
+
+                                                <div class="ml-3">
+                                                    <h6 class="mb-1">Completed Learning</h6>
+                                                    <small class="text-muted">
+                                                        {{ completed_sessions }} completed sessions
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <hr>
+
+                                            <a href="{% url 'tutor_requests' %}"
+                                            class="btn btn-outline-primary btn-block">
+                                                Manage My Requests
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                            <!-- Tutor Pending approvals ends -->
-                            <!--Second row ends--> 
-                        
-                        {% endif %}
+
+                        </div>
+                        <!--Second row ends-->   
                     </div>
+                    {% endif %}
                 </div>
                 <!-- Page-body end -->
             </div>

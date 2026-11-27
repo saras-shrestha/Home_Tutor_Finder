@@ -294,11 +294,7 @@
                                                             Remove
                                                         </button>
 
-                                                        <input type="file"
-                                                            id="profile_picture"
-                                                            name="profile_picture"
-                                                            accept="image/*"
-                                                            hidden>
+                                                        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" {% if not tutor.profile_picture %}required{% endif %} hidden>
 
                                                         <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                        
 
@@ -557,7 +553,7 @@
                                                 <label for="description">
                                                     Your Description
                                                 </label>
-                                                <textarea rows="10" id="description" name="description" value="{{ tutor.description|default:'' }}" placeholder="I am a passionate tutor with experience in teaching and helping students achieve their learning goals…"></textarea>
+                                                <textarea rows="10" id="description" name="description" placeholder="I am a passionate tutor with experience in teaching and helping students achieve their learning goals…">{{ tutor.description|default:'' }}</textarea>
                                             </div>
                                         </div>
 
@@ -598,16 +594,16 @@
                                                         name="high_qualification" value="{{ tutor.qualifications.high_qualification|default:'' }}"
                                                         required>
 
-                                                    <option value="">
+                                                    <option value="" disabled {% if not tutor.qualifications.first.highest_qualification %}selected{% endif %}>
                                                         Select highest academic qualification
                                                     </option>
 
-                                                    <option value="masters">
-                                                        Master's Degree
+                                                    <option value="bachelors" {% if tutor.qualifications.first.highest_qualification == "bachelors" %}selected{% endif %}>
+                                                        Bachelor's Degree
                                                     </option>
 
-                                                    <option value="bachelors">
-                                                        Bachelor's Degree
+                                                    <option value="masters" {% if tutor.qualifications.first.highest_qualification == "masters" %}selected{% endif %}>
+                                                        Master's Degree
                                                     </option>
 
                                                 </select>
@@ -623,7 +619,7 @@
                                                 <input type="text"
                                                     id="study_field"
                                                     name="study_field"
-                                                    value="{{ tutor.qualifications.study_field|default:'' }}"
+                                                    value="{{ tutor.qualifications.first.study_field|default:'' }}"
                                                     placeholder="Enter your major or area of specialization.">
                                             </div>
 
@@ -636,7 +632,7 @@
                                                 <input type="text"
                                                     id="degree_name"
                                                     name="degree_name"
-                                                    value="{{ tutor.qualifications.degree_name|default:'' }}"
+                                                    value="{{ tutor.qualifications.first.degree_name|default:'' }}"
                                                     placeholder="Enter the name of your degree or qualification.">
 
                                             </div>
@@ -650,7 +646,7 @@
                                                 <input type="text"
                                                     id="college_name"
                                                     name="college_name"
-                                                    value="{{ tutor.qualifications.college_name|default:'' }}"
+                                                    value="{{ tutor.qualifications.first.college|default:'' }}"
                                                     placeholder="Enter the name of the college or institution where you studied.">
 
                                             </div>
@@ -662,7 +658,7 @@
 
                                                 <input type="text"
                                                     id="university"
-                                                    name="university" value="{{ tutor.qualifications.university|default:'' }}"
+                                                    name="university" value="{{ tutor.qualifications.first.university|default:'' }}"
                                                     placeholder="Enter the university your qualification is affiliated with or awarded by.">
 
                                             </div>
@@ -674,7 +670,7 @@
 
                                                 <input type="text"
                                                     id="study_country"
-                                                    name="study_country" value="{{ tutor.qualifications.country|default:'' }}"
+                                                    name="study_country" value="{{ tutor.qualifications.first.country|default:'' }}"
                                                     placeholder="Enter the country where you studied.">
                                             </div>
                                             <div class="form-group">
@@ -683,9 +679,10 @@
                                                     GPA
                                                 </label>
 
-                                                <input type="text"
+                                                <input type="number"
+                                                    step="0.01"
                                                     id="tutor_gpa"
-                                                    name="tutor_gpa" value="{{ tutor.qualifications.gpa|default:'' }}"
+                                                    name="tutor_gpa" value="{{ tutor.qualifications.first.gpa|default:'' }}"
                                                     placeholder="Enter your final grade or GPA, if applicable.">
                                             </div>                                            
                                         </div>
@@ -742,7 +739,7 @@
                                                                 class="remove-certificate">
                                                             Remove
                                                         </button>
-                                                        <input type="file" id="certificate" name="certificate" accept="image/*" hidden>
+                                                        <input type="file" id="certificate" name="certificate" accept="image/*" {% if not tutor.certificate %}required{% endif %} hidden>
                                                         <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                       
                                                     </div>
                                                 </div>
@@ -804,7 +801,7 @@
                                                                 class="remove-cv">
                                                             Remove
                                                         </button>
-                                                        <input type="file" id="cv" name="cv" hidden>
+                                                        <input type="file" id="cv" name="cv" {% if not tutor.cv %}required{% endif %} hidden>
                                                         <p>JPG, PNG or JPEG. Maximum 2MB.</p>                                                        
 
                                                     </div>

@@ -70,6 +70,43 @@
             border-radius: 50%;
             z-index: 10;
         }
+
+        .mark-all-read {
+            float: right;
+            font-size: 11px;
+            color: #4099ff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .mark-all-read:hover {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .unread-notification {
+            background-color: #f5f7fa;
+        }
+
+        .notification-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .notification-link:hover {
+            text-decoration: none;
+        }
+        .show-notification {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .unread-notification {
+            background-color: #f0f7ff;
+            border-left: 3px solid #448aff;
+        }
+
     </style>
 </head>
 
@@ -182,7 +219,7 @@
                             </li>
                         </ul>
                         <ul class="nav-right">
-                            <!--Notification-->
+                            <!--Notifications part starts-->
                             <li class="header-notification">
 
                                 <a href="#!" class="waves-effect waves-light">
@@ -190,13 +227,12 @@
 
                                     {% if unread_count > 0 %}
                                         <span class="badge bg-c-red">
-                                            {{ unread_count }}
+                                            {% if unread_count > 9 %}9+{% else %}{{ unread_count }}{% endif %}
                                         </span>
                                     {% endif %}
                                 </a>
 
                                 <ul class="show-notification">
-
                                     <li>
                                         <h6>Notifications</h6>
                                         {% if unread_count > 0 %}
@@ -208,35 +244,27 @@
                                                 {{ unread_count }} New
                                             </label>
                                         {% endif %}
-
                                     </li>
 
                                     {% for notification in recent_notifications %}
 
-                                        <li class="waves-effect waves-light
-                                            {% if not notification.is_read %}unread-notification{% endif %}">
+                                        <li class="waves-effect waves-light {% if not notification.is_read %}unread-notification{% endif %}">
 
                                             <a href="{{ notification.link|default:'#' }}"
-                                            class="notification-link">
+                                            class="notification-link" data-id="{{ notification.id }}">
 
                                                 <div class="media">
-
                                                     <div class="media-body">
-
                                                         <h5 class="notification-user">
                                                             {{ notification.title }}
                                                         </h5>
-
                                                         <p class="notification-msg">
                                                             {{ notification.message }}
                                                         </p>
-
                                                         <span class="notification-time">
                                                             {{ notification.created_at|timesince }} ago
                                                         </span>
-
                                                     </div>
-
                                                 </div>
 
                                             </a>
@@ -257,10 +285,16 @@
 
                                     {% endfor %}
 
+                                    <li class="text-center border-top" id="view-all-footer">
+                                        <a href="{% url 'all_notifications' %}" class="text-primary d-block py-2 font-weight-bold">
+                                            View All Notifications
+                                        </a>
+                                    </li>
+
                                 </ul>
 
                             </li>
-
+                            <!--Notifications part ends-->
                             <li class="user-profile header-notification">
                                 <a href="#!" class="waves-effect waves-light">
                                     {% if request.user.admin_profile.profile_picture or request.user.admin_profile.full_name %}
@@ -344,112 +378,157 @@
     <!--Extra JS-->
     {% block extra_js %}
     {% endblock %}
+    <!--Notifications-->
     <script>
-    $(document).ready(function () {
+        $(document).ready(function () {
 
-        // Get CSRF token
-        function getCookie(name) {
-            let cookieValue = null;
-
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-
-                for (let cookie of cookies) {
-                    cookie = cookie.trim();
-
-                    if (cookie.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(
-                            cookie.substring(name.length + 1)
-                        );
-                        break;
-                    }
-                }
-            }
-
-            return cookieValue;
-        }
-
-        const csrftoken = getCookie('csrftoken');
-
-
-        // Mark individual notification as read
-        $('.notification-link').on('click', function (e) {
-
-            e.preventDefault();
-
-            const link = $(this).attr('href');
-            const notificationItem = $(this).closest('li');
-            const notificationId = $(this).data('id');
-
-            if (!notificationId) {
-                window.location.href = link;
-                return;
-            }
-
-            $.ajax({
-                url: `/notifications/read/${notificationId}/`,
-                type: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken
-                },
-
-                success: function (response) {
-
-                    if (response.success) {
-
-                        notificationItem.removeClass(
-                            'unread-notification'
-                        );
-
-                        $('.header-notification .badge')
-                            .text(response.unread_count);
-
-                        if (response.unread_count === 0) {
-                            $('.header-notification .badge').hide();
-                            $('#notification-label').hide();
-                            $('#mark-all-read').hide();
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let cookie of cookies) {
+                        cookie = cookie.trim();
+                        if (cookie.startsWith(name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
                         }
                     }
-
-                    if (link && link !== '#') {
-                        window.location.href = link;
-                    }
                 }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
+            function formatBadge(count) {
+                return count > 9 ? '9+' : count;
+            }
+
+            // 1. Auto-fetch new notifications every 10 seconds
+            function fetchNotifications() {
+                $.ajax({
+                    url: '/notifications/fetch/',
+                    type: 'GET',
+                    success: function (data) {
+                        const bellLink = $('.header-notification > a');
+                        const dropdown = $('.show-notification');
+                        const headerLi = dropdown.find('li:notification-header');
+
+                        if (data.unread_count > 0) {
+                            if (bellLink.find('.badge').length) {
+                                bellLink.find('.badge').text(formatBadge(data.unread_count));
+                            } else {
+                                bellLink.append(`<span class="badge bg-c-red">${formatBadge(data.unread_count)}</span>`);
+                            }
+
+                            if ($('#mark-all-read').length === 0) {
+                                headerLi.append(`
+                                    <a href="#!" id="mark-all-read">Mark all as read</a>
+                                    <label class="label label-danger" id="notification-label">${data.unread_count} New</label>
+                                `);
+                            } else {
+                                $('#mark-all-read').show();
+                                $('#notification-label').text(`${data.unread_count} New`).show();
+                            }
+                        } else {
+                            bellLink.find('.badge').remove();
+                            $('#mark-all-read').hide();
+                            $('#notification-label').hide();
+                        }
+
+                        // Clear old items while keeping header and footer
+                        dropdown.find('li:not(:first-child):not(#view-all-footer)').remove();
+
+                        if (data.notifications.length === 0) {
+                            $('#view-all-footer').before(`
+                                <li>
+                                    <div class="media">
+                                        <div class="media-body">
+                                            <p class="notification-msg">No notifications yet.</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            `);
+                        } else {
+                            data.notifications.forEach(function (n) {
+                                const unreadClass = n.is_read ? '' : 'unread-notification';
+                                $('#view-all-footer').before(`
+                                    <li class="waves-effect waves-light ${unreadClass}">
+                                        <a href="${n.link}" class="notification-link" data-id="${n.id}">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <h5 class="notification-user">${n.title}</h5>
+                                                    <p class="notification-msg">${n.message}</p>
+                                                    <span class="notification-time">${n.time_since}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                `);
+                            });
+                        }
+                    }
+                });
+            }
+
+            setInterval(fetchNotifications, 10000);
+
+            // 2. Mark individual notification as read
+            $(document).on('click', '.notification-link', function (e) {
+                e.preventDefault();
+
+                const link = $(this).attr('href');
+                const notificationItem = $(this).closest('li');
+                const notificationId = $(this).data('id');
+
+                if (!notificationId || !notificationItem.hasClass('unread-notification')) {
+                    if (link && link !== '#') window.location.href = link;
+                    return;
+                }
+
+                $.ajax({
+                    url: `/notifications/read/${notificationId}/`,
+                    type: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken },
+                    success: function (response) {
+                        if (response.success) {
+                            notificationItem.removeClass('unread-notification');
+                            $('.header-notification .badge').text(formatBadge(response.unread_count));
+                            $('#notification-label').text(`${response.unread_count} New`);
+
+                            if (response.unread_count === 0) {
+                                $('.header-notification .badge').remove();
+                                $('#notification-label').hide();
+                                $('#mark-all-read').hide();
+                            }
+                        }
+                        if (link && link !== '#') window.location.href = link;
+                    },
+                    error: function () {
+                        if (link && link !== '#') window.location.href = link;
+                    }
+                });
             });
 
-        });
+            // 3. Mark all notifications as read
+            $(document).on('click', '#mark-all-read', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-
-        // Mark all notifications as read
-        $('#mark-all-read').on('click', function (e) {
-
-            e.preventDefault();
-
-            $.ajax({
-                url: '/notifications/read-all/',
-                type: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken
-                },
-
-                success: function (response) {
-
-                    if (response.success) {
-
-                        $('.unread-notification').removeClass(
-                            'unread-notification'
-                        );
-
-                        $('.header-notification .badge').hide();
-                        $('#notification-label').hide();
-                        $('#mark-all-read').hide();
+                $.ajax({
+                    url: '/notifications/read-all/',
+                    type: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken },
+                    success: function (response) {
+                        if (response.success) {
+                            $('.unread-notification').removeClass('unread-notification');
+                            $('.header-notification > a .badge').remove();
+                            $('#mark-all-read').hide();
+                            $('#notification-label').hide();
+                        }
                     }
-                }
+                });
             });
-
         });
-
-    });  
     </script>
 </body>
 

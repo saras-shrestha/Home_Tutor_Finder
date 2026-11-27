@@ -48,6 +48,70 @@
     <!-- for location-->
     {% block location_css %}
     {% endblock %}
+
+    <style>
+        .header-notification > a {
+            position: relative;
+            display: inline-block;
+        }
+
+        .header-notification > a .badge {
+            position: absolute !important;
+            top: 6px !important;
+            right: 3px !important;
+
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+
+            line-height: normal !important;
+            text-align: center;
+            font-size: 10px;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .mark-all-read {
+            float: right;
+            font-size: 11px;
+            color: #4099ff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .mark-all-read:hover {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .unread-notification {
+            background-color: #f5f7fa;
+        }
+
+        .notification-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .notification-link:hover {
+            text-decoration: none;
+        }
+        .show-notification {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .unread-notification {
+            background-color: #f0f7ff;
+            border-left: 3px solid #448aff;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -143,7 +207,7 @@
                                 <div class="sidebar_toggle"><a href="javascript:void(0)"><i class="ti-menu"></i></a>
                                 </div>
                             </li>
-                            <li class="header-search">
+                            {% comment %} <li class="header-search">
                                 <div class="main-search morphsearch-search">
                                     <div class="input-group">
                                         <span class="input-group-addon search-close"><i class="ti-close"></i></span>
@@ -151,7 +215,7 @@
                                         <span class="input-group-addon search-btn"><i class="ti-search"></i></span>
                                     </div>
                                 </div>
-                            </li>
+                            </li> {% endcomment %}
                             <li>
                                 <a href="#!" onclick="javascript:toggleFullScreen()" class="waves-effect waves-light">
                                     <i class="ti-fullscreen"></i>
@@ -159,54 +223,84 @@
                             </li>
                         </ul>
                         <ul class="nav-right">
+                            <!--Notifications part starts-->
                             <li class="header-notification">
+
                                 <a href="#!" class="waves-effect waves-light">
                                     <i class="ti-bell"></i>
-                                    <span class="badge bg-c-red"></span>
+
+                                    {% if unread_count > 0 %}
+                                        <span class="badge bg-c-red">
+                                            {% if unread_count > 9 %}9+{% else %}{{ unread_count }}{% endif %}
+                                        </span>
+                                    {% endif %}
                                 </a>
+
                                 <ul class="show-notification">
+
                                     <li>
                                         <h6>Notifications</h6>
-                                        <label class="label label-danger">New</label>
+                                        {% if unread_count > 0 %}
+                                            <a href="#!" id="mark-all-read">
+                                                Mark all as read
+                                            </a>
+
+                                            <label class="label label-danger" id="notification-label">
+                                                {{ unread_count }} New
+                                            </label>
+                                        {% endif %}
                                     </li>
-                                    <li class="waves-effect waves-light">
-                                        <div class="media">
-                                            <img class="d-flex align-self-center img-radius"
-                                                src="assets/images/avatar-2.jpg" alt="Generic placeholder image">
-                                            <div class="media-body">
-                                                <h5 class="notification-user">{{profile.full_name}}</h5>
-                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer
-                                                    elit.</p>
-                                                <span class="notification-time">30 minutes ago</span>
+
+                                    {% for notification in recent_notifications %}
+
+                                        <li class="waves-effect waves-light {% if not notification.is_read %}unread-notification{% endif %}">
+
+                                            <a href="{{ notification.link|default:'#' }}"
+                                            class="notification-link" data-id="{{ notification.id }}">
+
+                                                <div class="media">
+                                                    <div class="media-body">
+                                                        <h5 class="notification-user">
+                                                            {{ notification.title }}
+                                                        </h5>
+                                                        <p class="notification-msg">
+                                                            {{ notification.message }}
+                                                        </p>
+                                                        <span class="notification-time">
+                                                            {{ notification.created_at|timesince }} ago
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                            </a>
+
+                                        </li>
+
+                                    {% empty %}
+
+                                        <li>
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <p class="notification-msg">
+                                                        No notifications yet.
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </li>
+
+                                    {% endfor %}
+
+                                    <li class="text-center border-top" id="view-all-footer">
+                                        <a href="{% url 'all_notifications' %}" class="text-primary d-block py-2 font-weight-bold">
+                                            View All Notifications
+                                        </a>
                                     </li>
-                                    <li class="waves-effect waves-light">
-                                        <div class="media">
-                                            <img class="d-flex align-self-center img-radius"
-                                                src="assets/images/avatar-4.jpg" alt="Generic placeholder image">
-                                            <div class="media-body">
-                                                <h5 class="notification-user">Joseph William</h5>
-                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer
-                                                    elit.</p>
-                                                <span class="notification-time">30 minutes ago</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="waves-effect waves-light">
-                                        <div class="media">
-                                            <img class="d-flex align-self-center img-radius"
-                                                src="assets/images/avatar-3.jpg" alt="Generic placeholder image">
-                                            <div class="media-body">
-                                                <h5 class="notification-user">Sara Soudein</h5>
-                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer
-                                                    elit.</p>
-                                                <span class="notification-time">30 minutes ago</span>
-                                            </div>
-                                        </div>
-                                    </li>
+
                                 </ul>
+
                             </li>
+                            <!--Notifications part ends-->
+
                             <li class="user-profile header-notification">
                                 <a href="#!" class="waves-effect waves-light">
                                 {% if request.user.student_profile.profile_picture%}
@@ -306,6 +400,159 @@
     <!--Script for location map-->
     {% block location_map %}
     {% endblock %}
+
+    <!--Notifications-->
+    <script>
+        $(document).ready(function () {
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let cookie of cookies) {
+                        cookie = cookie.trim();
+                        if (cookie.startsWith(name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
+            function formatBadge(count) {
+                return count > 9 ? '9+' : count;
+            }
+
+            // 1. Auto-fetch new notifications every 10 seconds
+            function fetchNotifications() {
+                $.ajax({
+                    url: '/notifications/fetch/',
+                    type: 'GET',
+                    success: function (data) {
+                        const bellLink = $('.header-notification > a');
+                        const dropdown = $('.show-notification');
+                        const headerLi = dropdown.find('li:first-child');
+
+                        if (data.unread_count > 0) {
+                            if (bellLink.find('.badge').length) {
+                                bellLink.find('.badge').text(formatBadge(data.unread_count));
+                            } else {
+                                bellLink.append(`<span class="badge bg-c-red">${formatBadge(data.unread_count)}</span>`);
+                            }
+
+                            if ($('#mark-all-read').length === 0) {
+                                headerLi.append(`
+                                    <a href="#!" id="mark-all-read">Mark all as read</a>
+                                    <label class="label label-danger" id="notification-label">${data.unread_count} New</label>
+                                `);
+                            } else {
+                                $('#mark-all-read').show();
+                                $('#notification-label').text(`${data.unread_count} New`).show();
+                            }
+                        } else {
+                            bellLink.find('.badge').remove();
+                            $('#mark-all-read').hide();
+                            $('#notification-label').hide();
+                        }
+
+                        // Clear old items while keeping header and footer
+                        dropdown.find('li:not(:first-child):not(#view-all-footer)').remove();
+
+                        if (data.notifications.length === 0) {
+                            $('#view-all-footer').before(`
+                                <li>
+                                    <div class="media">
+                                        <div class="media-body">
+                                            <p class="notification-msg">No notifications yet.</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            `);
+                        } else {
+                            data.notifications.forEach(function (n) {
+                                const unreadClass = n.is_read ? '' : 'unread-notification';
+                                $('#view-all-footer').before(`
+                                    <li class="waves-effect waves-light ${unreadClass}">
+                                        <a href="${n.link}" class="notification-link" data-id="${n.id}">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <h5 class="notification-user">${n.title}</h5>
+                                                    <p class="notification-msg">${n.message}</p>
+                                                    <span class="notification-time">${n.time_since}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                `);
+                            });
+                        }
+                    }
+                });
+            }
+
+            setInterval(fetchNotifications, 10000);
+
+            // 2. Mark individual notification as read
+            $(document).on('click', '.notification-link', function (e) {
+                e.preventDefault();
+
+                const link = $(this).attr('href');
+                const notificationItem = $(this).closest('li');
+                const notificationId = $(this).data('id');
+
+                if (!notificationId || !notificationItem.hasClass('unread-notification')) {
+                    if (link && link !== '#') window.location.href = link;
+                    return;
+                }
+
+                $.ajax({
+                    url: `/notifications/read/${notificationId}/`,
+                    type: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken },
+                    success: function (response) {
+                        if (response.success) {
+                            notificationItem.removeClass('unread-notification');
+                            $('.header-notification .badge').text(formatBadge(response.unread_count));
+                            $('#notification-label').text(`${response.unread_count} New`);
+
+                            if (response.unread_count === 0) {
+                                $('.header-notification .badge').remove();
+                                $('#notification-label').hide();
+                                $('#mark-all-read').hide();
+                            }
+                        }
+                        if (link && link !== '#') window.location.href = link;
+                    },
+                    error: function () {
+                        if (link && link !== '#') window.location.href = link;
+                    }
+                });
+            });
+
+            // 3. Mark all notifications as read
+            $(document).on('click', '#mark-all-read', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                $.ajax({
+                    url: '/notifications/read-all/',
+                    type: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken },
+                    success: function (response) {
+                        if (response.success) {
+                            $('.unread-notification').removeClass('unread-notification');
+                            $('.header-notification > a .badge').remove();
+                            $('#mark-all-read').hide();
+                            $('#notification-label').hide();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 
